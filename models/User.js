@@ -11,6 +11,7 @@ var UserSchema = new mongoose.Schema({
   image: String,
   orderCount:Number,
   goodCount:Number,
+  logoutDateTime:Date,
   favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Article' }],
   following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   hash: String,
@@ -89,6 +90,11 @@ UserSchema.methods.follow = function(id){
 
 UserSchema.methods.unfollow = function(id){
   this.following.remove(id);
+  return this.save();
+};
+
+UserSchema.methods.logout = function(){
+  this.logoutDateTime = new Date();
   return this.save();
 };
 
