@@ -54,7 +54,7 @@ router.post('/users/login', function(req, res, next){
     return res.status(422).json({errors: {password: "can't be blank"}});
   }
 
-  passport.authenticate('local', {session: false}, function(err, user, info){
+  passport.authenticate('local', {session: true}, function(err, user, info){
     if(err){ return next(err); }
 
     if(user){
@@ -80,5 +80,25 @@ router.post('/users', function(req, res, next){
     return res.json({user: user.toAuthJSON()});
   }).catch(next);
 });
+
+
+router.get("/users/logout", auth.required, function(req, res, next) {
+  console.log(req.payload.id);
+  let currentUser = req.user;
+  console.log(currentUser)
+  
+  User.findById(req.payload.id).then(function(user){
+    if (!user) { return res.sendStatus(401); }
+
+    return user.logout().then(function(){
+      res.json({logoutdatetime: new Date()});
+    });
+    req.logout(); // clears the passport session
+    req.session.destroy(); // destroys all session related data
+    
+  }).catch(next);
+  
+});
+
 
 module.exports = router;

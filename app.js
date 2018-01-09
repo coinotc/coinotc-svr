@@ -8,6 +8,9 @@ var http = require('http'),
     passport = require('passport'),
     errorhandler = require('errorhandler'),
     mongoose = require('mongoose');
+    cookieParser = require('cookie-parser');
+    compression = require('compression');
+    config = require('./config');
 
 var isProduction = process.env.NODE_ENV === 'production';
 
@@ -18,13 +21,17 @@ app.use(cors());
 
 // Normal express config defaults
 app.use(require('morgan')('dev'));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
 
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(compression());
 app.use(require('method-override')());
 app.use(express.static(__dirname + '/public'));
 
 app.use(session({ secret: 'conduit', cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false  }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 if (!isProduction) {
   app.use(errorhandler());
@@ -33,7 +40,7 @@ if (!isProduction) {
 if(isProduction){
   mongoose.connect(process.env.MONGODB_URI);
 } else {
-  mongoose.connect('mongodb://localhost/conduit');
+  mongoose.connect(config.mongodb_url);
   mongoose.set('debug', true);
 }
 
@@ -46,6 +53,27 @@ require('./models/adsell');
 require('./config/passport');
 
 app.use(require('./routes'));
+
+// If the connection throws an error
+mongoose.connection.on("error", function(err) {
+  console.error('Failed to connect to DB ' + config.mongodb_url + ' on startup ', err);
+});
+
+// When the connection is disconnected
+mongoose.connection.on('disconnected', function () {
+  console.log('Mongoose default connection to DB :' + config.mongodb_url + ' disconnected');
+});
+
+var gracefulExit = function() { 
+  mongoose.connection.close(function () {
+    console.log('Mongoose default connection with DB :' + config.mongodb_url + ' is disconnected through app termination');
+    process.exit(0);
+  });
+}
+
+// If the Node process ends, close the Mongoose connection
+process.on('SIGINT', gracefulExit).on('SIGTERM', gracefulExit);
+
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {
