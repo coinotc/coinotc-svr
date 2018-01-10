@@ -5,7 +5,7 @@ router.use('/profiles', require('./profiles'));
 router.use('/articles', require('./articles'));
 router.use('/tags', require('./tags'));
 router.use('/order',require('./make-order'));
-router.use('/ad',require('./ad'));
+router.use('/guanggao',require('./ad'));
 
 router.use(function(err, req, res, next){
   if(err.name === 'ValidationError'){
