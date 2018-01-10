@@ -29,6 +29,7 @@ router.post(apiurl, (req, res) => {
     send.payment = get.payment;
     send.limit = get.limit;
     send.finished = get.finished;
+    send.trader = get.trader;
     console.log(send);
     let error = send.validateSync();
     if (!error) {
@@ -42,9 +43,10 @@ router.post(apiurl, (req, res) => {
 });
 router.put(apiurl, (req, res) => {
     let orderInformation = req.body;
+    console.log(req.body)
     let newOrderInformation = new Order();
     newOrderInformation._id = orderInformation._id;
-    newOrderInformation.finished = true;
+    newOrderInformation.finished = orderInformation.finished;
     var error = newOrderInformation.validateSync();
     if (!error) {
         //console.log(user._id);

@@ -13,6 +13,7 @@ router.get('/user', auth.required, function(req, res, next){
 });
 
 router.put('/user', auth.required, function(req, res, next){
+  console.log(req.payload)
   User.findById(req.payload.id).then(function(user){
     if(!user){ return res.sendStatus(401); }
 
@@ -31,6 +32,12 @@ router.put('/user', auth.required, function(req, res, next){
     }
     if(typeof req.body.user.password !== 'undefined'){
       user.setPassword(req.body.user.password);
+    }
+    if(typeof req.body.user.goodCount !== 'undefined'){
+      user.goodCount = req.body.user.goodCount;
+    }
+    if(typeof req.body.user.orderCount !== 'undefined'){
+      user.orderCount = req.body.user.orderCount;
     }
 
     return user.save().then(function(){
@@ -61,11 +68,11 @@ router.post('/users/login', function(req, res, next){
 });
 
 router.post('/users', function(req, res, next){
+  console.log('here');
   var user = new User();
 
   user.goodCount = "0",
   user.orderCount = "0",
-
   user.username = req.body.user.username;
   user.email = req.body.user.email;
   user.setPassword(req.body.user.password);
