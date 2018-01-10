@@ -5,9 +5,11 @@ var Order = mongoose.model('orderInformation');
 
 const apiurl = '/';
 
-router.get(apiurl, (req, res) => {
+router.get(apiurl+'buyer', (req, res) => {
     let finished = req.query.finished;
-    Order.find({ finished: `${finished}` }, (err, result) => {
+    let username = req.query.username;
+    console.log(req.query)
+    Order.find({ buyer: `${username}`, finished: `${finished}` }, (err, result) => {
         if (err) {
             res.status(500).send(err);
             return;
@@ -15,11 +17,25 @@ router.get(apiurl, (req, res) => {
         res.status(200).json(result);
     });
 });
+
+router.get(apiurl+'seller', (req, res) => {
+    let finished = req.query.finished;
+    let username = req.query.username;
+    console.log(req.query)
+    Order.find({ seller: `${username}`, finished: `${finished}` }, (err, result) => {
+        if (err) {
+            res.status(500).send(err);
+            return;
+        }
+        res.status(200).json(result);
+    });
+});
+
 router.post(apiurl, (req, res) => {
     let get = req.body;
     let send = new Order();
-    send.buyer = mongoose.Types.ObjectId()
-    send.seller = mongoose.Types.ObjectId();
+    send.buyer = get.buyer;
+    send.seller = get.seller;
     send.crypto = get.crypto;
     send.country = get.country;
     send.quantity = get.quantity;
@@ -41,6 +57,7 @@ router.post(apiurl, (req, res) => {
         res.status(500).send(error);
     }
 });
+
 router.put(apiurl, (req, res) => {
     let orderInformation = req.body;
     console.log(req.body)
