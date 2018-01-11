@@ -1,8 +1,8 @@
 var mongoose = require('mongoose');
 
 module.exports = mongoose.model('orderInformation', {
-    buyer: mongoose.Schema.Types.ObjectId,
-    seller: mongoose.Schema.Types.ObjectId,
+    buyer: String,
+    seller: String,
     crypto: String,
     country: String,
     quantity: Number,
