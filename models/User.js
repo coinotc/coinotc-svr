@@ -11,6 +11,7 @@ var UserSchema = new mongoose.Schema({
   image: String,
   orderCount: Number,
   goodCount: Number,
+  volume:String,
   logoutDateTime: Date,
   favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Article' }],
   following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],

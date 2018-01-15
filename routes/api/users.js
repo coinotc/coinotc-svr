@@ -73,6 +73,7 @@ router.post('/users', function(req, res, next){
 
   user.goodCount = "0",
   user.orderCount = "0",
+  user.volume = "",
   user.username = req.body.user.username;
   user.email = req.body.user.email;
   user.setPassword(req.body.user.password);
@@ -82,7 +83,19 @@ router.post('/users', function(req, res, next){
   }).catch(next);
 });
 
+router.get("/users/public", (req, res) => {
+  let username = req.query.username;
+  
+  console.log(req.query);
+  User.find({ username: `${username}`},'orderCount goodCount volume',(err, result) => {
+    if (err) {
+        res.status(500).send(err);
+        return;
+    }
+    res.status(200).json(result);
+});
 
+});
 router.get("/users/logout", auth.required, function(req, res, next) {
   console.log(req.payload.id);
   let currentUser = req.user;
