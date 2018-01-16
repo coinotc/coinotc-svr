@@ -14,7 +14,7 @@ var UserSchema = new mongoose.Schema({
   volume:String,
   logoutDateTime: Date,
   favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Article' }],
-  following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  following: Array,
   hash: String,
   salt: String
 }, { timestamps: true });

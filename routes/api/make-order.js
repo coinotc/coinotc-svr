@@ -12,7 +12,7 @@ router.get(apiurl+'buyer', (req, res) => {
     Order.find({ buyer: `${username}`, finished: `${finished}` }, (err, result) => {
         if (err) {
             res.status(500).send(err);
-            return;
+            return; 
         }
         res.status(200).json(result);
     });

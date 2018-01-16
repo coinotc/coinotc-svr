@@ -11,7 +11,28 @@ router.get('/user', auth.required, function(req, res, next){
     return res.json({user: user.toAuthJSON()});
   }).catch(next);
 });
-
+router.get('/user/public/block',  (req, res) => {
+  let currentUsername = req.query.currentUsername;
+  let username = req.query.username;
+  User.find({ username: `${currentUsername}`, block : `${username}`},(err, result) => {
+    if (err) {
+        res.status(500).send(err);
+        return;
+    }
+    res.status(200).json(result);
+  });
+});
+router.get('/user/public/follow',  (req, res) => {
+  let currentUsername = req.query.currentUsername;
+  let username = req.query.username;
+  User.find({ username: `${currentUsername}`, follow : `${username}`},(err, result) => {
+    if (err) {
+        res.status(500).send(err);
+        return;
+    }
+    res.status(200).json(result);
+  });
+});
 router.put('/user', auth.required, function(req, res, next){
   console.log(req.payload)
   User.findById(req.payload.id).then(function(user){
@@ -45,7 +66,24 @@ router.put('/user', auth.required, function(req, res, next){
     });
   }).catch(next);
 });
-
+router.put('/users/public/block', (req, res) => {
+  console.log(req.body)
+  console.log(req.query)
+  console.log(req.params)
+  // let orderInformation = req.body;
+  // console.log(req.body)
+  // let newOrderInformation = new Order();
+  // newOrderInformation._id = orderInformation._id;
+  // newOrderInformation.finished = orderInformation.finished;
+  // var error = newOrderInformation.validateSync();
+  // if (!error) {
+  //     //console.log(user._id);
+  //     Order.findByIdAndUpdate({ _id: orderInformation._id }, { $set: newOrderInformation }, { new: true }, (err, result) => {
+  //         if (err) res.status(500).json(err);
+  //         res.status(201).json(result);
+  //     })
+  // }
+});
 router.post('/users/login', function(req, res, next){
   if(!req.body.user.email){
     return res.status(422).json({errors: {email: "can't be blank"}});
