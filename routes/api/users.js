@@ -11,7 +11,28 @@ router.get('/user', auth.required, function(req, res, next){
     return res.json({user: user.toAuthJSON()});
   }).catch(next);
 });
-
+// router.get('/user/public/block',  (req, res) => {
+//   let currentUsername = req.query.currentUsername;
+//   let username = req.query.username;
+//   User.find({ username: `${currentUsername}`, block : `${username}`},(err, result) => {
+//     if (err) {
+//         res.status(500).send(err);
+//         return;
+//     }
+//     res.status(200).json(result);
+//   });
+// });
+// router.get('/user/public/follow',  (req, res) => {
+//   let currentUsername = req.query.currentUsername;
+//   let username = req.query.username;
+//   User.find({ username: `${currentUsername}`, follow : `${username}`},(err, result) => {
+//     if (err) {
+//         res.status(500).send(err);
+//         return;
+//     }
+//     res.status(200).json(result);
+//   });
+// });
 router.put('/user', auth.required, function(req, res, next){
   console.log(req.payload)
   User.findById(req.payload.id).then(function(user){
@@ -39,13 +60,41 @@ router.put('/user', auth.required, function(req, res, next){
     if(typeof req.body.user.orderCount !== 'undefined'){
       user.orderCount = req.body.user.orderCount;
     }
-
+    if(typeof req.body.user.idCard !== 'undefined'){
+      user.idCard = req.body.user.idCard;
+    }
+    if(typeof req.body.user.verifyName !== 'undefined'){
+      user.verifyName = req.body.user.verifyName;
+    }
+    if(typeof req.body.user.phone !== 'undefined'){
+      user.phone = req.body.user.phone;
+    }
+    if(typeof req.body.user.tradePrd !== 'undefined'){
+      user.tradePrd = req.body.user.tradePrd;
+    }
     return user.save().then(function(){
       return res.json({user: user.toAuthJSON()});
     });
   }).catch(next);
 });
-
+router.patch('/users/public/block', (req, res) => {
+  
+  console.log(req.body)
+  console.log(req.query)
+  User.findOneAndUpdate({ username: req.query.username},{ block: req.body }, { new: true },  (err, result) => {
+    if (err) res.status(500).json(err);
+    res.status(201).json(result);
+  })
+});
+router.patch('/users/public/follow', (req, res) => {
+  
+  console.log(req.body)
+  console.log(req.query)
+  User.findOneAndUpdate({ username: req.query.username},{ following: req.body }, { new: true },  (err, result) => {
+    if (err) res.status(500).json(err);
+    res.status(201).json(result);
+  })
+});
 router.post('/users/login', function(req, res, next){
   if(!req.body.user.email){
     return res.status(422).json({errors: {email: "can't be blank"}});
@@ -70,10 +119,17 @@ router.post('/users/login', function(req, res, next){
 router.post('/users', function(req, res, next){
   console.log('here');
   var user = new User();
-
-  user.goodCount = "0",
-  user.orderCount = "0",
-  user.volume = "",
+  user.verify = "0";
+  user.goodCount = "0";
+  user.orderCount = "0";
+  user.volume = "";
+  user.verifyName = "";
+  user.idCard = "";
+  user.phone = "";
+  user.tradePrd="";
+  user.following = [];
+  user.block = [];
+  
   user.username = req.body.user.username;
   user.email = req.body.user.email;
   user.setPassword(req.body.user.password);

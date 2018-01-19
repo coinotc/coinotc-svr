@@ -13,8 +13,14 @@ var UserSchema = new mongoose.Schema({
   goodCount: Number,
   volume:String,
   logoutDateTime: Date,
+  idCard : String,
+  verifyName :String,
+  verify:Number,
+  phone:Number,
+  tradePrd:Number,
   favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Article' }],
-  following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  following: Array,
+  block:Array,
   hash: String,
   salt: String
 }, { timestamps: true });
@@ -51,7 +57,9 @@ UserSchema.methods.toAuthJSON = function () {
     bio: this.bio,
     image: this.image,
     orderCount: this.orderCount,
-    goodCount: this.goodCount
+    goodCount: this.goodCount,
+    block : this.block,
+    following: this.following
   };
 };
 
