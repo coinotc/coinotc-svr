@@ -5,7 +5,19 @@ var Order = mongoose.model('orderInformation');
 
 const apiurl = '/';
 
-router.get(apiurl+'buyer', (req, res) => {
+router.get(apiurl, (req, res) => {
+    // let orderID = req.query._id;
+    console.log(req.query)
+    Order.find((err, result) => {
+        if (err) {
+            res.status(500).send(err);
+            return;
+        }
+        res.status(200).json(result);
+    });
+});
+
+router.get(apiurl + 'buyer', (req, res) => {
     let finished = req.query.finished;
     let username = req.query.username;
     console.log(req.query)
@@ -18,7 +30,7 @@ router.get(apiurl+'buyer', (req, res) => {
     });
 });
 
-router.get(apiurl+'seller', (req, res) => {
+router.get(apiurl + 'seller', (req, res) => {
     let finished = req.query.finished;
     let username = req.query.username;
     console.log(req.query)
