@@ -24,7 +24,7 @@ router.get(apiurl + 'buyer', (req, res) => {
     Order.find({ buyer: `${username}`, finished: `${finished}` }, (err, result) => {
         if (err) {
             res.status(500).send(err);
-            return;
+            return; 
         }
         res.status(200).json(result);
     });
@@ -57,7 +57,7 @@ router.post(apiurl, (req, res) => {
     send.payment = get.payment;
     send.limit = get.limit;
     send.finished = get.finished;
-    send.trader = get.trader;
+    send.date = new Date();
     console.log(send);
     let error = send.validateSync();
     if (!error) {
