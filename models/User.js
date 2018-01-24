@@ -22,7 +22,8 @@ var UserSchema = new mongoose.Schema({
   following: Array,
   block:Array,
   hash: String,
-  salt: String
+  salt: String,
+  baseCurrency: String
 }, { timestamps: true });
 
 UserSchema.plugin(uniqueValidator, { message: 'is already taken.' });
