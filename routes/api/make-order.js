@@ -5,13 +5,20 @@ var Order = mongoose.model('orderInformation');
 
 const apiurl = '/';
 
+//SEARCH & GET PROJECTS
 router.get(apiurl, (req, res) => {
-    // let orderID = req.query._id;
-    console.log(req.query)
-    Order.find((err, result) => {
+    var query = {};
+    var keyword = req.query.keyword;
+    if (typeof keyword == 'undefined') {
+        keyword = "";
+    }
+    if (keyword !== '') {
+        query = { _id: `${keyword}` }
+    }
+    Order.find(query, (err, result) => {
         if (err) {
+            // console.log(err);
             res.status(500).send(err);
-            return;
         }
         res.status(200).json(result);
     });
@@ -24,7 +31,7 @@ router.get(apiurl + 'buyer', (req, res) => {
     Order.find({ buyer: `${username}`, finished: `${finished}` }, (err, result) => {
         if (err) {
             res.status(500).send(err);
-            return; 
+            return;
         }
         res.status(200).json(result);
     });
