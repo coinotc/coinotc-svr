@@ -50,6 +50,8 @@ require('./models/adbuy');
 require('./models/adsell');
 require('./models/wallet');
 require('./config/passport');
+require('./models/complain');
+require('./models/advertisement');
 
 app.use(require('./routes'));
 
