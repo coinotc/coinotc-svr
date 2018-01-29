@@ -51,6 +51,8 @@ require('./models/orderinformation');
 require('./models/adbuy');
 require('./models/adsell');
 require('./config/passport');
+require('./models/complain');
+require('./models/advertisement');
 
 app.use(require('./routes'));
 
