@@ -42,5 +42,16 @@ router.get(advertisementapi,(req,res)=>{
         res.status(200).json(result);
     });
 })
+router.get(advertisementapi+"myadvertisement/",(req,res)=>{
+    let owner = req.query.owner;
+    advertisement.find({owner:`${owner}`},(err,result)=>{
+        if (err) {
+            res.status(500).send(err);
+            return;
+        }
+        res.status(200).json(result);
+    });
+})
+
 
 module.exports = router;

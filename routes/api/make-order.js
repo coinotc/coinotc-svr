@@ -5,20 +5,39 @@ var Order = mongoose.model('orderInformation');
 
 const apiurl = '/';
 
-router.get(apiurl+'buyer', (req, res) => {
+//SEARCH & GET PROJECTS
+router.get(apiurl, (req, res) => {
+    var query = {};
+    var keyword = req.query.keyword;
+    if (typeof keyword == 'undefined') {
+        keyword = "";
+    }
+    if (keyword !== '') {
+        query = { _id: `${keyword}` }
+    }
+    Order.find(query, (err, result) => {
+        if (err) {
+            // console.log(err);
+            res.status(500).send(err);
+        }
+        res.status(200).json(result);
+    });
+});
+
+router.get(apiurl + 'buyer', (req, res) => {
     let finished = req.query.finished;
     let username = req.query.username;
     console.log(req.query)
     Order.find({ buyer: `${username}`, finished: `${finished}` }, (err, result) => {
         if (err) {
             res.status(500).send(err);
-            return; 
+            return;
         }
         res.status(200).json(result);
     });
 });
 
-router.get(apiurl+'seller', (req, res) => {
+router.get(apiurl + 'seller', (req, res) => {
     let finished = req.query.finished;
     let username = req.query.username;
     console.log(req.query)

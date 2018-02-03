@@ -1,3 +1,4 @@
+
 var router = require('express').Router();
 var mongoose = require('mongoose');
 
@@ -28,8 +29,15 @@ router.post(apiurl, (req, res) => {
     }
 });
 router.get(apiurl,(req,res)=>{
+    var query ={};
     let username = req.query.keyword;
-    Complain.find({ complainant: `${username}`}, (err, result) => {
+    if (typeof username == 'undefined'|| username == "") {
+        username = "";
+    }
+    if (username !== '') {
+        query = { complainant: `${username}`}
+    }
+    Complain.find( query, (err, result) => {
         if (err) {
             res.status(500).send(err);
             return; 
