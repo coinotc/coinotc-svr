@@ -44,7 +44,8 @@ router.get(advertisementapi,(req,res)=>{
 })
 router.get(advertisementapi+"myadvertisement/",(req,res)=>{
     let owner = req.query.owner;
-    advertisement.find({owner:`${owner}`},(err,result)=>{
+    let visible = req.query.visible;
+    advertisement.find({owner:`${owner}`,visible :`${visible}`},(err,result)=>{
         if (err) {
             res.status(500).send(err);
             return;
