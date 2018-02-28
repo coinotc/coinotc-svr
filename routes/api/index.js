@@ -7,10 +7,7 @@ router.use('/complain',require('./complain'));
 router.use('/advertisement',require('./advertisement'));
 router.use('/wallet',require('./crypto-wallet'));
 router.use('/base-currency',require('./users'));
-<<<<<<< HEAD
-=======
 
->>>>>>> 7747a78707e83e02b157db0beceb9e4b49310ff5
 
 router.use(function(err, req, res, next){
   if(err.name === 'ValidationError'){
