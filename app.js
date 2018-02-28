@@ -45,12 +45,13 @@ if(isProduction){
 }
 
 require('./models/User');
-require('./models/Article');
-require('./models/Comment');
 require('./models/orderinformation');
 require('./models/adbuy');
 require('./models/adsell');
+require('./models/wallet');
 require('./config/passport');
+require('./models/complain');
+require('./models/advertisement');
 
 app.use(require('./routes'));
 
@@ -76,11 +77,11 @@ process.on('SIGINT', gracefulExit).on('SIGTERM', gracefulExit);
 
 
 /// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
+// app.use(function(req, res, next) {
+//   var err = new Error('Not Found');
+//   err.status = 404;
+//   next(err);
+// });
 
 /// error handlers
 

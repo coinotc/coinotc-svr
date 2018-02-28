@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 
-module.exports = mongoose.model('adsell', {
+module.exports = mongoose.model('advertisement', {
     visible: Boolean,
     owner: String,
     crypto: String,
@@ -13,4 +13,5 @@ module.exports = mongoose.model('adsell', {
     payment: String,
     limit: Number,
     massage: String,
+    type: Number // 0 is sell ,1 is buy
 });
