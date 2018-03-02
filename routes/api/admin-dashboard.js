@@ -10,6 +10,7 @@ const orderapi = '/order';
 
 router.get(`${orderapi}/sevenday`, (req, res) => {
   let array = [];
+  let times = 0;
   for (let i = 0; i < 7; i++) {
     // let aday = new Date((d => new Date(d.setDate(d.getDate() - i)).setHours(0, 0, 0, 0))(new Date())).toISOString(),
     //     beforeaday = new Date((d => new Date(d.setDate(d.getDate() - (i + 1))).setHours(0, 0, 0, 0))(new Date())).toISOString();
@@ -24,13 +25,14 @@ router.get(`${orderapi}/sevenday`, (req, res) => {
             .toDate()
         }
       },
-      (err, result, time = i) => {
-        array.unshift(result);
+      (err, result) => {
+        array[i] = result;
+        times++;
         if (err) {
           console.log(err);
           res.status(500).send('error');
         }
-        if (time === 6) {
+        if (times == 7) {
           res.status(200).json(array);
         }
       }
@@ -38,10 +40,11 @@ router.get(`${orderapi}/sevenday`, (req, res) => {
   }
 });
 
-router.get(`${orderapi}/sevendayCrypto`, (req, res) => {
+router.get(`${orderapi}/sevendayCryptoTrades`, (req, res) => {
   let array = [];
   let finished = req.query.finished;
   let crypto = req.query.crypto;
+  let times = 0;
   for (let i = 0; i < 7; i++) {
     let sum = 0;
     console.log(req.query);
@@ -59,17 +62,20 @@ router.get(`${orderapi}/sevendayCrypto`, (req, res) => {
         finished: `${finished}`
       },
       'quantity -_id',
-      (err, result, time = i) => {
+      (err, result) => {
+        console.log(result);
         for (let j = 0; j < result.length; j++) {
           sum = sum + result[j].quantity;
         }
-        array.unshift(sum);
+        array[i] = sum;
+        times++;
         console.log(array);
         if (err) {
           console.log(err);
           res.status(500).send('error');
         }
-        if (time === 6) {
+        if (times == 7) {
+          console.log(array);
           res.status(200).json(array);
         }
       }
