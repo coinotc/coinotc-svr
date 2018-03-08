@@ -12,5 +12,6 @@ module.exports = mongoose.model('orderInformation', {
     payment: String,
     limit: Number,
     finished: Boolean,
-    date: Date
+    date: Date,
+    roomkey: String
 });

@@ -64,6 +64,7 @@ router.post(apiurl, (req, res) => {
     send.payment = get.payment;
     send.limit = get.limit;
     send.finished = get.finished;
+    send.roomkey = get.roomkey;
     send.date = new Date();
     console.log(send);
     let error = send.validateSync();
