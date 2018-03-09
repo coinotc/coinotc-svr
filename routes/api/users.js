@@ -13,7 +13,7 @@ router.get('/user', auth.required, function(req, res, next){
 });
 
 router.put('/user', auth.required, function(req, res, next){
-  console.log(req.payload)
+  console.log(req.body.user)
   User.findById(req.payload.id).then(function(user){
     if(!user){ return res.sendStatus(401); }
 
@@ -51,6 +51,7 @@ router.put('/user', auth.required, function(req, res, next){
     if(typeof req.body.user.tradePrd !== 'undefined'){
       user.tradePrd = req.body.user.tradePrd;
     }
+    console.log(user)
     return user.save().then(function(){
       return res.json({user: user.toAuthJSON()});
     });
@@ -112,7 +113,7 @@ router.post('/users', function(req, res, next){
   user.username = req.body.user.username;
   user.email = req.body.user.email;
   user.setPassword(req.body.user.password);
-
+  
   user.save().then(function(){
     return res.json({user: user.toAuthJSON()});
   }).catch(next);
