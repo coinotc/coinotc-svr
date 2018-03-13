@@ -19,14 +19,7 @@ router.patch('/users/public/follow', (req, res) => {
     res.status(201).json(result);
   })
 });
-router.patch('/users/public/follow', (req, res) => {
-  console.log(req.body)
-  console.log(req.query)
-  User.findOneAndUpdate({ username: req.query.username},{ following: req.body }, { new: true },  (err, result) => {
-    if (err) res.status(500).json(err);
-    res.status(201).json(result);
-  })
-});
+
 router.patch('/users/public/tradepassword', (req, res) => {
   console.log(req.body)
   console.log(req.query)
@@ -153,7 +146,18 @@ router.get("/users/public", (req, res) => {
     }
     res.status(200).json(result);
   });
-
+});
+router.get("/users/tradepassword", (req, res) => {
+  let username = req.query.username;
+  
+  console.log(req.query);
+  User.find({ username: `${username}`},'tradePrd',(err, result) => {
+    if (err) {
+        res.status(500).send(err);
+        return;
+    }
+    res.status(200).json(result);
+  });
 });
 router.patch('/users/public/block', (req, res) => {
     console.log(req.body)
@@ -163,6 +167,7 @@ router.patch('/users/public/block', (req, res) => {
       res.status(201).json(result);
     })
   });
+
   
 router.get("/users/logout", auth.required, function(req, res, next) {
   console.log(req.payload.id);
