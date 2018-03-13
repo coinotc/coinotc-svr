@@ -8,6 +8,7 @@ router.use('/complain', require('./complain'));
 router.use('/advertisement', require('./advertisement'));
 router.use('/wallet', require('./crypto-wallet'));
 router.use('/base-currency', require('./users'));
+router.use('/alert', require('./alert'));
 
 router.use(function(err, req, res, next) {
   if (err.name === 'ValidationError') {

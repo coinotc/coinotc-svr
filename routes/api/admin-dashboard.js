@@ -5,7 +5,9 @@ var moment = require('moment');
 var adbuy = mongoose.model('adbuy');
 var adsell = mongoose.model('adsell');
 var Order = mongoose.model('orderInformation');
+
 var User = mongoose.model('User');
+
 
 const orderapi = '/order';
 
@@ -83,6 +85,7 @@ router.get(`${orderapi}/sevendayCryptoTrades`, (req, res) => {
     );
   }
 });
+
 router.get(`${orderapi}/sevendayReg`, (req, res) => {
   let array = [];
   let times = 0;
@@ -115,4 +118,5 @@ router.get(`${orderapi}/sevendayReg`, (req, res) => {
     );
   }
 });
+
 module.exports = router;
