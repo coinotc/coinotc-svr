@@ -5,49 +5,76 @@ var Order = mongoose.model('orderInformation');
 
 const apiurl = '/';
 
+//GET ALERT INFORMATION
+router.get(apiurl + 'alert', (req, res) => {
+  let fiat = req.query.fiat;
+  let crypto = req.query.crypto;
+  let sum = 0;
+  Order.find({ fiat: `${fiat}`, crypto: `${crypto}` }, (err, result) => {
+    //console.log(result);
+    for (let i = 0; i < result.length; i++) {
+      sum = sum + result[i].price / result.length;
+    }
+    //console.log(typeof sum);
+    if (err) {
+      res.status(500).send(err);
+      return;
+    }
+    res.status(200).json(sum);
+  })
+    .sort({ date: -1 })
+    .limit(5);
+});
+
 //SEARCH & GET PROJECTS
 router.get(apiurl, (req, res) => {
-    var query = {};
-    var keyword = req.query.keyword;
-    if (typeof keyword == 'undefined') {
-        keyword = "";
+  var query = {};
+  var keyword = req.query.keyword;
+  if (typeof keyword == 'undefined') {
+    keyword = '';
+  }
+  if (keyword !== '') {
+    query = { _id: `${keyword}` };
+  }
+  Order.find(query, (err, result) => {
+    if (err) {
+      // console.log(err);
+      res.status(500).send(err);
     }
-    if (keyword !== '') {
-        query = { _id: `${keyword}` }
-    }
-    Order.find(query, (err, result) => {
-        if (err) {
-            // console.log(err);
-            res.status(500).send(err);
-        }
-        res.status(200).json(result);
-    });
+    res.status(200).json(result);
+  });
 });
 
 router.get(apiurl + 'buyer', (req, res) => {
-    let finished = req.query.finished;
-    let username = req.query.username;
-    console.log(req.query)
-    Order.find({ buyer: `${username}`, finished: `${finished}` }, (err, result) => {
-        if (err) {
-            res.status(500).send(err);
-            return;
-        }
-        res.status(200).json(result);
-    });
+  let finished = req.query.finished;
+  let username = req.query.username;
+  console.log(req.query);
+  Order.find(
+    { buyer: `${username}`, finished: `${finished}` },
+    (err, result) => {
+      if (err) {
+        res.status(500).send(err);
+        return;
+      }
+      res.status(200).json(result);
+    }
+  );
 });
 
 router.get(apiurl + 'seller', (req, res) => {
-    let finished = req.query.finished;
-    let username = req.query.username;
-    console.log(req.query)
-    Order.find({ seller: `${username}`, finished: `${finished}` }, (err, result) => {
-        if (err) {
-            res.status(500).send(err);
-            return;
-        }
-        res.status(200).json(result);
-    });
+  let finished = req.query.finished;
+  let username = req.query.username;
+  console.log(req.query);
+  Order.find(
+    { seller: `${username}`, finished: `${finished}` },
+    (err, result) => {
+      if (err) {
+        res.status(500).send(err);
+        return;
+      }
+      res.status(200).json(result);
+    }
+  );
 });
 
 router.post(apiurl, (req, res) => {
@@ -76,22 +103,28 @@ router.post(apiurl, (req, res) => {
         console.log(error);
         res.status(500).send(error);
     }
+
 });
 
 router.put(apiurl, (req, res) => {
-    let orderInformation = req.body;
-    console.log(req.body)
-    let newOrderInformation = new Order();
-    newOrderInformation._id = orderInformation._id;
-    newOrderInformation.finished = orderInformation.finished;
-    var error = newOrderInformation.validateSync();
-    if (!error) {
-        //console.log(user._id);
-        Order.findByIdAndUpdate({ _id: orderInformation._id }, { $set: newOrderInformation }, { new: true }, (err, result) => {
-            if (err) res.status(500).json(err);
-            res.status(201).json(result);
-        })
-    }
+  let orderInformation = req.body;
+  console.log(req.body);
+  let newOrderInformation = new Order();
+  newOrderInformation._id = orderInformation._id;
+  newOrderInformation.finished = orderInformation.finished;
+  var error = newOrderInformation.validateSync();
+  if (!error) {
+    //console.log(user._id);
+    Order.findByIdAndUpdate(
+      { _id: orderInformation._id },
+      { $set: newOrderInformation },
+      { new: true },
+      (err, result) => {
+        if (err) res.status(500).json(err);
+        res.status(201).json(result);
+      }
+    );
+  }
 });
 
 module.exports = router;
