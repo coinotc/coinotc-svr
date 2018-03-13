@@ -17,7 +17,7 @@ var UserSchema = new mongoose.Schema({
   verifyName :String,
   verify:Number,
   phone:Number,
-  tradePrd:String,
+  tradePrd:Number,
   following: Array,
   block:Array,
   hash: String,
