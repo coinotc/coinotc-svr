@@ -9,6 +9,7 @@ var http = require('http'),
   passport = require('passport'),
   errorhandler = require('errorhandler'),
   mongoose = require('mongoose');
+  Mailgun = require('mailgun-js');
 cookieParser = require('cookie-parser');
 compression = require('compression');
 config = require('./config');
@@ -29,7 +30,7 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(compression());
 app.use(require('method-override')());
 app.use(express.static(__dirname + '/public'));
-
+app.set('view engine', 'html');
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
