@@ -105,15 +105,7 @@ router.post(apiurl, (req, res) => {
     }
 
 });
-router.patch(apiurl+"roomkey", (req, res) => {
-  console.log("patch roomkey"+req.body)
-  console.log("patch roomkey"+req.query)
 
-  Order.findOneAndUpdate({ _id: req.query.orderId},{ roomkey: req.body.roomkey },  (err, result) => {
-    if (err) res.status(500).json(err);
-    res.status(201).json(result);
-  })
-});
 router.put(apiurl, (req, res) => {
   let orderInformation = req.body;
   console.log(req.body);
