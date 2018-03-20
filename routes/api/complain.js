@@ -16,6 +16,7 @@ router.post(apiurl, (req, res) => {
     newComplain.content = complain.content;
     newComplain.status = 1;
     newComplain.support = "";
+    newComplain.roomkey = "";
     newComplain.date = new Date();
     console.log(newComplain);
     let error = newComplain.validateSync();
@@ -45,5 +46,13 @@ router.get(apiurl,(req,res)=>{
         res.status(200).json(result);
     });
 })
+router.patch(apiurl+"roomkey", (req, res) => {
+    console.log("patch roomkey"+req.body)
+    console.log("patch roomkey"+req.query)
+Complain.findOneAndUpdate({ _id: req.query.complainId},{ roomkey: req.body.roomkey },  (err, result) => {
+        if (err) res.status(500).json(err);
+        res.status(201).json(result);
+      })
+    });
 
 module.exports = router;
