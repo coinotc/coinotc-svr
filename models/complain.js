@@ -8,5 +8,6 @@ module.exports = mongoose.model('complain', {
     content: String,
     status:Number,//1:hold on 2:in progess 3:completed
     support:String,
-    date:Date
+    date:Date,
+    roomkey:String
 });
