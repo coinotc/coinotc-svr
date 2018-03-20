@@ -1,7 +1,7 @@
 {
-  "name": "conduit-node",
+  "name": "coinotc-node",
   "version": "1.0.0",
-  "description": "conduit on node",
+  "description": "coinotc on node",
   "main": "app.js",
   "scripts": {
     "start": "node ./app.js",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gothinkster/productionready-node-api.git"
+    "url": "git+https://github.com/coinotc/coinotc-svr.git"
   },
   "license": "ISC",
   "dependencies": {
