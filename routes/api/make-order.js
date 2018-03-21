@@ -78,41 +78,45 @@ router.get(apiurl + 'seller', (req, res) => {
 });
 
 router.post(apiurl, (req, res) => {
-    let get = req.body;
-    let send = new Order();
-    send.buyer = get.buyer;
-    send.seller = get.seller;
-    send.crypto = get.crypto;
-    send.country = get.country;
-    send.quantity = get.quantity;
-    send.price = get.price;
-    send.amount = get.amount;
-    send.fiat = get.fiat;
-    send.payment = get.payment;
-    send.limit = get.limit;
-    send.finished = get.finished;
-    send.roomkey = get.roomkey;
-    send.date = new Date();
-    console.log(send);
-    let error = send.validateSync();
-    if (!error) {
-        send.save(function (err, result) {
-            res.status(201).json(result);
-        });
-    } else {
-        console.log(error);
-        res.status(500).send(error);
-    }
-
-});
-router.patch(apiurl+"roomkey", (req, res) => {
-    console.log("patch roomkey"+req.body)
-    console.log("patch roomkey"+req.query)
-  Order.findOneAndUpdate({ _id: req.query.orderId},{ roomkey: req.body.roomkey },  (err, result) => {
-        if (err) res.status(500).json(err);
-        res.status(201).json(result);
-      })
+  let get = req.body;
+  let send = new Order();
+  send.buyer = get.buyer;
+  send.seller = get.seller;
+  send.crypto = get.crypto;
+  send.country = get.country;
+  send.quantity = get.quantity;
+  send.price = get.price;
+  send.amount = get.amount;
+  send.fiat = get.fiat;
+  send.payment = get.payment;
+  send.limit = get.limit;
+  send.finished = get.finished;
+  send.roomkey = get.roomkey;
+  send.date = new Date();
+  console.log(send);
+  let error = send.validateSync();
+  if (!error) {
+    send.save(function(err, result) {
+      res.status(201).json(result);
     });
+  } else {
+    console.log(error);
+    res.status(500).send(error);
+  }
+});
+
+router.patch(apiurl + 'roomkey', (req, res) => {
+  console.log('patch roomkey' + req.body);
+  console.log('patch roomkey' + req.query);
+  Order.findOneAndUpdate(
+    { _id: req.query.orderId },
+    { roomkey: req.body.roomkey },
+    (err, result) => {
+      if (err) res.status(500).json(err);
+      res.status(201).json(result);
+    }
+  );
+});
 router.put(apiurl, (req, res) => {
   let orderInformation = req.body;
   console.log(req.body);
