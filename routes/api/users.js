@@ -171,6 +171,7 @@ router.get('/users/public', (req, res) => {
     { username: `${username}` },
     'orderCount goodCount volume deviceToken',
     (err, result) => {
+      console.log(result);
       if (err) {
         res.status(500).send(err);
         return;
