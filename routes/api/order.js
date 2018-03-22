@@ -45,6 +45,18 @@ router.get(apiurl, (req, res) => {
   });
 });
 
+//GET A SPECIFIC ORDER
+router.get(apiurl + 'getone', (req, res) => {
+  var id = req.query._id;
+  Order.findById({ _id: `${id}` }, (err, result) => {
+    if (err) {
+      // console.log(err);
+      res.status(500).send(err);
+    }
+    res.status(200).json(result);
+  });
+});
+
 router.get(apiurl + 'buyer', (req, res) => {
   let finished = req.query.finished;
   let username = req.query.username;
