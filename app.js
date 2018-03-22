@@ -9,7 +9,7 @@ var http = require('http'),
   passport = require('passport'),
   errorhandler = require('errorhandler'),
   mongoose = require('mongoose');
-  Mailgun = require('mailgun-js');
+Mailgun = require('mailgun-js');
 cookieParser = require('cookie-parser');
 compression = require('compression');
 config = require('./config');
@@ -56,7 +56,7 @@ if (isProduction) {
 }
 
 require('./models/User');
-require('./models/orderinformation');
+require('./models/orderInformation');
 require('./models/adbuy');
 require('./models/adsell');
 require('./models/wallet');
