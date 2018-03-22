@@ -29,6 +29,20 @@ router.patch('/users/public/follow', (req, res) => {
   );
 });
 
+router.patch('/users/public/comment', (req, res) => {
+  console.log(req.body);
+  console.log(req.query);
+  User.findOneAndUpdate(
+    { username: req.query.username },
+    { goodCount: req.body.good },
+    { new: true },
+    (err, result) => {
+      if (err) res.status(500).json(err);
+      res.status(201).json(result);
+    }
+  );
+});
+
 router.patch('/users/public/tradepassword', (req, res) => {
   console.log(req.body);
   console.log(req.query);
