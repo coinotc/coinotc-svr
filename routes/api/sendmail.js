@@ -1,5 +1,5 @@
 var mailgun = require("mailgun-js");
-var api_key = 'key43175e952d518dcf69a937bc4ff7cb2a';
+var api_key = 'key-43175e952d518dcf69a937bc4ff7cb2a';
 var domain = 'sandboxe515817a071342c6b3f28d2de1ef3407.mailgun.org';
 var render = require("render")
 // var mailgun = require('mailgunjs')({apiKey: api_key, domain: DOMAIN});
@@ -25,7 +25,7 @@ router.get(apiurl, function(req,res) {
       var data = {
         from: 'MrMoo <jiacheng.hou@lemo.io>',
 //to: req.params.mail,
-        to: '1447379207@qq.com',
+        to: 'douglas@lemo.io',
         subject: 'Hello from coinOTC',
         html: 'Welcome to coinOTC'
       }

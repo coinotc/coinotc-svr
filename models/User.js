@@ -38,7 +38,8 @@ var UserSchema = new mongoose.Schema(
     hash: String,
     salt: String,
     baseCurrency: String,
-    deviceToken: String
+    deviceToken: String,
+    tfa: Object
   },
   { timestamps: true }
 );
