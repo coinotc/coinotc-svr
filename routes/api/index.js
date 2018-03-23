@@ -1,7 +1,7 @@
 var router = require('express').Router();
 
 router.use('/', require('./users'));
-router.use('/order', require('./make-order'));
+router.use('/order', require('./order'));
 router.use('/admin-dashboard', require('./admin-dashboard'));
 router.use('/complain', require('./complain'));
 router.use('/advertisement', require('./advertisement'));
