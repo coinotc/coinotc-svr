@@ -10,6 +10,8 @@ var http = require('http'),
   errorhandler = require('errorhandler'),
   mongoose = require('mongoose');
   Mailgun = require('mailgun-js');
+  multer = require('multer');
+  fs = require('fs');
 cookieParser = require('cookie-parser');
 compression = require('compression');
 config = require('./config');
@@ -19,7 +21,15 @@ var isProduction = process.env.NODE_ENV === 'production';
 // Create global app object
 var app = express();
 
-app.use(cors());
+var corsOptions = {
+  origin: 'http://localhost:4200',
+  // optionsSuccessStatus: 200 ,// some legacy browsers (IE11, various SmartTVs) choke on 204 
+  // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  // preflightContinue: true,
+  credentials: true
+}
+
+app.use(cors(corsOptions));
 
 // Normal express config defaults
 app.use(require('morgan')('dev'));
@@ -64,7 +74,7 @@ require('./config/passport');
 require('./models/complain');
 require('./models/advertisement');
 require('./models/alert');
-
+require('./models/upload')
 app.use(require('./routes'));
 
 // If the connection throws an error
