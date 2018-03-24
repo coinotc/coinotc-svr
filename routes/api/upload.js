@@ -6,11 +6,11 @@ var multer = require('multer');
 //var DIR = './uploads/';
 var fs = require('fs');
 var Upload = mongoose.model('upload');
-router.use(multer({ dest: './uploads/',
-  rename: function (fieldname, filename) {
-    return filename;
-  },
- }));
+// router.use(multer({ dest: './uploads/',
+//   rename: function (fieldname, filename) {
+//     return filename;
+//   },
+//  }));
 //var upload = multer({dest: DIR}).single('photo');
 //router.options('/', cors()) 
 // router.get('/', function(req, res, next) {

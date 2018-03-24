@@ -17,20 +17,20 @@ compression = require('compression');
 config = require('./config');
 
 var isProduction = process.env.NODE_ENV === 'production';
-
+``
 // Create global app object
 var app = express();
 
-var corsOptions = {
-  origin: 'http://localhost:4200',
-  // optionsSuccessStatus: 200 ,// some legacy browsers (IE11, various SmartTVs) choke on 204 
-  // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-  // preflightContinue: true,
-  credentials: true
-}
+// var corsOptions = {
+//   origin: 'http://localhost:4200',
+//   // optionsSuccessStatus: 200 ,// some legacy browsers (IE11, various SmartTVs) choke on 204 
+//   // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+//   // preflightContinue: true,
+//   credentials: true
+// }
 
-app.use(cors(corsOptions));
-
+//app.use(cors(corsOptions));
+app.use(cors());
 // Normal express config defaults
 app.use(require('morgan')('dev'));
 
@@ -66,7 +66,7 @@ if (isProduction) {
 }
 
 require('./models/User');
-require('./models/orderinformation');
+require('./models/orderInformation');
 require('./models/adbuy');
 require('./models/adsell');
 require('./models/wallet');
@@ -74,7 +74,7 @@ require('./config/passport');
 require('./models/complain');
 require('./models/advertisement');
 require('./models/alert');
-require('./models/upload')
+//require('./models/upload')
 app.use(require('./routes'));
 
 // If the connection throws an error

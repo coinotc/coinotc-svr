@@ -5,5 +5,7 @@ module.exports = mongoose.model('alert', {
   crypto: String,
   price: Number,
   fiat: String,
+  status: Boolean,
+  above: Boolean,
   date: Date
 });

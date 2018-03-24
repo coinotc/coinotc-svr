@@ -45,6 +45,18 @@ router.get(apiurl, (req, res) => {
   });
 });
 
+//GET A SPECIFIC ORDER
+router.get(apiurl + 'getone', (req, res) => {
+  var id = req.query._id;
+  Order.findById({ _id: `${id}` }, (err, result) => {
+    if (err) {
+      // console.log(err);
+      res.status(500).send(err);
+    }
+    res.status(200).json(result);
+  });
+});
+
 router.get(apiurl + 'buyer', (req, res) => {
   let finished = req.query.finished;
   let username = req.query.username;
@@ -78,46 +90,52 @@ router.get(apiurl + 'seller', (req, res) => {
 });
 
 router.post(apiurl, (req, res) => {
-    let get = req.body;
-    let send = new Order();
-    send.buyer = get.buyer;
-    send.seller = get.seller;
-    send.crypto = get.crypto;
-    send.country = get.country;
-    send.quantity = get.quantity;
-    send.price = get.price;
-    send.amount = get.amount;
-    send.fiat = get.fiat;
-    send.payment = get.payment;
-    send.limit = get.limit;
-    send.finished = get.finished;
-    send.roomkey = get.roomkey;
-    send.date = new Date();
-    console.log(send);
-    let error = send.validateSync();
-    if (!error) {
-        send.save(function (err, result) {
-            res.status(201).json(result);
-        });
-    } else {
-        console.log(error);
-        res.status(500).send(error);
-    }
-
-});
-router.patch(apiurl+"roomkey", (req, res) => {
-    console.log("patch roomkey"+req.body)
-    console.log("patch roomkey"+req.query)
-  Order.findOneAndUpdate({ _id: req.query.orderId},{ roomkey: req.body.roomkey },  (err, result) => {
-        if (err) res.status(500).json(err);
-        res.status(201).json(result);
-      })
+  let order = req.body;
+  let newOrder = new Order();
+  newOrder.buyer = order.buyer;
+  newOrder.seller = order.seller;
+  newOrder.crypto = order.crypto;
+  newOrder.country = order.country;
+  newOrder.quantity = order.quantity;
+  newOrder.price = order.price;
+  newOrder.amount = order.amount;
+  newOrder.fiat = order.fiat;
+  newOrder.payment = order.payment;
+  newOrder.limit = order.limit;
+  newOrder.informed = order.informed;
+  newOrder.finished = order.finished;
+  newOrder.roomkey = order.roomkey;
+  newOrder.date = new Date();
+  console.log(newOrder);
+  let error = newOrder.validateSync();
+  if (!error) {
+    newOrder.save(function(err, result) {
+      res.status(201).json(result);
     });
+  } else {
+    console.log(error);
+    res.status(500).send(error);
+  }
+});
+
+router.patch(apiurl + 'roomkey', (req, res) => {
+  console.log('patch roomkey' + req.body);
+  console.log('patch roomkey' + req.query);
+  Order.findOneAndUpdate(
+    { _id: req.query.orderId },
+    { roomkey: req.body.roomkey },
+    (err, result) => {
+      if (err) res.status(500).json(err);
+      res.status(201).json(result);
+    }
+  );
+});
 router.put(apiurl, (req, res) => {
   let orderInformation = req.body;
   console.log(req.body);
   let newOrderInformation = new Order();
   newOrderInformation._id = orderInformation._id;
+  newOrderInformation.informed = orderInformation.informed;
   newOrderInformation.finished = orderInformation.finished;
   var error = newOrderInformation.validateSync();
   if (!error) {
