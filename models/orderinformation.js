@@ -11,6 +11,7 @@ module.exports = mongoose.model('orderInformation', {
   fiat: String,
   payment: String,
   limit: Number,
+  message: String,
   informed: Boolean,
   finished: Boolean,
   date: Date,

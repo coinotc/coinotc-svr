@@ -102,6 +102,7 @@ router.post(apiurl, (req, res) => {
   newOrder.fiat = order.fiat;
   newOrder.payment = order.payment;
   newOrder.limit = order.limit;
+  newOrder.message = order.message;
   newOrder.informed = order.informed;
   newOrder.finished = order.finished;
   newOrder.roomkey = order.roomkey;
