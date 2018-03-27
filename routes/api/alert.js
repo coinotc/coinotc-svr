@@ -113,6 +113,14 @@ router.put('/', (req, res) => {
   }
 });
 
-//router.delete('/', (req, res) => {});
+router.delete('/', (req, res) => {
+  let deleteAlertId = req.query._id;
+  Alert.findByIdAndRemove({ _id: deleteAlertId }, (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+    }
+    res.status(200).json(result);
+  });
+});
 
 module.exports = router;
