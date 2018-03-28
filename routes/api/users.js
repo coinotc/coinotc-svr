@@ -149,6 +149,10 @@ router.post('/users', function(req, res, next) {
   user.tradePrd = '';
   user.following = [];
   user.block = [];
+  user.tfa = {
+    effective:false,
+    secret:{}
+  }
 
   user.deviceToken = req.body.deviceToken;
   user.username = req.body.user.username;

@@ -10,6 +10,7 @@ router.use('/base-currency', require('./users'));
 router.use('/alert', require('./alert'));
 router.use('/sendmail', require('./sendmail'));
 router.use('/2fa', require('./2fa'));
+router.use('/background', require('./BackgroundUser'));
 router.use(function(err, req, res, next) {
   if (err.name === 'ValidationError') {
     return res.status(422).json({

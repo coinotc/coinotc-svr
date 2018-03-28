@@ -8,11 +8,11 @@ var http = require('http'),
   cors = require('cors'),
   passport = require('passport'),
   errorhandler = require('errorhandler'),
-  mongoose = require('mongoose');
-  Mailgun = require('mailgun-js');
-cookieParser = require('cookie-parser');
-compression = require('compression');
-config = require('./config');
+  mongoose = require('mongoose'),
+  Mailgun = require('mailgun-js'),
+  cookieParser = require('cookie-parser'),
+  compression = require('compression'),
+  config = require('./config');
 
 var isProduction = process.env.NODE_ENV === 'production';
 
@@ -57,18 +57,17 @@ if (isProduction) {
 
 require('./models/User');
 require('./models/orderinformation');
-require('./models/adbuy');
-require('./models/adsell');
 require('./models/wallet');
 require('./config/passport');
 require('./models/complain');
 require('./models/advertisement');
 require('./models/alert');
+require('./models/BackgroundUser');
 
 app.use(require('./routes'));
 
 // If the connection throws an error
-mongoose.connection.on('error', function(err) {
+mongoose.connection.on('error', function (err) {
   console.error(
     'Failed to connect to DB ' + config.mongodb_url + ' on startup ',
     err
@@ -76,18 +75,18 @@ mongoose.connection.on('error', function(err) {
 });
 
 // When the connection is disconnected
-mongoose.connection.on('disconnected', function() {
+mongoose.connection.on('disconnected', function () {
   console.log(
     'Mongoose default connection to DB :' + config.mongodb_url + ' disconnected'
   );
 });
 
-var gracefulExit = function() {
-  mongoose.connection.close(function() {
+var gracefulExit = function () {
+  mongoose.connection.close(function () {
     console.log(
       'Mongoose default connection with DB :' +
-        config.mongodb_url +
-        ' is disconnected through app termination'
+      config.mongodb_url +
+      ' is disconnected through app termination'
     );
     process.exit(0);
   });
@@ -108,7 +107,7 @@ process.on('SIGINT', gracefulExit).on('SIGTERM', gracefulExit);
 // development error handler
 // will print stacktrace
 if (!isProduction) {
-  app.use(function(err, req, res, next) {
+  app.use(function (err, req, res, next) {
     console.log(err.stack);
 
     res.status(err.status || 500);
@@ -124,7 +123,7 @@ if (!isProduction) {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.json({
     errors: {
@@ -135,6 +134,6 @@ app.use(function(err, req, res, next) {
 });
 
 // finally, let's start our server...
-var server = app.listen(process.env.PORT || 3000, function() {
+var server = app.listen(process.env.PORT || 3000, function () {
   console.log('Listening on port ' + server.address().port);
 });
