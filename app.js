@@ -31,7 +31,6 @@ app.use(compression());
 app.use(require('method-override')());
 app.use(express.static(__dirname + '/public'));
 
-
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -57,8 +56,6 @@ if (isProduction) {
 
 require('./models/User');
 require('./models/orderInformation');
-require('./models/adbuy');
-require('./models/adsell');
 require('./models/wallet');
 require('./config/passport');
 require('./models/complain');
