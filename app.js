@@ -66,7 +66,7 @@ require('./models/BackgroundUser');
 app.use(require('./routes'));
 
 // If the connection throws an error
-mongoose.connection.on('error', function(err) {
+mongoose.connection.on('error', function (err) {
   console.error(
     'Failed to connect to DB ' + config.mongodb_url + ' on startup ',
     err
@@ -74,18 +74,18 @@ mongoose.connection.on('error', function(err) {
 });
 
 // When the connection is disconnected
-mongoose.connection.on('disconnected', function() {
+mongoose.connection.on('disconnected', function () {
   console.log(
     'Mongoose default connection to DB :' + config.mongodb_url + ' disconnected'
   );
 });
 
-var gracefulExit = function() {
-  mongoose.connection.close(function() {
+var gracefulExit = function () {
+  mongoose.connection.close(function () {
     console.log(
       'Mongoose default connection with DB :' +
-        config.mongodb_url +
-        ' is disconnected through app termination'
+      config.mongodb_url +
+      ' is disconnected through app termination'
     );
     process.exit(0);
   });
@@ -106,7 +106,7 @@ process.on('SIGINT', gracefulExit).on('SIGTERM', gracefulExit);
 // development error handler
 // will print stacktrace
 if (!isProduction) {
-  app.use(function(err, req, res, next) {
+  app.use(function (err, req, res, next) {
     console.log(err.stack);
 
     res.status(err.status || 500);
@@ -122,7 +122,7 @@ if (!isProduction) {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.json({
     errors: {
@@ -133,6 +133,6 @@ app.use(function(err, req, res, next) {
 });
 
 // finally, let's start our server...
-var server = app.listen(process.env.PORT || 3000, function() {
+var server = app.listen(process.env.PORT || 3000, function () {
   console.log('Listening on port ' + server.address().port);
 });
