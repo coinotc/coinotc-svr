@@ -57,14 +57,18 @@ router.get(apiurl + 'getone', (req, res) => {
   });
 });
 
-router.get(apiurl + 'buyer', (req, res) => {
+//FILTER ORDERS
+router.get(apiurl + 'filter', (req, res) => {
   let finished = req.query.finished;
   let username = req.query.username;
-  console.log(req.query);
   Order.find(
-    { buyer: `${username}`, finished: `${finished}` },
+    {
+      finished: `${finished}`,
+      $or: [{ buyer: `${username}` }, { seller: `${username}` }]
+    },
     (err, result) => {
       if (err) {
+        // console.log(err);
         res.status(500).send(err);
         return;
       }
@@ -73,21 +77,37 @@ router.get(apiurl + 'buyer', (req, res) => {
   );
 });
 
-router.get(apiurl + 'seller', (req, res) => {
-  let finished = req.query.finished;
-  let username = req.query.username;
-  console.log(req.query);
-  Order.find(
-    { seller: `${username}`, finished: `${finished}` },
-    (err, result) => {
-      if (err) {
-        res.status(500).send(err);
-        return;
-      }
-      res.status(200).json(result);
-    }
-  );
-});
+// router.get(apiurl + 'buyer', (req, res) => {
+//   let finished = req.query.finished;
+//   let username = req.query.username;
+//   console.log(req.query);
+//   Order.find(
+//     { buyer: `${username}`, finished: `${finished}` },
+//     (err, result) => {
+//       if (err) {
+//         res.status(500).send(err);
+//         return;
+//       }
+//       res.status(200).json(result);
+//     }
+//   );
+// });
+
+// router.get(apiurl + 'seller', (req, res) => {
+//   let finished = req.query.finished;
+//   let username = req.query.username;
+//   console.log(req.query);
+//   Order.find(
+//     { seller: `${username}`, finished: `${finished}` },
+//     (err, result) => {
+//       if (err) {
+//         res.status(500).send(err);
+//         return;
+//       }
+//       res.status(200).json(result);
+//     }
+//   );
+// });
 
 router.post(apiurl, (req, res) => {
   let order = req.body;
