@@ -38,10 +38,10 @@ router.get(api, (req, res) => {
 
 router.post(api, (req, res) => {
     let get = req.body;
-    User.find({ username: get.username }, (err, result) => {
-        if (!result[0].tfa.effective) {
+    User.findOne({ username: get.username }, (err, result) => {
+        if (!result.tfa.effective) {
             let match = speakeasy.totp.verify({
-                secret: result[0].tfa.secret.base32,
+                secret: result.tfa.secret.base32,
                 encoding: 'base32',
                 token: get.token
               });
