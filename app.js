@@ -8,11 +8,11 @@ var http = require('http'),
   cors = require('cors'),
   passport = require('passport'),
   errorhandler = require('errorhandler'),
-  mongoose = require('mongoose');
-Mailgun = require('mailgun-js');
-cookieParser = require('cookie-parser');
-compression = require('compression');
-config = require('./config');
+  mongoose = require('mongoose'),
+  Mailgun = require('mailgun-js'),
+  cookieParser = require('cookie-parser'),
+  compression = require('compression'),
+  config = require('./config');
 
 var isProduction = process.env.NODE_ENV === 'production';
 
@@ -61,6 +61,7 @@ require('./config/passport');
 require('./models/complain');
 require('./models/advertisement');
 require('./models/alert');
+require('./models/BackgroundUser');
 
 app.use(require('./routes'));
 
