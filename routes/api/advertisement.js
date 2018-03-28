@@ -47,12 +47,12 @@ router.get(advertisementapi, (req, res) => {
         advertisement.find({ crypto: `${crypto}`, type: `${type}`, country: `${country}` }, null, { sort: { price: 1 } }, (err, result) => {
             if (err) {
                 res.status(500).send(err);
-                return;
+                return; 
             }
+            result = result.concat(result);
             res.status(200).json(result);
         });
     }
-
 })
 router.get(advertisementapi + "myadvertisement/", (req, res) => {
     let owner = req.query.owner;
@@ -64,7 +64,34 @@ router.get(advertisementapi + "myadvertisement/", (req, res) => {
         }
         res.status(200).json(result);
     });
-})
-
+});
+router.get(advertisementapi, (req, res) => {
+    let crypto = req.query.crypto;
+    let type = req.query.type;
+    advertisement.find(
+        { crypto: `${crypto}`, type: `${type}` },
+        (err, result) => {
+            if (err) {
+                res.status(500).send(err);
+                return;
+            }
+            res.status(200).json(result);
+        }
+    );
+});
+router.get(advertisementapi + 'myadvertisement/', (req, res) => {
+    let owner = req.query.owner;
+    let visible = req.query.visible;
+    advertisement.find(
+        { owner: `${owner}`, visible: `${visible}` },
+        (err, result) => {
+            if (err) {
+                res.status(500).send(err);
+                return;
+            }
+            res.status(200).json(result);
+        }
+    );
+});
 
 module.exports = router;
