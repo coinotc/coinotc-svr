@@ -12,6 +12,6 @@ module.exports = mongoose.model('advertisement', {
     fiat: String,
     payment: String,
     limit: Number,
-    massage: String,
+    message: String,
     type: Number // 0 is sell ,1 is buy
 });

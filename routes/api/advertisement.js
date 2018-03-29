@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var advertisement = mongoose.model('advertisement');
 const advertisementapi = '/';
 
-router.post(advertisementapi,(req,res)=>{
+router.post(advertisementapi, (req, res) => {
     let get = req.body;
     let send = new advertisement();
     send.visible = get.visible
@@ -19,7 +19,7 @@ router.post(advertisementapi,(req,res)=>{
     send.fiat = get.fiat
     send.payment = get.payment
     send.limit = get.limit
-    send.massage = get.massage
+    send.message = get.message
     send.type = get.type
     let error = send.validateSync();
     if (!error) {
@@ -31,28 +31,67 @@ router.post(advertisementapi,(req,res)=>{
         res.status(500).send(error);
     }
 })
-router.get(advertisementapi,(req,res)=>{
+router.get(advertisementapi, (req, res) => {
     let crypto = req.query.crypto;
     let type = req.query.type;
-    advertisement.find({crypto:`${crypto}`,type :`${type}`},(err,result)=>{
-        if (err) {
-            res.status(500).send(err);
-            return;
-        }
-        res.status(200).json(result);
-    });
+    let country = req.query.country;
+    let fiat = req.query.fiat
+    if (type == 0) {
+        advertisement.find({ crypto: crypto, type: type, country: country, fiat: fiat }, null, { sort: { price: -1 } }, (err, result) => {
+            if (err) {
+                res.status(500).send(err);
+                return;
+            }
+            res.status(200).json(result);
+        });
+    } else {
+        advertisement.find({ crypto: crypto, type: type, country: country, fiat: fiat }, null, { sort: { price: 1 } }, (err, result) => {
+            if (err) {
+                res.status(500).send(err);
+                return;
+            }
+            res.status(200).json(result);
+        });
+    }
 })
-router.get(advertisementapi+"myadvertisement/",(req,res)=>{
+router.get(advertisementapi + "myadvertisement/", (req, res) => {
     let owner = req.query.owner;
     let visible = req.query.visible;
-    advertisement.find({owner:`${owner}`,visible :`${visible}`},(err,result)=>{
+    advertisement.find({ owner: `${owner}`, visible: `${visible}` }, (err, result) => {
         if (err) {
             res.status(500).send(err);
             return;
         }
         res.status(200).json(result);
     });
-})
-
+});
+router.get(advertisementapi, (req, res) => {
+    let crypto = req.query.crypto;
+    let type = req.query.type;
+    advertisement.find(
+        { crypto: `${crypto}`, type: `${type}` },
+        (err, result) => {
+            if (err) {
+                res.status(500).send(err);
+                return;
+            }
+            res.status(200).json(result);
+        }
+    );
+});
+router.get(advertisementapi + 'myadvertisement/', (req, res) => {
+    let owner = req.query.owner;
+    let visible = req.query.visible;
+    advertisement.find(
+        { owner: `${owner}`, visible: `${visible}` },
+        (err, result) => {
+            if (err) {
+                res.status(500).send(err);
+                return;
+            }
+            res.status(200).json(result);
+        }
+    );
+});
 
 module.exports = router;

@@ -177,6 +177,11 @@ router.post('/users', function(req, res, next) {
   user.following = [];
   user.block = [];
   user.followers = [];
+  user.tfa = {
+    effective:false,
+    secret:{}
+  }
+
   user.deviceToken = req.body.deviceToken;
   user.username = req.body.user.username;
   user.email = req.body.user.email;

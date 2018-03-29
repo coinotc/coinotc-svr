@@ -11,6 +11,7 @@ router.use('/alert', require('./alert'));
 router.use('/sendmail', require('./sendmail'));
 router.use('/upload', require('./upload'));
 router.use('/2fa', require('./2fa'));
+router.use('/background', require('./BackgroundUser'));
 router.use(function(err, req, res, next) {
  
   if (err.name === 'ValidationError') {
