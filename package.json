@@ -8,7 +8,7 @@
     "restart": "pm2 restart all",
     "dev": "nodemon ./app.js",
     "nodemon": "nodemon --inspect=9228 ./app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --forceExit"
   },
   "repository": {
     "type": "git",
@@ -47,6 +47,7 @@
     "underscore": "1.8.3"
   },
   "devDependencies": {
+    "jest": "^22.4.3",
     "nodemon": "^1.14.11"
   }
 }
