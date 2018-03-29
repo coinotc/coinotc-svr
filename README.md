@@ -40,3 +40,13 @@ Requests are authenticated using the `Authorization` header with a valid JWT. We
 
 
 <br />
+
+## dotenv configuration
+- Create a .env file before start the backend service.
+
+```
+NODE_ENV=
+SESSION_SECRET=
+MONGODB_URI=
+PORT=
+```
