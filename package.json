@@ -4,7 +4,7 @@
   "description": "coinotc on node",
   "main": "app.js",
   "scripts": {
-    "start": "pm2 start app.js -i max — name=\”coinotc-api\”",
+    "start": "pm2 start app.js -i max — name=coinotc-api",
     "restart": "pm2 restart all",
     "dev": "nodemon ./app.js",
     "nodemon": "nodemon --inspect=9228 ./app.js",
