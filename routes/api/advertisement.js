@@ -35,8 +35,9 @@ router.get(advertisementapi, (req, res) => {
     let crypto = req.query.crypto;
     let type = req.query.type;
     let country = req.query.country;
+    let fiat = req.query.fiat
     if (type == 0) {
-        advertisement.find({ crypto: `${crypto}`, type: `${type}`, country: `${country}` }, null, { sort: { price: -1 } }, (err, result) => {
+        advertisement.find({ crypto: crypto, type: type, country: country, fiat: fiat }, null, { sort: { price: -1 } }, (err, result) => {
             if (err) {
                 res.status(500).send(err);
                 return;
@@ -44,12 +45,11 @@ router.get(advertisementapi, (req, res) => {
             res.status(200).json(result);
         });
     } else {
-        advertisement.find({ crypto: `${crypto}`, type: `${type}`, country: `${country}` }, null, { sort: { price: 1 } }, (err, result) => {
+        advertisement.find({ crypto: crypto, type: type, country: country, fiat: fiat }, null, { sort: { price: 1 } }, (err, result) => {
             if (err) {
                 res.status(500).send(err);
-                return; 
+                return;
             }
-            result = result.concat(result);
             res.status(200).json(result);
         });
     }
