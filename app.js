@@ -10,8 +10,8 @@ var http = require('http'),
   errorhandler = require('errorhandler'),
   mongoose = require('mongoose');
   Mailgun = require('mailgun-js');
-  multer = require('multer');
-  fs = require('fs');
+  multer = require('multer'),
+  googleStorage = require('@google-cloud/storage');
 cookieParser = require('cookie-parser');
 compression = require('compression');
 config = require('./config');
@@ -40,6 +40,8 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(compression());
 app.use(require('method-override')());
 app.use(express.static(__dirname + '/public'));
+// app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+// app.use(bodyParser.json({limit: '50mb'}));
 
 
 app.use(

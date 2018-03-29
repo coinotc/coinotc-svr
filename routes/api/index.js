@@ -9,7 +9,7 @@ router.use('/wallet', require('./crypto-wallet'));
 router.use('/base-currency', require('./users'));
 router.use('/alert', require('./alert'));
 router.use('/sendmail', require('./sendmail'));
-//router.use('/upload', require('./upload'));
+router.use('/upload', require('./upload'));
 router.use('/2fa', require('./2fa'));
 router.use(function(err, req, res, next) {
  
@@ -19,21 +19,11 @@ router.use(function(err, req, res, next) {
         errors[key] = err.errors[key].message;
 
         return errors;
-      }, {})
+      }, {})  
     });
   }
 
   return next(err);
 });
-// router.use(function(error, request, response, next) {
-//   console.log("ITCHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
-//   response.header("Access-Control-Allow-Origin", "http://localhost:4200");
-//   response.header("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
-//   response.header("Access-Control-Allow-Methods", "GET,HEAD,POST,PUT,DELETE,OPTIONS");
-//   response.header("Access-Control-Allow-Credentials", "true");
-//   next();
-
-//   return next(error);
-// });
 
 module.exports = router;
