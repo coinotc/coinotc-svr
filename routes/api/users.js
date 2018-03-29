@@ -28,6 +28,19 @@ router.patch('/users/public/follow', (req, res) => {
     }
   );
 });
+router.patch('/users/public/followers', (req, res) => {
+  console.log(req.body);
+  console.log(req.query);
+  User.findOneAndUpdate(
+    { username: req.query.username },
+    { followers: req.body },
+    { new: true },
+    (err, result) => {
+      if (err) res.status(500).json(err);
+      res.status(201).json(result);
+    }
+  );
+});
 
 router.patch('/users/public/comment', (req, res) => {
   console.log(req.body);
@@ -163,6 +176,7 @@ router.post('/users', function(req, res, next) {
   user.tradePrd = '';
   user.following = [];
   user.block = [];
+  user.followers = [];
   user.tfa = {
     effective:false,
     secret:{}
@@ -187,7 +201,7 @@ router.get('/users/public', (req, res) => {
   console.log(req.query);
   User.find(
     { username: `${username}` },
-    'orderCount goodCount volume deviceToken',
+    'orderCount goodCount volume deviceToken following block followers',
     (err, result) => {
       console.log(result);
       if (err) {
