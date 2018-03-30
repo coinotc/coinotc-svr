@@ -175,7 +175,6 @@ router.post('/users', function(req, res, next) {
   user.phone = '';
   user.tradePrd = '';
   user.following = [];
-  user.block = [];
   user.followers = [];
   user.tfa = {
     effective:false,
@@ -201,7 +200,7 @@ router.get('/users/public', (req, res) => {
   console.log(req.query);
   User.find(
     { username: `${username}` },
-    'orderCount goodCount volume deviceToken following block followers',
+    'orderCount goodCount volume deviceToken following followers',
     (err, result) => {
       console.log(result);
       if (err) {
@@ -224,19 +223,7 @@ router.get('/users/tradepassword', (req, res) => {
     res.status(200).json(result);
   });
 });
-router.patch('/users/public/block', (req, res) => {
-  console.log(req.body);
-  console.log(req.query);
-  User.findOneAndUpdate(
-    { username: req.query.username },
-    { block: req.body },
-    { new: true },
-    (err, result) => {
-      if (err) res.status(500).json(err);
-      res.status(201).json(result);
-    }
-  );
-});
+
 
 router.get('/users/logout', auth.required, function(req, res, next) {
   console.log(req.payload.id);

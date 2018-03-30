@@ -28,15 +28,15 @@ var app = express();
 //   // preflightContinue: true,
 //   credentials: true
 // }
-
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(bodyParser.json({ limit: '50mb' }));
 //app.use(cors(corsOptions));
 app.use(cors());
 // Normal express config defaults
 app.use(require('morgan')('dev'));
 
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-app.use(bodyParser.json({ limit: '50mb' }));
+
 app.use(compression());
 app.use(require('method-override')());
 app.use(express.static(__dirname + '/public'));
