@@ -21,7 +21,7 @@ router.post(advertisementapi, (req, res) => {
     send.limit = get.limit
     send.message = get.message
     send.type = get.type
-    send.deleteStatuts = false;
+    send.deleteStatus = false;
     let error = send.validateSync();
     if (!error) {
         send.save(function (err, result) {
@@ -73,7 +73,7 @@ router.get(advertisementapi, (req, res) => {
 router.get(advertisementapi + "myadvertisement/", (req, res) => {
     let owner = req.query.owner;
     let visible = req.query.visible;
-    advertisement.find({ owner: `${owner}`, visible: `${visible}`,deleteStatuts:false }, (err, result) => {
+    advertisement.find({ owner: `${owner}`, visible: `${visible}`,deleteStatus:false }, (err, result) => {
         if (err) {
             res.status(500).send(err);
             return;
@@ -108,7 +108,7 @@ router.patch(advertisementapi + 'deleteStatuts/',(req,res)=>{
     console.log(id)
     advertisement.findOneAndUpdate(
     { _id: id },
-    { deleteStatuts: true },
+    { deleteStatus: true },
     (err, result) => {
       if (err) res.status(500).json(err);
       res.status(201).json(result);
@@ -131,7 +131,7 @@ router.put(advertisementapi + 'editAdvertisement/', (req, res) => {
     newAdvertisementInfo.crypto = Info.crypto;
     newAdvertisementInfo.owner = Info.owner;
     newAdvertisementInfo.visible = Info.visible;
-    newAdvertisementInfo.deleteStatuts = Info.deleteStatuts;
+    newAdvertisementInfo.deleteStatus = Info.deleteStatus;
     console.log("<<<<" + newAdvertisementInfo)
     // newOrderInformation._id = orderInformation._id;
     // newOrderInformation.informed = orderInformation.informed;
