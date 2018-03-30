@@ -31,6 +31,7 @@ var diskUpload = multer({ storage: storage })
 router.post('/upload-firestore', googleMulter.single('coverThumbnail'), (req, res)=>{
     console.log('upload here ...');
     console.log(req.file);
+    console.log(req)
     uploadToFireBaseStorage(req.file).then((result=>{
         console.log("firebase stored -> " + result);
         // saveOneGallery([req.file.originalname, result, req.body.remarks]).then((result)=>{

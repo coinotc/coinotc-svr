@@ -13,5 +13,6 @@ module.exports = mongoose.model('advertisement', {
     payment: String,
     limit: Number,
     message: String,
+    deleteStatuts : Boolean,
     type: Number // 0 is sell ,1 is buy
 });

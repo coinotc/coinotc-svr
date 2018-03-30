@@ -35,7 +35,6 @@ var UserSchema = new mongoose.Schema(
     tradePrd: Number,
     following: Array,
     followers:Array,
-    block: Array,
     hash: String,
     salt: String,
     baseCurrency: String,
@@ -85,7 +84,6 @@ UserSchema.methods.toAuthJSON = function() {
     image: this.image,
     orderCount: this.orderCount,
     goodCount: this.goodCount,
-    block: this.block,
     following: this.following,
     followers:this.followers,
     nativeCurrency: this.baseCurrency
