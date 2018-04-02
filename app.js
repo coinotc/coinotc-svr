@@ -8,29 +8,40 @@ var http = require('http'),
   cors = require('cors'),
   passport = require('passport'),
   errorhandler = require('errorhandler'),
-  mongoose = require('mongoose'),
-  Mailgun = require('mailgun-js'),
-  cookieParser = require('cookie-parser'),
-  compression = require('compression'),
-  config = require('./config');
+  mongoose = require('mongoose');
+  Mailgun = require('mailgun-js');
+  multer = require('multer'),
+  googleStorage = require('@google-cloud/storage');
+cookieParser = require('cookie-parser');
+compression = require('compression');
+config = require('./config');
 
 var isProduction = process.env.NODE_ENV === 'production';
-
+``
 // Create global app object
 var app = express();
 
+// var corsOptions = {
+//   origin: 'http://localhost:4200',
+//   // optionsSuccessStatus: 200 ,// some legacy browsers (IE11, various SmartTVs) choke on 204 
+//   // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+//   // preflightContinue: true,
+//   credentials: true
+// }
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(bodyParser.json({ limit: '50mb' }));
+//app.use(cors(corsOptions));
 app.use(cors());
-
 // Normal express config defaults
 app.use(require('morgan')('dev'));
 
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-app.use(bodyParser.json({ limit: '50mb' }));
+
 app.use(compression());
 app.use(require('method-override')());
 app.use(express.static(__dirname + '/public'));
-
+// app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+// app.use(bodyParser.json({limit: '50mb'}));
 
 app.use(
   session({
@@ -56,12 +67,13 @@ if (isProduction) {
 }
 
 require('./models/User');
-require('./models/orderinformation');
+require('./models/orderInformation');
 require('./models/wallet');
 require('./config/passport');
 require('./models/complain');
 require('./models/advertisement');
 require('./models/alert');
+//require('./models/upload')
 require('./models/BackgroundUser');
 
 app.use(require('./routes'));

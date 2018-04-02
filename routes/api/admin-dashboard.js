@@ -2,9 +2,7 @@ var router = require('express').Router();
 var mongoose = require('mongoose');
 var moment = require('moment');
 var Order = mongoose.model('orderInformation');
-
 var User = mongoose.model('User');
-
 
 const orderapi = '/order';
 
