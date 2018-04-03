@@ -164,7 +164,6 @@ router.post('/users/login', function(req, res, next) {
 });
 
 router.post('/users', function(req, res, next) {
-  console.log('here');
   var user = new User();
   user.verify = '0';
   user.goodCount = '0';
