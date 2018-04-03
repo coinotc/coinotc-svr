@@ -61,20 +61,37 @@ router.get(apiurl + 'getone', (req, res) => {
 router.get(apiurl + 'filter', (req, res) => {
   let finished = req.query.finished;
   let username = req.query.username;
-  Order.find(
-    {
-      finished: `${finished}`,
-      $or: [{ buyer: `${username}` }, { seller: `${username}` }]
-    },
-    (err, result) => {
-      if (err) {
-        // console.log(err);
-        res.status(500).send(err);
-        return;
+  if (finished == 'true') {
+    Order.find(
+      {
+        finished: { $in: [0, 3] },
+        $or: [{ buyer: `${username}` }, { seller: `${username}` }]
+      },
+      (err, result) => {
+        if (err) {
+          console.log(err);
+          res.status(500).send(err);
+          return;
+        }
+        res.status(200).json(result);
       }
-      res.status(200).json(result);
-    }
-  );
+    );
+  } else {
+    Order.find(
+      {
+        finished: { $in: [1, 2] },
+        $or: [{ buyer: `${username}` }, { seller: `${username}` }]
+      },
+      (err, result) => {
+        if (err) {
+          console.log(err);
+          res.status(500).send(err);
+          return;
+        }
+        res.status(200).json(result);
+      }
+    );
+  }
 });
 
 // router.get(apiurl + 'buyer', (req, res) => {
@@ -123,7 +140,6 @@ router.post(apiurl, (req, res) => {
   newOrder.payment = order.payment;
   newOrder.limit = order.limit;
   newOrder.message = order.message;
-  newOrder.informed = order.informed;
   newOrder.finished = order.finished;
   newOrder.roomkey = order.roomkey;
   newOrder.date = new Date();
@@ -156,7 +172,6 @@ router.put(apiurl, (req, res) => {
   console.log(req.body);
   let newOrderInformation = new Order();
   newOrderInformation._id = orderInformation._id;
-  newOrderInformation.informed = orderInformation.informed;
   newOrderInformation.finished = orderInformation.finished;
   var error = newOrderInformation.validateSync();
   if (!error) {
