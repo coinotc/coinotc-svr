@@ -114,6 +114,7 @@ router.post(apiurl, (req, res) => {
   let newOrder = new Order();
   newOrder.buyer = order.buyer;
   newOrder.seller = order.seller;
+  newOrder.owner = order.owner;
   newOrder.crypto = order.crypto;
   newOrder.country = order.country;
   newOrder.quantity = order.quantity;
@@ -130,7 +131,7 @@ router.post(apiurl, (req, res) => {
   console.log(newOrder);
   let error = newOrder.validateSync();
   if (!error) {
-    newOrder.save(function(err, result) {
+    newOrder.save(function (err, result) {
       res.status(201).json(result);
     });
   } else {
