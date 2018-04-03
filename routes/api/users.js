@@ -196,7 +196,7 @@ router.post('/users', function(req, res, next) {
 
 router.get('/users/public', (req, res) => {
   let username = req.query.username;
-
+  
   console.log(req.query);
   User.find(
     { username: `${username}` },
