@@ -12,6 +12,7 @@ var http = require('http'),
   Mailgun = require('mailgun-js');
   multer = require('multer'),
   googleStorage = require('@google-cloud/storage');
+  moment = require('moment')
 cookieParser = require('cookie-parser');
 compression = require('compression');
 config = require('./config');

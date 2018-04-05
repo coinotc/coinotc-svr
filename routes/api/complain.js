@@ -1,6 +1,6 @@
-
 var router = require('express').Router();
 var mongoose = require('mongoose');
+var moment = require('moment');
 
 var Complain = mongoose.model('complain');
 
@@ -17,7 +17,14 @@ router.post(apiurl, (req, res) => {
     newComplain.status = 1;
     newComplain.support = "";
     newComplain.roomkey = "";
+    newComplain.fiat = complain.fiat;
+    newComplain.role = complain.role;
+    newComplain.crypto = complain.crypto;
+    newComplain.country = complain.country;
+    ts = moment.now();
     newComplain.date = new Date();
+    newComplain.complainId = newComplain.country+"-"+newComplain.crypto+"-"+newComplain.role+"-"+ts;
+    console.log(newComplain.complainId)
     console.log(newComplain);
     let error = newComplain.validateSync();
     if (!error) {
