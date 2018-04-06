@@ -3,8 +3,9 @@ var mongoose = require('mongoose');
 
 var advertisement = mongoose.model('advertisement');
 const advertisementapi = '/';
+var auth = require('../auth');
 
-router.post(advertisementapi, (req, res) => {
+router.post(advertisementapi, auth.required, (req, res) => {
     let get = req.body;
     let send = new advertisement();
     send.visible = get.visible
@@ -32,7 +33,7 @@ router.post(advertisementapi, (req, res) => {
         res.status(500).send(error);
     }
 })
-router.get(advertisementapi, (req, res) => {
+router.get(advertisementapi, auth.required, (req, res) => {
     let crypto = req.query.crypto;
     let type = req.query.type;
     let country = req.query.country;
@@ -56,7 +57,7 @@ router.get(advertisementapi, (req, res) => {
     }
 })
 
-router.get(advertisementapi, (req, res) => {
+router.get(advertisementapi, auth.required, (req, res) => {
     let crypto = req.query.crypto;
     let type = req.query.type;
     advertisement.find(
@@ -70,7 +71,7 @@ router.get(advertisementapi, (req, res) => {
         }
     );
 });
-router.get(advertisementapi + "myadvertisement/", (req, res) => {
+router.get(advertisementapi + "myadvertisement/", auth.required, (req, res) => {
     let owner = req.query.owner;
     let visible = req.query.visible;
     advertisement.find({ owner: `${owner}`, visible: `${visible}`,deleteStatus:false }, (err, result) => {
@@ -81,7 +82,7 @@ router.get(advertisementapi + "myadvertisement/", (req, res) => {
         res.status(200).json(result);
     });
 });
-router.get(advertisementapi + "editAdvertisement/", (req, res) => {
+router.get(advertisementapi + "editAdvertisement/", auth.required, (req, res) => {
     let id = req.query.id;
     advertisement.find({ _id: `${id}` }, (err, result) => {
         if (err) {
@@ -103,7 +104,7 @@ router.patch(advertisementapi,(req,res)=>{
     });
 });
 
-router.patch(advertisementapi + 'deleteStatuts/',(req,res)=>{
+router.patch(advertisementapi + 'deleteStatuts/', auth.required,(req,res)=>{
     let id = req.body._id;
     console.log(id)
     advertisement.findOneAndUpdate(
@@ -114,7 +115,7 @@ router.patch(advertisementapi + 'deleteStatuts/',(req,res)=>{
       res.status(201).json(result);
     });
 });
-router.put(advertisementapi + 'editAdvertisement/', (req, res) => {
+router.put(advertisementapi + 'editAdvertisement/', auth.required, (req, res) => {
     let Info = req.body;
     console.log(req.body);
     let newAdvertisementInfo = new advertisement();
