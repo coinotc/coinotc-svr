@@ -96,7 +96,7 @@ router.get(advertisementapi + "editAdvertisement/", auth.required, (req, res) =>
   }
 });
 
-router.get(advertisementapi, (req, res) => {
+router.get(advertisementapi, auth.required, (req, res) => {
   let crypto = req.query.crypto;
   let type = req.query.type;
   advertisement.find(
@@ -110,7 +110,7 @@ router.get(advertisementapi, (req, res) => {
     }
   );
 });
-router.get(advertisementapi + 'myadvertisement/', (req, res) => {
+router.get(advertisementapi + 'myadvertisement/',auth.required, (req, res) => {
   let owner = req.query.owner;
   let visible = req.query.visible;
   advertisement.find(
@@ -124,7 +124,7 @@ router.get(advertisementapi + 'myadvertisement/', (req, res) => {
     }
   );
 });
-router.get(advertisementapi + 'editAdvertisement/', (req, res) => {
+router.get(advertisementapi + 'editAdvertisement/', auth.required, (req, res) => {
   let id = req.query.id;
   advertisement.find({ _id: `${id}` }, (err, result) => {
     if (err) {
