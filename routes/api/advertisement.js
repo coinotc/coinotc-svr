@@ -5,6 +5,7 @@ var advertisement = mongoose.model('advertisement');
 const advertisementapi = '/';
 var auth = require('../auth');
 
+
 router.post(advertisementapi, auth.required, (req, res) => {
     let get = req.body;
     let send = new advertisement();
@@ -76,8 +77,8 @@ router.get(advertisementapi + "myadvertisement/", auth.required, (req, res) => {
     let visible = req.query.visible;
     advertisement.find({ owner: `${owner}`, visible: `${visible}`,deleteStatus:false }, (err, result) => {
         if (err) {
-            res.status(500).send(err);
-            return;
+          res.status(500).send(err);
+          return;
         }
         res.status(200).json(result);
     });
@@ -86,24 +87,65 @@ router.get(advertisementapi + "editAdvertisement/", auth.required, (req, res) =>
     let id = req.query.id;
     advertisement.find({ _id: `${id}` }, (err, result) => {
         if (err) {
-            res.status(500).send(err);
-            return;
+          res.status(500).send(err);
+          return;
         }
         res.status(200).json(result);
-    });
+      }
+    );
+  }
 });
-router.patch(advertisementapi,(req,res)=>{
-    let id = req.query._id;
-    let visible = req.body.visible;
-    advertisement.findOneAndUpdate(
+
+router.get(advertisementapi, (req, res) => {
+  let crypto = req.query.crypto;
+  let type = req.query.type;
+  advertisement.find(
+    { crypto: `${crypto}`, type: `${type}` },
+    (err, result) => {
+      if (err) {
+        res.status(500).send(err);
+        return;
+      }
+      res.status(200).json(result);
+    }
+  );
+});
+router.get(advertisementapi + 'myadvertisement/', (req, res) => {
+  let owner = req.query.owner;
+  let visible = req.query.visible;
+  advertisement.find(
+    { owner: `${owner}`, visible: `${visible}`, deleteStatus: false },
+    (err, result) => {
+      if (err) {
+        res.status(500).send(err);
+        return;
+      }
+      res.status(200).json(result);
+    }
+  );
+});
+router.get(advertisementapi + 'editAdvertisement/', (req, res) => {
+  let id = req.query.id;
+  advertisement.find({ _id: `${id}` }, (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+      return;
+    }
+    res.status(200).json(result);
+  });
+});
+router.patch(advertisementapi, (req, res) => {
+  let id = req.query._id;
+  let visible = req.body.visible;
+  advertisement.findOneAndUpdate(
     { _id: id },
     { visible: !visible },
     (err, result) => {
       if (err) res.status(500).json(err);
       res.status(201).json(result);
-    });
+    }
+  );
 });
-
 router.patch(advertisementapi + 'deleteStatuts/', auth.required,(req,res)=>{
     let id = req.body._id;
     console.log(id)
@@ -113,7 +155,8 @@ router.patch(advertisementapi + 'deleteStatuts/', auth.required,(req,res)=>{
     (err, result) => {
       if (err) res.status(500).json(err);
       res.status(201).json(result);
-    });
+    }
+  );
 });
 router.put(advertisementapi + 'editAdvertisement/', auth.required, (req, res) => {
     let Info = req.body;
