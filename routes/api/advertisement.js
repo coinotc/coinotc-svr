@@ -93,8 +93,7 @@ router.get(advertisementapi + "editAdvertisement/", auth.required, (req, res) =>
         res.status(200).json(result);
       }
     );
-  }
-});
+  });
 
 router.get(advertisementapi, auth.required, (req, res) => {
   let crypto = req.query.crypto;
