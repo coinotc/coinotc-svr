@@ -36,4 +36,4 @@ node_modules
 
 .idea
 .env
-package-lock.json
+./package-lock.json
