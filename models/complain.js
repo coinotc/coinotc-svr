@@ -9,5 +9,10 @@ module.exports = mongoose.model('complain', {
     status:Number,//1:hold on 2:in progess 3:completed
     support:String,
     date:Date,
-    roomkey:String
+    roomkey:String,
+    complainId:String,
+    crypto:String,
+    fiat:String,
+    role:String,
+    country:String
 });

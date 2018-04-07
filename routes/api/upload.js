@@ -3,6 +3,7 @@ var router = require('express').Router();
 var cors = require('cors')
 var mongoose = require('mongoose');
 var multer = require('multer');
+var auth = require('../auth');
 
 const  gstorage = googleStorage({
     projectId: "coinotc-kitchensink-banner",
@@ -28,7 +29,7 @@ var storage = multer.diskStorage({
   })
 var diskUpload = multer({ storage: storage })
 
-router.post('/upload-firestore', googleMulter.single('coverThumbnail'), (req, res)=>{
+router.post('/upload-firestore', auth.required, googleMulter.single('coverThumbnail'), (req, res)=>{
     console.log('upload here ...');
     console.log(req.file);
     console.log(req)

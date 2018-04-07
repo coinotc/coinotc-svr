@@ -1,12 +1,12 @@
 var router = require('express').Router();
 var mongoose = require('mongoose');
-
+var auth = require('../auth');
 var Order = mongoose.model('orderInformation');
 
 const apiurl = '/';
 
 //GET ALERT INFORMATION
-router.get(apiurl + 'alert', (req, res) => {
+router.get(apiurl + 'alert', auth.required, (req, res) => {
   let fiat = req.query.fiat;
   let crypto = req.query.crypto;
   let sum = 0;
@@ -27,7 +27,7 @@ router.get(apiurl + 'alert', (req, res) => {
 });
 
 //SEARCH & GET PROJECTS
-router.get(apiurl, (req, res) => {
+router.get(apiurl, auth.required, (req, res) => {
   var query = {};
   var keyword = req.query.keyword;
   if (typeof keyword == 'undefined') {
@@ -46,7 +46,7 @@ router.get(apiurl, (req, res) => {
 });
 
 //GET A SPECIFIC ORDER
-router.get(apiurl + 'getone', (req, res) => {
+router.get(apiurl + 'getone', auth.required, (req, res) => {
   var id = req.query._id;
   Order.findById({ _id: `${id}` }, (err, result) => {
     if (err) {
@@ -58,7 +58,7 @@ router.get(apiurl + 'getone', (req, res) => {
 });
 
 //FILTER ORDERS
-router.get(apiurl + 'filter', (req, res) => {
+router.get(apiurl + 'filter', auth.required, (req, res) => {
   let finished = req.query.finished;
   let username = req.query.username;
   if (finished == 'true') {
@@ -126,11 +126,12 @@ router.get(apiurl + 'filter', (req, res) => {
 //   );
 // });
 
-router.post(apiurl, (req, res) => {
+router.post(apiurl, auth.required, (req, res) => {
   let order = req.body;
   let newOrder = new Order();
   newOrder.buyer = order.buyer;
   newOrder.seller = order.seller;
+  newOrder.owner = order.owner;
   newOrder.crypto = order.crypto;
   newOrder.country = order.country;
   newOrder.quantity = order.quantity;
@@ -146,7 +147,7 @@ router.post(apiurl, (req, res) => {
   console.log(newOrder);
   let error = newOrder.validateSync();
   if (!error) {
-    newOrder.save(function(err, result) {
+    newOrder.save(function (err, result) {
       res.status(201).json(result);
     });
   } else {
@@ -155,7 +156,7 @@ router.post(apiurl, (req, res) => {
   }
 });
 
-router.patch(apiurl + 'roomkey', (req, res) => {
+router.patch(apiurl + 'roomkey', auth.required, (req, res) => {
   console.log('patch roomkey' + req.body);
   console.log('patch roomkey' + req.query);
   Order.findOneAndUpdate(
@@ -167,7 +168,7 @@ router.patch(apiurl + 'roomkey', (req, res) => {
     }
   );
 });
-router.put(apiurl, (req, res) => {
+router.put(apiurl, auth.required, (req, res) => {
   let orderInformation = req.body;
   console.log(req.body);
   let newOrderInformation = new Order();

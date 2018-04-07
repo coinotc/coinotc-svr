@@ -3,6 +3,7 @@ var mongoose = require('mongoose');
 module.exports = mongoose.model('orderInformation', {
   buyer: String,
   seller: String,
+  owner: String,
   crypto: String,
   country: String,
   quantity: Number,

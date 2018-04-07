@@ -1,7 +1,8 @@
 var mailgun = require("mailgun-js");
 var api_key = 'key-43175e952d518dcf69a937bc4ff7cb2a';
 var domain = 'sandboxe515817a071342c6b3f28d2de1ef3407.mailgun.org';
-var render = require("render")
+var render = require("render");
+var auth = require('../auth');
 // var mailgun = require('mailgunjs')({apiKey: api_key, domain: DOMAIN});
 
 // var data = {
@@ -19,7 +20,7 @@ var router = require('express').Router();
 
 const apiurl = '/';
 
-router.get(apiurl, function(req,res) {
+router.get(apiurl, auth.required, function(req,res) {
       console.log(req.query.email+"there is email")
       var mailgun = new Mailgun({apiKey: api_key, domain: domain});
       var data = {

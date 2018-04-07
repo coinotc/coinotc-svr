@@ -15,7 +15,8 @@ router.get('/user', auth.required, function(req, res, next) {
     })
     .catch(next);
 });
-router.patch('/users/public/follow', (req, res) => {
+
+router.patch('/users/public/follow', auth.required, (req, res) => {
   console.log(req.body);
   console.log(req.query);
   User.findOneAndUpdate(
@@ -28,7 +29,7 @@ router.patch('/users/public/follow', (req, res) => {
     }
   );
 });
-router.patch('/users/public/followers', (req, res) => {
+router.patch('/users/public/followers', auth.required, (req, res) => {
   console.log(req.body);
   console.log(req.query);
   User.findOneAndUpdate(
@@ -42,7 +43,7 @@ router.patch('/users/public/followers', (req, res) => {
   );
 });
 
-router.patch('/users/public/comment', (req, res) => {
+router.patch('/users/public/comment', auth.required, (req, res) => {
   console.log(req.body);
   console.log(req.query);
   User.findOneAndUpdate(
@@ -56,7 +57,7 @@ router.patch('/users/public/comment', (req, res) => {
   );
 });
 
-router.patch('/users/public/tradepassword', (req, res) => {
+router.patch('/users/public/tradepassword', auth.required, (req, res) => {
   console.log(req.body);
   console.log(req.query);
   User.findOneAndUpdate(
@@ -68,7 +69,8 @@ router.patch('/users/public/tradepassword', (req, res) => {
     }
   );
 });
-router.put('/user', auth.required, function(req, res, next) {
+
+router.put('/user', auth.required, auth.required, function(req, res, next) {
   console.log(req.body.user);
   User.findById(req.payload.id)
     .then(function(user) {
@@ -158,13 +160,16 @@ router.post('/users/login', function(req, res, next) {
       user.token = user.generateJWT();
       return res.json({ user: user.toAuthJSON() });
     } else {
+      console.log(info);
+      console.log("---");
       return res.status(422).json(info);
     }
   })(req, res, next);
 });
 
 router.post('/users', function(req, res, next) {
-  console.log('here');
+  console.log("--- Register ---- ");
+  console.log(req);
   var user = new User();
   user.verify = '0';
   user.goodCount = '0';
@@ -191,12 +196,15 @@ router.post('/users', function(req, res, next) {
     .then(function() {
       return res.json({ user: user.toAuthJSON() });
     })
-    .catch(next);
+    .catch((error)=> {
+      console.log(error);
+      next;
+    });
 });
 
-router.get('/users/public', (req, res) => {
+router.get('/users/public', auth.required, (req, res) => {
   let username = req.query.username;
-
+  
   console.log(req.query);
   User.find(
     { username: `${username}` },
@@ -211,9 +219,14 @@ router.get('/users/public', (req, res) => {
     }
   );
 });
-router.get('/users/tradepassword', (req, res) => {
-  let username = req.query.username;
 
+/**
+ * require auth ?
+ */
+router.get('/users/tradepassword', auth.required, (req, res) => {
+  let username = req.query.username;
+  let currentUser = req.user;
+  console.log(">>> " + currentUser.username);
   console.log(req.query);
   User.find({ username: `${username}` }, 'tradePrd', (err, result) => {
     if (err) {
