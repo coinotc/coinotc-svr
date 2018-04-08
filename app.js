@@ -22,13 +22,6 @@ var isProduction = process.env.NODE_ENV === 'production';
 // Create global app object
 var app = express();
 
-// var corsOptions = {
-//   origin: 'http://localhost:4200',
-//   // optionsSuccessStatus: 200 ,// some legacy browsers (IE11, various SmartTVs) choke on 204 
-//   // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-//   // preflightContinue: true,
-//   credentials: true
-// }
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(bodyParser.json({ limit: '50mb' }));
 //app.use(cors(corsOptions));
@@ -47,7 +40,6 @@ app.use(express.static(__dirname + '/public'));
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
-    secret: 'conduit',
     cookie: { maxAge: 60000 },
     resave: false,
     saveUninitialized: false
@@ -69,7 +61,6 @@ if (isProduction) {
 
 require('./models/User');
 require('./models/orderInformation');
-require('./models/wallet');
 require('./config/passport');
 require('./models/complain');
 require('./models/advertisement');

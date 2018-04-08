@@ -3,10 +3,11 @@ var speakeasy = require("speakeasy");
 var mongoose = require('mongoose');
 var QRCode = require('qrcode');
 var User = mongoose.model('User');
+var auth = require('../auth');
 
 const api = '/'
 
-router.get(api, (req, res) => {
+router.get(api, auth.required,(req, res) => {
     let user = req.query;
     if (user) {
         User.findOne({ username: user.username }, (err, result) => {
@@ -40,7 +41,7 @@ router.get(api, (req, res) => {
     }
 });
 
-router.post(api, (req, res) => {
+router.post(api, auth.required,(req, res) => {
     let get = req.body;
     User.findOne({ username: get.username }, (err, result) => {
         if (!result.tfa.effective) {

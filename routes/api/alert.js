@@ -1,8 +1,9 @@
 var router = require('express').Router();
 var mongoose = require('mongoose');
 var Alert = mongoose.model('alert');
+var auth = require('../auth');
 
-router.get('/', (req, res) => {
+router.get('/', auth.required, (req, res) => {
   let username = req.query.username;
   let crypto = req.query.crypto;
   Alert.find(
@@ -17,7 +18,7 @@ router.get('/', (req, res) => {
   );
 });
 
-router.get('/getAbove', (req, res) => {
+router.get('/getAbove', auth.required, (req, res) => {
   let above = req.query.above;
   let status = req.query.status;
   let fiat = req.query.fiat;
@@ -44,7 +45,7 @@ router.get('/getAbove', (req, res) => {
   );
 });
 
-router.get('/getBelow', (req, res) => {
+router.get('/getBelow', auth.required, (req, res) => {
   let above = req.query.above;
   let status = req.query.status;
   let fiat = req.query.fiat;
@@ -71,7 +72,7 @@ router.get('/getBelow', (req, res) => {
   );
 });
 
-router.post('/', (req, res) => {
+router.post('/', auth.required, (req, res) => {
   let alert = req.body;
   let newAlert = new Alert();
   newAlert.username = alert.username;
@@ -92,7 +93,7 @@ router.post('/', (req, res) => {
   }
 });
 
-router.put('/', (req, res) => {
+router.put('/', auth.required, (req, res) => {
   let alert = req.body;
   console.log(req.body);
   let newAlert = new Alert();
@@ -113,7 +114,7 @@ router.put('/', (req, res) => {
   }
 });
 
-router.delete('/', (req, res) => {
+router.delete('/',  auth.required, (req, res) => {
   let deleteAlertId = req.query._id;
   Alert.findByIdAndRemove({ _id: deleteAlertId }, (err, result) => {
     if (err) {

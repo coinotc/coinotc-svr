@@ -1,12 +1,12 @@
 var router = require('express').Router();
 var mongoose = require('mongoose');
 var moment = require('moment');
-
+var auth = require('../auth');
 var Complain = mongoose.model('complain');
 
 const apiurl = '/';
 
-router.post(apiurl, (req, res) => {
+router.post(apiurl, auth.required,(req, res) => {
     let complain = req.body;
     let newComplain = new Complain();
     newComplain.complainant = complain.complainant;
@@ -36,7 +36,7 @@ router.post(apiurl, (req, res) => {
         res.status(500).send(error);
     }
 });
-router.get(apiurl,(req,res)=>{
+router.get(apiurl, auth.required, (req,res)=>{
     var query ={};
     let username = req.query.keyword;
     if (typeof username == 'undefined'|| username == "") {
@@ -53,7 +53,7 @@ router.get(apiurl,(req,res)=>{
         res.status(200).json(result);
     });
 })
-router.patch(apiurl+"roomkey", (req, res) => {
+router.patch(apiurl+"roomkey", auth.required, (req, res) => {
     console.log("patch roomkey"+req.body)
     console.log("patch roomkey"+req.query)
 Complain.findOneAndUpdate({ _id: req.query.complainId},{ roomkey: req.body.roomkey },  (err, result) => {

@@ -3,10 +3,11 @@ var mongoose = require('mongoose');
 var moment = require('moment');
 var Order = mongoose.model('orderInformation');
 var User = mongoose.model('User');
+var auth = require('../auth');
 
 const orderapi = '/order';
 
-router.get(`${orderapi}/sevenday`, (req, res) => {
+router.get(`${orderapi}/sevenday`, auth.required,(req, res) => {
   let array = [];
   let times = 0;
   for (let i = 0; i < 7; i++) {
@@ -38,7 +39,7 @@ router.get(`${orderapi}/sevenday`, (req, res) => {
   }
 });
 
-router.get(`${orderapi}/sevendayCryptoTrades`, (req, res) => {
+router.get(`${orderapi}/sevendayCryptoTrades`, auth.required,(req, res) => {
   let array = [];
   let finished = req.query.finished;
   let crypto = req.query.crypto;
@@ -81,7 +82,7 @@ router.get(`${orderapi}/sevendayCryptoTrades`, (req, res) => {
   }
 });
 
-router.get(`${orderapi}/sevendayReg`, (req, res) => {
+router.get(`${orderapi}/sevendayReg`, auth.required,(req, res) => {
   let array = [];
   let times = 0;
   for (let i = 0; i < 7; i++) {

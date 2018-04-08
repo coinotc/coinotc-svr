@@ -13,8 +13,7 @@ module.exports = mongoose.model('orderInformation', {
   payment: String,
   limit: Number,
   message: String,
-  informed: Boolean,
-  finished: Boolean,
+  finished: Number,
   date: Date,
   roomkey: String
 });
