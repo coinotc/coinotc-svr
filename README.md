@@ -1,4 +1,4 @@
-# ![CoinOTC App](project-logo.png)
+<img src="project-logo.png" width="200">
 
 # Getting started
 
@@ -8,6 +8,8 @@ To get the Node server running locally:
 - `npm install` to install all required dependencies
 - Install MongoDB Community Edition ([instructions](https://docs.mongodb.com/manual/installation/#tutorials)) and run it by executing `mongod`
 - `npm run dev` to start the local server
+- `npm run nodemon` to start the local server with debug inspect port up
+- `npm test` this will test all the endpoint.
 
 Alternately, to quickly try out this repo in the cloud, you can [![Remix on Glitch](https://cdn.glitch.com/2703baf2-b643-4da7-ab91-7ee2a2d00b5b%2Fremix-button.svg)](https://glitch.com/edit/#!/remix/realworld)
 
@@ -42,7 +44,7 @@ Requests are authenticated using the `Authorization` header with a valid JWT. We
 <br />
 
 ## dotenv configuration
-- Create a .env file before start the backend service. 
+- Create a .env file on the project root directory before start the backend service. 
 
 ```
 NODE_ENV=
@@ -50,4 +52,7 @@ SESSION_SECRET=
 MONGODB_URI=
 PORT=
 GOOGLE_APPLICATION_CREDENTIALS=
+FIREBASE_KEYFILENAME=
+MAILGUN_API_KEY=
+MAILGUN_DOMAIN=
 ```

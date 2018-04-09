@@ -160,12 +160,16 @@ router.post('/users/login', function(req, res, next) {
       user.token = user.generateJWT();
       return res.json({ user: user.toAuthJSON() });
     } else {
+      console.log(info);
+      console.log("---");
       return res.status(422).json(info);
     }
   })(req, res, next);
 });
 
 router.post('/users', function(req, res, next) {
+  console.log("--- Register ---- ");
+  console.log(req);
   var user = new User();
   user.verify = '0';
   user.goodCount = '0';
@@ -192,7 +196,10 @@ router.post('/users', function(req, res, next) {
     .then(function() {
       return res.json({ user: user.toAuthJSON() });
     })
-    .catch(next);
+    .catch((error)=> {
+      console.log(error);
+      next;
+    });
 });
 
 router.get('/users/public', auth.required, (req, res) => {
@@ -218,7 +225,8 @@ router.get('/users/public', auth.required, (req, res) => {
  */
 router.get('/users/tradepassword', auth.required, (req, res) => {
   let username = req.query.username;
-
+  let currentUser = req.user;
+  console.log(">>> " + currentUser.username);
   console.log(req.query);
   User.find({ username: `${username}` }, 'tradePrd', (err, result) => {
     if (err) {
