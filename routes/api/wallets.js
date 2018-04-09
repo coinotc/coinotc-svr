@@ -2,7 +2,6 @@ var mongoose = require('mongoose');
 var router = require('express').Router();
 var passport = require('passport');
 var User = mongoose.model('User');
-var Wallet = mongoose.model('Wallet');
 var auth = require('../auth');
 
 router.post('/generate', auth.required, function(req, res, next){
