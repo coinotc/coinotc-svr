@@ -1,9 +1,19 @@
 var router = require('express').Router();
 var mongoose = require('mongoose');
+var rp = require('request-promise');
 
 var advertisement = mongoose.model('advertisement');
 const advertisementapi = '/';
 var auth = require('../auth');
+
+router.get(`${advertisementapi}getprice`, auth.required, (req, res) => {
+    let type = req.query.type, fiat = req.query.fiat;
+    rp({ uri: `https://api.coinmarketcap.com/v1/ticker/${type}/?convert=${fiat}`, json: true }).then((result) => {
+        res.status(201).json(result);
+    }).catch((err) => {
+        res.status(500).send(`err: ${err}`);
+    })
+})
 
 router.post(advertisementapi, auth.required, (req, res) => {
     let get = req.body;
@@ -74,7 +84,7 @@ router.get(advertisementapi, auth.required, (req, res) => {
 router.get(advertisementapi + "myadvertisement/", auth.required, (req, res) => {
     let owner = req.query.owner;
     let visible = req.query.visible;
-    advertisement.find({ owner: `${owner}`, visible: `${visible}`,deleteStatus:false }, (err, result) => {
+    advertisement.find({ owner: `${owner}`, visible: `${visible}`, deleteStatus: false }, (err, result) => {
         if (err) {
             res.status(500).send(err);
             return;
@@ -92,28 +102,28 @@ router.get(advertisementapi + "editAdvertisement/", auth.required, (req, res) =>
         res.status(200).json(result);
     });
 });
-router.patch(advertisementapi,(req,res)=>{
+router.patch(advertisementapi, (req, res) => {
     let id = req.query._id;
     let visible = req.body.visible;
     advertisement.findOneAndUpdate(
-    { _id: id },
-    { visible: !visible },
-    (err, result) => {
-      if (err) res.status(500).json(err);
-      res.status(201).json(result);
-    });
+        { _id: id },
+        { visible: !visible },
+        (err, result) => {
+            if (err) res.status(500).json(err);
+            res.status(201).json(result);
+        });
 });
 
-router.patch(advertisementapi + 'deleteStatuts/', auth.required,(req,res)=>{
+router.patch(advertisementapi + 'deleteStatuts/', auth.required, (req, res) => {
     let id = req.body._id;
     console.log(id)
     advertisement.findOneAndUpdate(
-    { _id: id },
-    { deleteStatus: true },
-    (err, result) => {
-      if (err) res.status(500).json(err);
-      res.status(201).json(result);
-    });
+        { _id: id },
+        { deleteStatus: true },
+        (err, result) => {
+            if (err) res.status(500).json(err);
+            res.status(201).json(result);
+        });
 });
 router.put(advertisementapi + 'editAdvertisement/', auth.required, (req, res) => {
     let Info = req.body;
@@ -139,16 +149,16 @@ router.put(advertisementapi + 'editAdvertisement/', auth.required, (req, res) =>
     // newOrderInformation.finished = orderInformation.finished;
     var error = newAdvertisementInfo.validateSync();
     if (!error) {
-      //console.log(user._id);
-      advertisement.findByIdAndUpdate(
-        { _id: Info._id },
-        { $set: newAdvertisementInfo },
-        { new: true },
-        (err, result) => {
-          if (err) res.status(500).json(err);
-          res.status(201).json(result);
-        }
-      );
+        //console.log(user._id);
+        advertisement.findByIdAndUpdate(
+            { _id: Info._id },
+            { $set: newAdvertisementInfo },
+            { new: true },
+            (err, result) => {
+                if (err) res.status(500).json(err);
+                res.status(201).json(result);
+            }
+        );
     }
-  });
+});
 module.exports = router;
