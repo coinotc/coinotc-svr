@@ -5,7 +5,7 @@ router.use('/order', require('./order'));
 router.use('/admin-dashboard', require('./admin-dashboard'));
 router.use('/complain', require('./complain'));
 router.use('/advertisement', require('./advertisement'));
-router.use('/wallet', require('./crypto-wallet'));
+router.use('/wallet', require('./wallets'));
 router.use('/base-currency', require('./users'));
 router.use('/alert', require('./alert'));
 router.use('/sendmail', require('./sendmail'));
