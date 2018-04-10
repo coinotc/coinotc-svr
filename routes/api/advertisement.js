@@ -47,24 +47,14 @@ router.get(advertisementapi, auth.required, (req, res) => {
     let crypto = req.query.crypto;
     let type = req.query.type;
     let country = req.query.country;
-    let fiat = req.query.fiat
-    if (type == 0) {
-        advertisement.find({ crypto: crypto, type: type, country: country, fiat: fiat }, null, { sort: { price: -1 } }, (err, result) => {
-            if (err) {
-                res.status(500).send(err);
-                return;
-            }
-            res.status(200).json(result);
-        });
-    } else {
-        advertisement.find({ crypto: crypto, type: type, country: country, fiat: fiat }, null, { sort: { price: 1 } }, (err, result) => {
-            if (err) {
-                res.status(500).send(err);
-                return;
-            }
-            res.status(200).json(result);
-        });
-    }
+    let fiat = req.query.fiat;
+    advertisement.find({ crypto: crypto, type: type, country: country, fiat: fiat, visible: true }, null, { sort: { price: -1 } }, (err, result) => {
+        if (err) {
+            res.status(500).send(err);
+            return;
+        }
+        res.status(200).json(result);
+    });
 })
 
 router.get(advertisementapi, auth.required, (req, res) => {
