@@ -56,7 +56,34 @@ router.get(apiurl + 'getone', auth.required, (req, res) => {
     res.status(200).json(result);
   });
 });
-
+router.get(apiurl + 'tradeWithHim' ,auth.required, (req,res)=>{
+  console.log(req.query)
+  var profileUser = req.query.profileUser;
+  var currentUser = req.query.currentUser;
+  Order.count({
+    finished: { $in: [0, 3] },
+    $or: [{ buyer: `${currentUser}`,seller: `${profileUser}` },
+    { buyer: `${profileUser}`, seller: `${currentUser}`}]
+    },(err,result) =>{
+    if(err){
+      res.status(500).send(err);
+    }
+    res.status(200).json(result);
+  })
+})
+router.get(apiurl + 'myTrade' ,auth.required, (req,res)=>{
+  console.log(req.query)
+  var currentUser = req.query.currentUser;
+  Order.count({
+    finished: { $in: [0, 3] },
+    $or: [{ buyer: `${currentUser}` }, { seller: `${currentUser}` }]
+    },(err,result) =>{
+    if(err){
+      res.status(500).send(err);
+    }
+    res.status(200).json(result);
+  })
+})
 //FILTER ORDERS
 router.get(apiurl + 'filter', auth.required, (req, res) => {
   let finished = req.query.finished;
