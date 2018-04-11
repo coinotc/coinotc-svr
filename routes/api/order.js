@@ -141,13 +141,15 @@ router.post(apiurl, auth.required, (req, res) => {
   newOrder.payment = order.payment;
   newOrder.limit = order.limit;
   newOrder.message = order.message;
+  newOrder.buyerRating = order.buyerRating;
+  newOrder.sellerRating = order.sellerRating;
   newOrder.finished = order.finished;
   newOrder.roomkey = order.roomkey;
   newOrder.date = new Date();
   console.log(newOrder);
   let error = newOrder.validateSync();
   if (!error) {
-    newOrder.save(function (err, result) {
+    newOrder.save(function(err, result) {
       res.status(201).json(result);
     });
   } else {
@@ -173,6 +175,8 @@ router.put(apiurl, auth.required, (req, res) => {
   console.log(req.body);
   let newOrderInformation = new Order();
   newOrderInformation._id = orderInformation._id;
+  newOrderInformation.buyerRating = orderInformation.buyerRating;
+  newOrderInformation.sellerRating = orderInformation.sellerRating;
   newOrderInformation.finished = orderInformation.finished;
   var error = newOrderInformation.validateSync();
   if (!error) {
