@@ -3,6 +3,7 @@ var router = require('express').Router();
 var passport = require('passport');
 var User = mongoose.model('User');
 var auth = require('../auth');
+var crypto = require('crypto');
 
 router.get('/user', auth.required, function(req, res, next) {
   User.findById(req.payload.id)
@@ -60,9 +61,11 @@ router.patch('/users/public/comment', auth.required, (req, res) => {
 router.patch('/users/public/tradepassword', auth.required, (req, res) => {
   console.log(req.body);
   console.log(req.query);
+  var user = new User();
+  user.setTradePassword(req.body.tradePrd)
   User.findOneAndUpdate(
     { username: req.query.username },
-    { tradePrd: req.body.tradePrd },
+    { tradePasswordSalt: user.tradePasswordSalt ,tradePasswordHash:user.tradePasswordHash},
     (err, result) => {
       if (err) res.status(500).json(err);
       res.status(201).json(result);
@@ -189,8 +192,9 @@ router.post('/users', function(req, res, next) {
   user.deviceToken = req.body.deviceToken;
   user.username = req.body.user.username;
   user.email = req.body.user.email;
+  console.log(req.body.user.password)
   user.setPassword(req.body.user.password);
-
+  
   user
     .save()
     .then(function() {
