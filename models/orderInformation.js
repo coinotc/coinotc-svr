@@ -13,6 +13,8 @@ module.exports = mongoose.model('orderInformation', {
   payment: String,
   limit: Number,
   message: String,
+  buyerRating: Number,
+  sellerRating: Number,
   finished: Number,
   date: Date,
   roomkey: String
