@@ -25,7 +25,7 @@ var UserSchema = new mongoose.Schema(
     bio: String,
     image: String,
     orderCount: Number,
-    goodCount: Number,
+    ratings: Array,
     volume: String,
     logoutDateTime: Date,
     idCard: String,
@@ -34,7 +34,7 @@ var UserSchema = new mongoose.Schema(
     phone: Number,
     tradePrd: Number,
     following: Array,
-    followers:Array,
+    followers: Array,
     hash: String,
     salt: String,
     baseCurrency: String,
@@ -83,9 +83,9 @@ UserSchema.methods.toAuthJSON = function() {
     bio: this.bio,
     image: this.image,
     orderCount: this.orderCount,
-    goodCount: this.goodCount,
+    ratings: this.ratings,
     following: this.following,
-    followers:this.followers,
+    followers: this.followers,
     nativeCurrency: this.baseCurrency
   };
 };
