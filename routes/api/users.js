@@ -3,6 +3,7 @@ var router = require('express').Router();
 var passport = require('passport');
 var User = mongoose.model('User');
 var auth = require('../auth');
+var crypto = require('crypto');
 
 router.get('/user', auth.required, function(req, res, next) {
   User.findById(req.payload.id)
@@ -43,12 +44,12 @@ router.patch('/users/public/followers', auth.required, (req, res) => {
   );
 });
 
-router.patch('/users/public/comment', auth.required, (req, res) => {
+router.patch('/users/public/ratings', auth.required, (req, res) => {
   console.log(req.body);
   console.log(req.query);
   User.findOneAndUpdate(
     { username: req.query.username },
-    { goodCount: req.body.good },
+    { ratings: req.body },
     { new: true },
     (err, result) => {
       if (err) res.status(500).json(err);
@@ -60,9 +61,11 @@ router.patch('/users/public/comment', auth.required, (req, res) => {
 router.patch('/users/public/tradepassword', auth.required, (req, res) => {
   console.log(req.body);
   console.log(req.query);
+  var user = new User();
+  user.setTradePassword(req.body.tradePrd)
   User.findOneAndUpdate(
     { username: req.query.username },
-    { tradePrd: req.body.tradePrd },
+    { tradePasswordSalt: user.tradePasswordSalt ,tradePasswordHash:user.tradePasswordHash},
     (err, result) => {
       if (err) res.status(500).json(err);
       res.status(201).json(result);
@@ -94,9 +97,9 @@ router.put('/user', auth.required, auth.required, function(req, res, next) {
       if (typeof req.body.user.password !== 'undefined') {
         user.setPassword(req.body.user.password);
       }
-      if (typeof req.body.user.goodCount !== 'undefined') {
-        user.goodCount = req.body.user.goodCount;
-      }
+      // if (typeof req.body.user.goodCount !== 'undefined') {
+      //   user.goodCount = req.body.user.goodCount;
+      // }
       if (typeof req.body.user.orderCount !== 'undefined') {
         user.orderCount = req.body.user.orderCount;
       }
@@ -161,18 +164,18 @@ router.post('/users/login', function(req, res, next) {
       return res.json({ user: user.toAuthJSON() });
     } else {
       console.log(info);
-      console.log("---");
+      console.log('---');
       return res.status(422).json(info);
     }
   })(req, res, next);
 });
 
 router.post('/users', function(req, res, next) {
-  console.log("--- Register ---- ");
+  console.log('--- Register ---- ');
   console.log(req);
   var user = new User();
   user.verify = '0';
-  user.goodCount = '0';
+  user.ratings = [];
   user.orderCount = '0';
   user.volume = '';
   user.verifyName = '';
@@ -182,21 +185,22 @@ router.post('/users', function(req, res, next) {
   user.following = [];
   user.followers = [];
   user.tfa = {
-    effective:false,
-    secret:{}
-  }
+    effective: false,
+    secret: {}
+  };
 
   user.deviceToken = req.body.deviceToken;
   user.username = req.body.user.username;
   user.email = req.body.user.email;
+  console.log(req.body.user.password)
   user.setPassword(req.body.user.password);
-
+  
   user
     .save()
     .then(function() {
       return res.json({ user: user.toAuthJSON() });
     })
-    .catch((error)=> {
+    .catch(error => {
       console.log(error);
       next;
     });
@@ -204,11 +208,11 @@ router.post('/users', function(req, res, next) {
 
 router.get('/users/public', auth.required, (req, res) => {
   let username = req.query.username;
-  
+
   console.log(req.query);
   User.find(
     { username: `${username}` },
-    'orderCount goodCount volume deviceToken following followers',
+    'orderCount ratings volume deviceToken following followers',
     (err, result) => {
       console.log(result);
       if (err) {
@@ -226,7 +230,7 @@ router.get('/users/public', auth.required, (req, res) => {
 router.get('/users/tradepassword', auth.required, (req, res) => {
   let username = req.query.username;
   let currentUser = req.user;
-  console.log(">>> " + currentUser.username);
+  console.log('>>> ' + currentUser.username);
   console.log(req.query);
   User.find({ username: `${username}` }, 'tradePrd', (err, result) => {
     if (err) {
@@ -236,7 +240,6 @@ router.get('/users/tradepassword', auth.required, (req, res) => {
     res.status(200).json(result);
   });
 });
-
 
 router.get('/users/logout', auth.required, function(req, res, next) {
   console.log(req.payload.id);

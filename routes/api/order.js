@@ -56,7 +56,34 @@ router.get(apiurl + 'getone', auth.required, (req, res) => {
     res.status(200).json(result);
   });
 });
-
+router.get(apiurl + 'tradeWithHim' ,auth.required, (req,res)=>{
+  console.log(req.query)
+  var profileUser = req.query.profileUser;
+  var currentUser = req.query.currentUser;
+  Order.count({
+    finished: { $in: [0, 3] },
+    $or: [{ buyer: `${currentUser}`,seller: `${profileUser}` },
+    { buyer: `${profileUser}`, seller: `${currentUser}`}]
+    },(err,result) =>{
+    if(err){
+      res.status(500).send(err);
+    }
+    res.status(200).json(result);
+  })
+})
+router.get(apiurl + 'myTrade' ,auth.required, (req,res)=>{
+  console.log(req.query)
+  var currentUser = req.query.currentUser;
+  Order.count({
+    finished: { $in: [0, 3] },
+    $or: [{ buyer: `${currentUser}` }, { seller: `${currentUser}` }]
+    },(err,result) =>{
+    if(err){
+      res.status(500).send(err);
+    }
+    res.status(200).json(result);
+  })
+})
 //FILTER ORDERS
 router.get(apiurl + 'filter', auth.required, (req, res) => {
   let finished = req.query.finished;
@@ -141,13 +168,15 @@ router.post(apiurl, auth.required, (req, res) => {
   newOrder.payment = order.payment;
   newOrder.limit = order.limit;
   newOrder.message = order.message;
+  newOrder.buyerRating = order.buyerRating;
+  newOrder.sellerRating = order.sellerRating;
   newOrder.finished = order.finished;
   newOrder.roomkey = order.roomkey;
   newOrder.date = new Date();
   console.log(newOrder);
   let error = newOrder.validateSync();
   if (!error) {
-    newOrder.save(function (err, result) {
+    newOrder.save(function(err, result) {
       res.status(201).json(result);
     });
   } else {
@@ -173,6 +202,8 @@ router.put(apiurl, auth.required, (req, res) => {
   console.log(req.body);
   let newOrderInformation = new Order();
   newOrderInformation._id = orderInformation._id;
+  newOrderInformation.buyerRating = orderInformation.buyerRating;
+  newOrderInformation.sellerRating = orderInformation.sellerRating;
   newOrderInformation.finished = orderInformation.finished;
   var error = newOrderInformation.validateSync();
   if (!error) {
