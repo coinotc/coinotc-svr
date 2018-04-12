@@ -15,7 +15,7 @@ router.get(`${advertisementapi}getprice`, auth.required, (req, res) => {
     })
 })
 
-router.get(`${advertisementapi}:id`, auth.required, (req, res) => {
+router.get(`${advertisementapi}getvisible/:id`, auth.required, (req, res) => {
     advertisement.findById(req.params.id, (err,result) => {
         res.send(result.visible);
     })
