@@ -37,6 +37,8 @@ var UserSchema = new mongoose.Schema(
     followers: Array,
     hash: String,
     salt: String,
+    tradePasswordSalt:String,
+    tradePasswordHash:String,
     baseCurrency: String,
     deviceToken: String,
     tfa: Object
@@ -60,6 +62,12 @@ UserSchema.methods.setPassword = function(password) {
     .toString('hex');
 };
 
+UserSchema.methods.setTradePassword = function(tradePassword) {
+  this.tradePasswordSalt = crypto.randomBytes(16).toString('hex');
+  this.tradePasswordHash = crypto
+    .pbkdf2Sync(tradePassword, this.tradePasswordSalt, 10000, 512, 'sha512')
+    .toString('hex');
+};
 UserSchema.methods.generateJWT = function() {
   var today = new Date();
   var exp = new Date(today);
