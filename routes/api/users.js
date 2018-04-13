@@ -62,10 +62,27 @@ router.patch('/users/public/tradepassword', auth.required, (req, res) => {
   console.log(req.body);
   console.log(req.query);
   var user = new User();
-  user.setTradePassword(req.body.tradePrd)
+  user.setTradePassword(req.body.tradePrd);
   User.findOneAndUpdate(
     { username: req.query.username },
-    { tradePasswordSalt: user.tradePasswordSalt ,tradePasswordHash:user.tradePasswordHash},
+    {
+      tradePasswordSalt: user.tradePasswordSalt,
+      tradePasswordHash: user.tradePasswordHash
+    },
+    (err, result) => {
+      if (err) res.status(500).json(err);
+      res.status(201).json(result);
+    }
+  );
+});
+
+router.patch('./user/public/deviceToken', auth.required, (req, res) => {
+  console.log(req.body);
+  console.log(req.query);
+  User.findOneAndUpdate(
+    { username: req.query.username },
+    { deviceToken: req.body.deviceToken },
+    { new: true },
     (err, result) => {
       if (err) res.status(500).json(err);
       res.status(201).json(result);
@@ -192,9 +209,9 @@ router.post('/users', function(req, res, next) {
   user.deviceToken = req.body.deviceToken;
   user.username = req.body.user.username;
   user.email = req.body.user.email;
-  console.log(req.body.user.password)
+  console.log(req.body.user.password);
   user.setPassword(req.body.user.password);
-  
+
   user
     .save()
     .then(function() {
