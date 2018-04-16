@@ -218,7 +218,7 @@ router.post('/users', function(req, res, next) {
       return res.json({ user: user.toAuthJSON() });
     })
     .catch(error => {
-      res.status(500).send(err);
+      res.status(500).send(error);
       return;
     });
 });
