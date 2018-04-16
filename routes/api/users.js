@@ -4,7 +4,7 @@ var passport = require('passport');
 var User = mongoose.model('User');
 var auth = require('../auth');
 var crypto = require('crypto');
-
+var randomstring = require('randomstring');
 router.get('/user', auth.required, function(req, res, next) {
   User.findById(req.payload.id)
     .then(function(user) {
@@ -18,8 +18,8 @@ router.get('/user', auth.required, function(req, res, next) {
 });
 
 router.patch('/users/public/follow', auth.required, (req, res) => {
-  console.log(req.body);
-  console.log(req.query);
+  //console.log(req.body);
+  //console.log(req.query);
   User.findOneAndUpdate(
     { username: req.query.username },
     { following: req.body },
@@ -30,9 +30,22 @@ router.patch('/users/public/follow', auth.required, (req, res) => {
     }
   );
 });
+router.get('/users/verify' , (req, res) => {
+  User.findOneAndUpdate(
+    { secretToken: req.query.secretToken },
+    { secretToken: '' , active : true},
+    { new: true },
+    (err, result) => {
+      console.log(err)
+      if (err) 
+      res.status(500).json(err);
+      res.status(201).json("sucess");
+    }
+  );
+})
 router.patch('/users/public/followers', auth.required, (req, res) => {
-  console.log(req.body);
-  console.log(req.query);
+  //console.log(req.body);
+  //console.log(req.query);
   User.findOneAndUpdate(
     { username: req.query.username },
     { followers: req.body },
@@ -43,10 +56,22 @@ router.patch('/users/public/followers', auth.required, (req, res) => {
     }
   );
 });
-
+router.patch('/users/randomstring', auth.required, (req, res) => {
+  //console.log(req.body);
+  //console.log(req.query);
+  User.findOneAndUpdate(
+    { username: req.body.username },
+    { secretToken: randomstring.generate() },
+    { new: true },
+    (err, result) => {
+      if (err) res.status(500).json(err);
+      res.status(201).json(result);
+    }
+  );
+});
 router.patch('/users/public/ratings', auth.required, (req, res) => {
-  console.log(req.body);
-  console.log(req.query);
+  //console.log(req.body);
+  //console.log(req.query);
   User.findOneAndUpdate(
     { username: req.query.username },
     { ratings: req.body },
@@ -59,8 +84,8 @@ router.patch('/users/public/ratings', auth.required, (req, res) => {
 });
 
 router.patch('/users/public/tradepassword', auth.required, (req, res) => {
-  console.log(req.body);
-  console.log(req.query);
+  //console.log(req.body);
+  //console.log(req.query);
   var user = new User();
   user.setTradePassword(req.body.tradePrd);
   User.findOneAndUpdate(
@@ -141,7 +166,7 @@ router.put('/user', auth.required, auth.required, function(req, res, next) {
 });
 
 router.put('/users/base-currency', auth.required, function(req, res, next) {
-  console.log(req.payload);
+  //console.log(req.payload);
   User.findById(req.payload.id)
     .then(function(user) {
       if (!user) {
@@ -175,10 +200,11 @@ router.post('/users/login', function(req, res, next) {
     }
 
     if (user) {
+      console.log(user)
       user.deviceToken = req.body.deviceToken;
       console.log(user);
       user.token = user.generateJWT();
-      return res.json({ user: user.toAuthJSON() });
+      return res.json({ user: user.toAuthJSON(),active:user.active });
     } else {
       console.log(info);
       console.log('---');
@@ -192,6 +218,7 @@ router.post('/users', function(req, res, next) {
   console.log('--- Register ---- ');
   console.log(req);
   var user = new User();
+  user.active = false;
   user.verify = '0';
   user.ratings = [];
   user.orderCount = '0';
@@ -206,7 +233,7 @@ router.post('/users', function(req, res, next) {
     effective: false,
     secret: {}
   };
-
+  user.secretToken = randomstring.generate();
   user.deviceToken = req.body.deviceToken;
   user.username = req.body.user.username;
   user.email = req.body.user.email;
