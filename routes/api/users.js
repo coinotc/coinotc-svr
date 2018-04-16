@@ -182,7 +182,8 @@ router.post('/users/login', function(req, res, next) {
     } else {
       console.log(info);
       console.log('---');
-      return res.status(422).json(info);
+      res.status(500).send(info);
+      return;
     }
   })(req, res, next);
 });
