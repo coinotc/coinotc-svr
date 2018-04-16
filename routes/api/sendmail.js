@@ -12,7 +12,7 @@ var User = mongoose.model('User');
 
 const apiurl = '/';
 
-router.get(apiurl, auth.required, function(req,res) {
+router.get(apiurl, function(req,res) {
        console.log(req.query.email+"there is email")
        var secretToken = req.query.secretToken; 
 //       var mailgun = new Mailgun({apiKey: api_key, domain: domain});
@@ -39,7 +39,7 @@ router.get(apiurl, auth.required, function(req,res) {
 //       });
 
 
-nodemailer.createTestAccount((err, account) => {
+    nodemailer.createTestAccount((err, account) => {
     // create reusable transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
         service:'Zoho',
