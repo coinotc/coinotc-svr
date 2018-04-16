@@ -16,7 +16,7 @@ var http = require('http'),
 cookieParser = require('cookie-parser');
 compression = require('compression');
 config = require('./config');
-
+const {SHA256} = require("sha2");
 var isProduction = process.env.NODE_ENV === 'production';
 ``
 // Create global app object
@@ -140,4 +140,18 @@ app.use(function (err, req, res, next) {
 // finally, let's start our server...
 var server = app.listen(process.env.PORT || 3000, function () {
   console.log('Listening on port ' + server.address().port);
+  const nyanbuffer = SHA256(`
+  ░░░░░░░▄▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▄░░░░░░
+  ░░░░░░█░░▄▀▀▀▀▀▀▀▀▀▀▀▀▀▄░░█░░░░░
+  ░░░░░░█░█░▀░░░░░▀░░▀░░░░█░█░░░░░
+  ░░░░░░█░█░░░░░░░░▄▀▀▄░▀░█░█▄▀▀▄░
+  █▀▀█▄░█░█░░▀░░░░░█░░░▀▄▄█▄▀░░░█░
+  ▀▄▄░▀██░█▄░▀░░░▄▄▀░░░░░░░░░░░░▀▄
+  ░░▀█▄▄█░█░░░░▄░░█░░░▄█░░░▄░▄█░░█
+  ░░░░░▀█░▀▄▀░░░░░█░██░▄░░▄░░▄░███
+  ░░░░░▄█▄░░▀▀▀▀▀▀▀▀▄░░▀▀▀▀▀▀▀░▄▀░
+  ░░░░█░░▄█▀█▀▀█▀▀▀▀▀▀█▀▀█▀█▀▀█░░░
+  ░░░░▀▀▀▀░░▀▀▀░░░░░░░░▀▀▀░░▀▀░░░░
+  `);
+  console.log(nyanbuffer);
 });
