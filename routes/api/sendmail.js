@@ -42,10 +42,10 @@ router.get(apiurl, auth.required, function(req,res) {
 nodemailer.createTestAccount((err, account) => {
     // create reusable transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
-        service:'',
+        service:'Zoho',
         auth: {
-            user: '', 
-            pass: '' 
+            user: 'admin@coinotc.market', 
+            pass: 'Modus123' 
             // user: 'coinotc.market@gmail.com', 
             // pass: 'Modus123' 
         }
@@ -53,7 +53,7 @@ nodemailer.createTestAccount((err, account) => {
 
     // setup email data with unicode symbols
     let mailOptions = {
-        from: '"coinotc👻" <@>', // sender address
+        from: '"coinotc👻" <admin@coinotc.market>', // sender address
         to: req.query.email, // list of receivers
         subject: 'Hello ✔', // Subject line
         text: 'Hello world?', // plain text body
@@ -63,10 +63,8 @@ nodemailer.createTestAccount((err, account) => {
         <br/><br/>
         Please verify your email by typing the following token:
         <br/>
-        Token: <b>${secretToken}</b>
-        <br/>
         On the following page:
-        <a href="https://coinotc.market/api/users/verify?secretToken=${secretToken}">http://localhost:3000/users/verify</a>
+        <a href="https://coinotc.market/api/users/verify?secretToken=${secretToken}">click here</a>
         <br/><br/>
         Have a pleasant day.`  // html body
     };
