@@ -43,6 +43,7 @@
     "render": "^0.1.4",
     "request": "2.69.0",
     "request-promise": "^4.2.2",
+    "sha2": "^1.0.2",
     "speakeasy": "^2.0.0",
     "underscore": "1.8.3"
   },
