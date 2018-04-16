@@ -15,7 +15,7 @@ router.get('/', auth.required, (req, res) => {
       }
       res.status(200).json(result);
     }
-  );
+  ).sort({ price: -1 });
 });
 
 router.get('/getAbove', auth.required, (req, res) => {
@@ -114,7 +114,7 @@ router.put('/', auth.required, (req, res) => {
   }
 });
 
-router.delete('/',  auth.required, (req, res) => {
+router.delete('/', auth.required, (req, res) => {
   let deleteAlertId = req.query._id;
   Alert.findByIdAndRemove({ _id: deleteAlertId }, (err, result) => {
     if (err) {

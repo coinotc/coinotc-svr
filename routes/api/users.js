@@ -101,9 +101,9 @@ router.patch('/users/public/tradepassword', auth.required, (req, res) => {
   );
 });
 
-router.patch('./user/public/deviceToken', auth.required, (req, res) => {
-  //console.log(req.body);
-  //console.log(req.query);
+router.patch('/users/public/deviceToken', auth.required, (req, res) => {
+  console.log(req.body);
+  console.log(req.query);
   User.findOneAndUpdate(
     { username: req.query.username },
     { deviceToken: req.body.deviceToken },
@@ -208,7 +208,8 @@ router.post('/users/login', function(req, res, next) {
     } else {
       console.log(info);
       console.log('---');
-      return res.status(422).json(info);
+      res.status(500).send(info);
+      return;
     }
   })(req, res, next);
 });
@@ -245,8 +246,8 @@ router.post('/users', function(req, res, next) {
       return res.json({ user: user.toAuthJSON() });
     })
     .catch(error => {
-      console.log(error);
-      next;
+      res.status(500).send(error);
+      return;
     });
 });
 
