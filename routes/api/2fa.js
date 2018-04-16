@@ -22,7 +22,8 @@ router.get(api, auth.required,(req, res) => {
                         tfa: { effective: false, secret: secret }
                     }, (err, result) => {
                         if (!err) {
-                            res.send(secret.base32);
+                            res.status(201).json(secret.base32);
+                            //res.send(secret.base32);
                             //     QRCode.toDataURL(secret.otpauth_url, function (err, data_url) {
                             //         // res.send(data_url);
                             //         let img = `<img src='${data_url}' >`
