@@ -41,7 +41,9 @@ var UserSchema = new mongoose.Schema(
     tradePasswordHash:String,
     baseCurrency: String,
     deviceToken: String,
-    tfa: Object
+    tfa: Object,
+    secretToken :String,
+    active:Boolean
   },
   { timestamps: true }
 );
