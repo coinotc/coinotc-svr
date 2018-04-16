@@ -76,7 +76,7 @@ router.patch('/users/public/tradepassword', auth.required, (req, res) => {
   );
 });
 
-router.patch('./user/public/deviceToken', auth.required, (req, res) => {
+router.patch('./users/public/deviceToken', auth.required, (req, res) => {
   console.log(req.body);
   console.log(req.query);
   User.findOneAndUpdate(
