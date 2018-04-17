@@ -39,7 +39,7 @@ router.get('/users/verify' , (req, res) => {
       console.log(err)
       if (err) 
       res.status(500).json(err);
-      res.status(201).json("sucess");
+      res.status(201).json("success");
     }
   );
 })
