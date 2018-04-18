@@ -5,6 +5,7 @@ var User = mongoose.model('User');
 var auth = require('../auth');
 var crypto = require('crypto');
 var randomstring = require('randomstring');
+
 router.get('/user', auth.required, function(req, res, next) {
   User.findById(req.payload.id)
     .then(function(user) {
@@ -207,8 +208,8 @@ router.post('/users/login', function(req, res, next) {
       return res.json({ user: user.toAuthJSON(),active:user.active });
     } else {
       console.log(info);
-      console.log('---');
-      res.status(500).send(info);
+      console.log('---' + err);
+      res.status(500).json(info);
       return;
     }
   })(req, res, next);
