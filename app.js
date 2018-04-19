@@ -12,12 +12,10 @@ var http = require('http'),
   Mailgun = require('mailgun-js');
   multer = require('multer'),
   googleStorage = require('@google-cloud/storage');
-  moment = require('moment');
-  nodemailer = require('nodemailer');
-  randomstring = require('randomstring');
-cookieParser = require('cookie-parser');
-compression = require('compression');
-config = require('./config');
+  cookieParser = require('cookie-parser');
+  compression = require('compression');
+  config = require('./config');
+
 const {SHA256} = require("sha2");
 var isProduction = process.env.NODE_ENV === 'production';
 ``

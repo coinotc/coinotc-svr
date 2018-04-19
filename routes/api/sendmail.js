@@ -6,7 +6,6 @@ var auth = require('../auth');
 var mongoose = require('mongoose');
 var router = require('express').Router();
 var randomstring = require('randomstring');
-//var nodemailer = require('nodemailer');
 var User = mongoose.model('User');
 
 
