@@ -46,6 +46,8 @@ router.post(apiurl, function(req,res) {
           }
       });
 
+    });
+    module.exports = router; 
 
 //     nodemailer.createTestAccount((err, account) => {
 //     // create reusable transporter object using the default SMTP transport
@@ -93,6 +95,3 @@ router.post(apiurl, function(req,res) {
 // });
 
 
-
-  });
-module.exports = router; 
