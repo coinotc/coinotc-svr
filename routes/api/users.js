@@ -310,7 +310,6 @@ router.post('/users', function(req, res, next) {
 
 router.get('/users/public', auth.required, (req, res) => {
   let username = req.query.username;
-
   console.log(req.query);
   User.find(
     { username: `${username}` },
@@ -329,18 +328,29 @@ router.get('/users/public', auth.required, (req, res) => {
 /**
  * require auth ?
  */
-router.get('/users/tradepassword', auth.required, (req, res) => {
-  let username = req.query.username;
-  let currentUser = req.user;
-  console.log('>>> ' + currentUser.username);
-  console.log(req.query);
-  User.find({ username: `${username}` }, 'tradePrd', (err, result) => {
+router.get('/users/tradepassword' , auth.required , (req, res) => {
+  console.log
+  //let username = req.query.username;
+  let tradepassword = req.query.tradepassword;
+  //let currentUser = req.user;
+  //console.log('>>> ' + currentUser.username);
+  console.log(req.query.username);
+  User.findOne({ username:req.query.username},(err,result)=>{
     if (err) {
-      res.status(500).send(err);
-      return;
-    }
-    res.status(200).json(result);
-  });
+          res.status(500).send(err);
+          return;
+        }
+        ///User.validTradePassword(req.query.tradepassword)
+        
+        res.status(200).json(result.validTradePassword(req.query.tradepassword));
+  })
+  // User.find({ username: `${username}` }, 'tradePrd', (err, result) => {
+  //   if (err) {
+  //     res.status(500).send(err);
+  //     return;
+  //   }
+  //   res.status(200).json(result);
+  // });
 });
 
 router.get('/users/logout', auth.required, function(req, res, next) {
