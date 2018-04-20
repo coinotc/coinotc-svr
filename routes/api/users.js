@@ -35,7 +35,6 @@ router.patch('/users/public/follow', auth.required, (req, res) => {
   );
 });
 router.get('/users/verify' , (req, res) => {
-  console.log(req.query.secretToken+"111111111111111111111")
   User.findOneAndUpdate(
     { secretToken: req.query.secretToken },
     { secretToken: '' , active : true},
@@ -282,7 +281,7 @@ router.post('/users', function(req, res, next) {
         Please verify your email by typing the following token:
         <br/>
         On the following page:
-        <a href="http://localhost:3000/api/users/verify?secretToken=${user.secretToken}">click here</a>
+        <a href="http://api.coinotc.market/api/users/verify?secretToken=${user.secretToken}">click here</a>
         <br/><br/>
         Have a pleasant day.`
       }
