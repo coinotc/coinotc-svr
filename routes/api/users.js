@@ -5,6 +5,10 @@ var User = mongoose.model('User');
 var auth = require('../auth');
 var crypto = require('crypto');
 var randomstring = require('randomstring');
+var mailgun = require("mailgun-js");
+var sendEmail = require('../../config/sendEmail')
+
+
 router.get('/user', auth.required, function(req, res, next) {
   User.findById(req.payload.id)
     .then(function(user) {
@@ -207,16 +211,34 @@ router.post('/users/login', function(req, res, next) {
       return res.json({ user: user.toAuthJSON(),active:user.active });
     } else {
       console.log(info);
-      console.log('---');
-      res.status(500).send(info);
+      console.log('---' + err);
+      res.status(500).json(info);
       return;
     }
   })(req, res, next);
 });
 
+
+router.post('/users/checkUser', function(req, res, next) {
+  let username = req.body.user.username;
+  let email = req.body.user.email;
+  User.find({$or:[{ username: `${username}` }, { email: `${email}` }]},
+  (err, result) => {
+
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+      return;
+    }
+    res.status(200).json(result.length);
+  }
+    )
+})
+
+
 router.post('/users', function(req, res, next) {
   console.log('--- Register ---- ');
-  console.log(req);
+  //console.log(req);
   var user = new User();
   user.active = false;
   user.verify = '0';
@@ -229,22 +251,57 @@ router.post('/users', function(req, res, next) {
   user.tradePrd = '';
   user.following = [];
   user.followers = [];
+  user.block = false;
   user.tfa = {
     effective: false,
     secret: {}
   };
+  user.secretToken = randomstring.generate();
+  console.log(req.body.tradepassword)
   user.secretToken = randomstring.generate();
   user.deviceToken = req.body.deviceToken;
   user.username = req.body.user.username;
   user.email = req.body.user.email;
   console.log(req.body.user.password);
   user.setPassword(req.body.user.password);
-
+  user.setTradePassword(req.body.tradepassword);
   user
     .save()
-    .then(function() {
-      return res.json({ user: user.toAuthJSON() });
-    })
+    .then(
+      function() {
+        var mailgun = new Mailgun({apiKey: sendEmail.api_key, domain: sendEmail.domain});
+        var data = {
+        from: 'coinotc👻 <postmaster@mg.coinotc.market>',
+        to: user.email,
+        subject: 'Hello from coinOTC',
+        html: `Hi there,
+        <br/>
+        Thank you for registering!
+        <br/><br/>
+        Please verify your email by typing the following token:
+        <br/>
+        On the following page:
+        <a href="https://coinotc.market/api/users/verify?secretToken=${user.deviceToken}">click here</a>
+        <br/><br/>
+        Have a pleasant day.`
+      }
+
+      mailgun.messages().send(data, function (err, body) {
+
+          if (err) {
+              //res.render('error', { error : err});
+              console.log("got an error: ", err);
+                return res.status(500).send(err);
+          }
+          else {
+              //res.render('submitted', { email : req.params.mail });
+              console.log(body);
+              return res.status(201).json({ user: user.toAuthJSON(),body:body });
+          }
+      });
+      //return res.json({ user: user.toAuthJSON() });
+   }
+  )
     .catch(error => {
       res.status(500).send(error);
       return;
