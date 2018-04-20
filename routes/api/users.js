@@ -281,7 +281,7 @@ router.post('/users', function(req, res, next) {
         Please verify your email by typing the following token:
         <br/>
         On the following page:
-        <a href="https://api.coinotc.market/api/users/verify?secretToken=${user.secretToken}">click here</a>
+        <a href="https://coinotc.market/api/users/verify?secretToken=${user.secretToken}">click here</a>
         <br/><br/>
         Have a pleasant day.`
       }
