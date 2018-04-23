@@ -52,8 +52,10 @@ if (!isProduction) {
 
 if (isProduction) {
   mongoose.connect(process.env.MONGODB_URI);
+  mongoose.set('uri_decode_auth', true);
 } else {
   mongoose.connect(config.mongodb_url);
+  mongoose.set('uri_decode_auth', true);
   mongoose.set('debug', true);
 }
 
