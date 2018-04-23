@@ -353,13 +353,17 @@ router.post('/users', function(req, res, next) {
             regConfirmUrl: regUrl
           })
         .then((html)=>{
+          console.log("" + html.subject);
+          console.log("" + html.html);
+          console.log("" + process.env.COINOTC_FROM_EMAIL);
+          console.log("" + user.email);
           var data = {
             from: process.env.COINOTC_FROM_EMAIL,
             to: user.email,
             subject: html.subject,
             html: html.html
           }
-  
+          console.log(data);
           mailgun.messages().send(data, function (err, body) {
               if (err) {
                   console.log("got an error: ", err);
