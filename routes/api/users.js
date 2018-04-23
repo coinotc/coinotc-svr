@@ -39,7 +39,7 @@ router.patch('/users/public/follow', auth.required, (req, res) => {
 router.get('/users/verify' , (req, res) => {
   console.log('verify email after registration');
   if(req.query.secretToken == null){
-    res.status(500).json({error: 'error verifying user.'});
+    return res.status(500).json({error: 'error verifying user.'});
   }
   User.findOneAndUpdate(
     { secretToken: req.query.secretToken },
@@ -47,9 +47,10 @@ router.get('/users/verify' , (req, res) => {
     { new: true },
     (err, result) => {
       console.log(err)
-      if (err) 
-      res.status(500).json(err);
-      res.status(201).json({"status":"success"});
+      if (err){
+        return res.status(500).json(err);
+      }
+      return res.status(201).json({"status":"success"});
     }
   );
 })
