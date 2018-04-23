@@ -35,7 +35,12 @@ router.patch('/users/public/follow', auth.required, (req, res) => {
     }
   );
 });
+
 router.get('/users/verify' , (req, res) => {
+  console.log('verify email after registration');
+  if(req.query.secretToken == null){
+    res.status(500).json({error: 'error verifying user.'});
+  }
   User.findOneAndUpdate(
     { secretToken: req.query.secretToken },
     { secretToken: '' , active : true},
