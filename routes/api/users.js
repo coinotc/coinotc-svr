@@ -317,6 +317,62 @@ router.post('/users/change-password', auth.required, function(req, res, next) {
   });
 })
 
+router.post('/users/forgetPassword', function(req, res, next) {
+  //console.log(Math.floor(Math.random()*1000000))
+  //let code = Math.floor(Math.random()*1000000)
+  User.findOne({email:req.body.email.email}, (err, result) => {
+    if (err) {
+        res.status(500).send(err);
+        return; 
+    }
+    if(result == null)
+    res.status(200).json(result);
+    else{
+      User.findOneAndUpdate(
+        {email:req.body.email.email},
+        {code: Math.floor(Math.random()*1000000)},
+        {new:true}).
+        then(
+      function(user) {
+        console.log(user)
+        var mailgun = new Mailgun({apiKey: sendEmail.api_key, domain: sendEmail.domain});
+        //console.log(result)
+        console.log(user.code)
+        email
+          .renderAll('forgetpassword', {
+            name: user.username,
+            code: user.code
+          })
+        .then((html)=>{
+          var data = {
+            from: process.env.COINOTC_FROM_EMAIL,
+            to: user.email,
+            subject: html.subject,
+            html: html.html
+          }
+          mailgun.messages().send(data, function (err, body) {
+              if (err) {
+                  console.log("got an error: ", err);
+                    return res.status(500).send(err);
+              }
+              else {
+                  console.log(body);
+                  console.log(err)
+                  return res.status(201).json({ user: user.toAuthJSON(),body:body });
+              }
+          });
+        })
+        .catch(console.error);
+   }
+        )
+        .catch(error => {
+          res.status(500).send(error);
+          return;
+        });
+    }
+});
+})
+
 
 router.post('/users', function(req, res, next) {
   console.log('--- Register ---- ');
