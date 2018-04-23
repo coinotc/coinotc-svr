@@ -7,7 +7,8 @@ var crypto = require('crypto');
 var randomstring = require('randomstring');
 var mailgun = require("mailgun-js");
 var sendEmail = require('../../config/sendEmail')
-
+const Email = require('email-templates');
+const email = new Email();
 
 router.get('/user', auth.required, function(req, res, next) {
   User.findById(req.payload.id)
@@ -43,7 +44,7 @@ router.get('/users/verify' , (req, res) => {
       console.log(err)
       if (err) 
       res.status(500).json(err);
-      res.status(201).json("success");
+      res.status(201).json({"status":"success"});
     }
   );
 })
@@ -219,6 +220,39 @@ router.post('/users/login', function(req, res, next) {
 });
 
 
+function handleHashPassword(err, result, res, currentPassword){
+  console.log(result.hash);
+  var fromChangePasswordhash = crypto
+    .pbkdf2Sync(currentPassword, result.salt, 10000, 512, 'sha512')
+    .toString('hex');
+  
+  console.log(result.hash === fromChangePasswordhash);
+  if(result.hash === fromChangePasswordhash){
+    console.log("Password match !");
+    return res.status(200).json(1);
+  }else{
+    console.log("doesnt match !");
+    return res.status(200).json(0);
+  }
+}
+
+router.post('/users/checkChangePasswordUser', auth.required, function(req, res, next) {
+  let email = req.body.user.email;
+  let currentPassword = req.body.currentPassword;
+  console.log(email);
+  console.log(currentPassword);
+  User.findOne({ email: email }, 'hash salt',
+  (err, user) => {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+      return;
+    }
+    handleHashPassword(err, user, res, currentPassword);
+    
+  });
+})
+
 router.post('/users/checkUser', function(req, res, next) {
   let username = req.body.user.username;
   let email = req.body.user.email;
@@ -233,6 +267,104 @@ router.post('/users/checkUser', function(req, res, next) {
     res.status(200).json(result.length);
   }
     )
+})
+
+function handleChangePassword(err, result, res, currentPassword, newPassword){
+  console.log(result.hash);
+  var fromChangePasswordhash = crypto
+    .pbkdf2Sync(currentPassword, result.salt, 10000, 512, 'sha512')
+    .toString('hex');
+  let newPasswordUser = new User();
+  newPasswordUser.setPassword(newPassword);
+  console.log(result.hash === fromChangePasswordhash);
+  if(result.hash === fromChangePasswordhash){
+    console.log("Password match !");
+    console.log("NEW PASSWORD > " + newPasswordUser.hash);
+    console.log("NEW SALT > " + newPasswordUser.salt);
+    result.hash = newPasswordUser.hash;
+    result.salt = newPasswordUser.salt;
+    return result.save().then(function() {
+      return res.json({ user: result.toAuthJSON() });
+    });
+  }else{
+    console.log("doesnt match !");
+    console.log(err);
+    res.status(500).send(err);
+    return;
+  }
+}
+
+router.post('/users/change-password', auth.required, function(req, res, next) {
+  let email = req.body.user.email;
+  let currentPassword = req.body.passwordData.oldPassword;
+  let newPassword = req.body.passwordData.newPassword;
+
+  User.findOne({ email: email }, 'hash salt',
+  (err, user) => {
+
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+      return;
+    }
+    handleChangePassword(err, user, res, currentPassword, newPassword);
+  });
+})
+
+router.post('/users/forgetPassword', function(req, res, next) {
+  //console.log(Math.floor(Math.random()*1000000))
+  //let code = Math.floor(Math.random()*1000000)
+  User.findOne({email:req.body.email.email}, (err, result) => {
+    if (err) {
+        res.status(500).send(err);
+        return; 
+    }
+    if(result == null)
+    res.status(200).json(result);
+    else{
+      User.findOneAndUpdate(
+        {email:req.body.email.email},
+        {code: Math.floor(Math.random()*1000000)},
+        {new:true}).
+        then(
+      function(user) {
+        console.log(user)
+        var mailgun = new Mailgun({apiKey: sendEmail.api_key, domain: sendEmail.domain});
+        //console.log(result)
+        console.log(user.code)
+        email
+          .renderAll('forgetpassword', {
+            name: user.username,
+            code: user.code
+          })
+        .then((html)=>{
+          var data = {
+            from: process.env.COINOTC_FROM_EMAIL,
+            to: user.email,
+            subject: html.subject,
+            html: html.html
+          }
+          mailgun.messages().send(data, function (err, body) {
+              if (err) {
+                  console.log("got an error: ", err);
+                    return res.status(500).send(err);
+              }
+              else {
+                  console.log(body);
+                  console.log(err)
+                  return res.status(201).json({ user: user.toAuthJSON(),body:body });
+              }
+          });
+        })
+        .catch(console.error);
+   }
+        )
+        .catch(error => {
+          res.status(500).send(error);
+          return;
+        });
+    }
+});
 })
 
 
@@ -270,36 +402,32 @@ router.post('/users', function(req, res, next) {
     .then(
       function() {
         var mailgun = new Mailgun({apiKey: sendEmail.api_key, domain: sendEmail.domain});
-        var data = {
-        from: 'coinotc👻 <postmaster@mg.coinotc.market>',
-        to: user.email,
-        subject: 'Hello from coinOTC',
-        html: `Hi there,
-        <br/>
-        Thank you for registering!
-        <br/><br/>
-        Please verify your email by typing the following token:
-        <br/>
-        On the following page:
-        <a href="https://coinotc.market/api/users/verify?secretToken=${user.secretToken}">click here</a>
-        <br/><br/>
-        Have a pleasant day.`
-      }
-
-      mailgun.messages().send(data, function (err, body) {
-
-          if (err) {
-              //res.render('error', { error : err});
-              console.log("got an error: ", err);
-                return res.status(500).send(err);
+        var regUrl = `${process.env.API_DOMAIN_URL}/users/verify?secretToken=${user.secretToken}`
+        email
+          .renderAll('registration', {
+            name: user.username,
+            regConfirmUrl: regUrl
+          })
+        .then((html)=>{
+          var data = {
+            from: process.env.COINOTC_FROM_EMAIL,
+            to: user.email,
+            subject: html.subject,
+            html: html.html
           }
-          else {
-              //res.render('submitted', { email : req.params.mail });
-              console.log(body);
-              return res.status(201).json({ user: user.toAuthJSON(),body:body });
-          }
-      });
-      //return res.json({ user: user.toAuthJSON() });
+  
+          mailgun.messages().send(data, function (err, body) {
+              if (err) {
+                  console.log("got an error: ", err);
+                    return res.status(500).send(err);
+              }
+              else {
+                  console.log(body);
+                  return res.status(201).json({ user: user.toAuthJSON(),body:body });
+              }
+          });
+        })
+        .catch(console.error);
    }
   )
     .catch(error => {

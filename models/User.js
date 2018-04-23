@@ -44,7 +44,8 @@ var UserSchema = new mongoose.Schema(
     tfa: Object,
     secretToken :String,
     active:Boolean,
-    block :Boolean
+    block :Boolean,
+    code:Number
   },
   { timestamps: true }
 );
@@ -71,12 +72,14 @@ UserSchema.methods.setTradePassword = function(tradePassword) {
     .pbkdf2Sync(tradePassword, this.tradePasswordSalt, 10000, 512, 'sha512')
     .toString('hex');
 };
+
 UserSchema.methods.validTradePassword = function(tradePassword) {
   var tradePasswordHash = crypto
     .pbkdf2Sync(tradePassword, this.tradePasswordSalt, 10000, 512, 'sha512')
     .toString('hex');
   return this.tradePasswordHash === tradePasswordHash;
 };
+
 UserSchema.methods.generateJWT = function() {
   var today = new Date();
   var exp = new Date(today);
