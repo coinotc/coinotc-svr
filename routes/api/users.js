@@ -35,16 +35,22 @@ router.patch('/users/public/follow', auth.required, (req, res) => {
     }
   );
 });
+
 router.get('/users/verify' , (req, res) => {
+  console.log('verify email after registration');
+  if(req.query.secretToken == null){
+    return res.status(500).json({error: 'error verifying user.'});
+  }
   User.findOneAndUpdate(
     { secretToken: req.query.secretToken },
     { secretToken: '' , active : true},
     { new: true },
     (err, result) => {
       console.log(err)
-      if (err) 
-      res.status(500).json(err);
-      res.status(201).json({"status":"success"});
+      if (err){
+        return res.status(500).json(err);
+      }
+      return res.status(201).json({"status":"success"});
     }
   );
 })
@@ -353,13 +359,17 @@ router.post('/users', function(req, res, next) {
             regConfirmUrl: regUrl
           })
         .then((html)=>{
+          console.log("" + html.subject);
+          console.log("" + html.html);
+          console.log("" + process.env.COINOTC_FROM_EMAIL);
+          console.log("" + user.email);
           var data = {
             from: process.env.COINOTC_FROM_EMAIL,
             to: user.email,
             subject: html.subject,
             html: html.html
           }
-  
+          console.log(data);
           mailgun.messages().send(data, function (err, body) {
               if (err) {
                   console.log("got an error: ", err);
