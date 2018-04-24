@@ -12,11 +12,11 @@ var http = require('http'),
   Mailgun = require('mailgun-js');
   multer = require('multer'),
   googleStorage = require('@google-cloud/storage');
-  moment = require('moment')
-cookieParser = require('cookie-parser');
-compression = require('compression');
-config = require('./config');
+  cookieParser = require('cookie-parser');
+  compression = require('compression');
+  config = require('./config');
 
+const {SHA256} = require("sha2");
 var isProduction = process.env.NODE_ENV === 'production';
 ``
 // Create global app object
@@ -24,9 +24,9 @@ var app = express();
 
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(bodyParser.json({ limit: '50mb' }));
-//app.use(cors(corsOptions));
+
 app.use(cors());
-// Normal express config defaults
+
 app.use(require('morgan')('dev'));
 
 app.use(cookieParser());
@@ -34,8 +34,6 @@ app.use(cookieParser());
 app.use(compression());
 app.use(require('method-override')());
 app.use(express.static(__dirname + '/public'));
-// app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-// app.use(bodyParser.json({limit: '50mb'}));
 
 app.use(
   session({
@@ -52,10 +50,20 @@ if (!isProduction) {
   app.use(errorhandler());
 }
 
+const options = {
+  useMongoClient: true,
+  autoIndex: false, // Don't build indexes
+  reconnectTries: Number.MAX_VALUE, // Never stop trying to reconnect
+  reconnectInterval: 500, // Reconnect every 500ms
+  poolSize: 10, // Maintain up to 10 socket connections
+  // If not connected, return errors immediately rather than waiting for reconnect
+  bufferMaxEntries: 0
+};
+
 if (isProduction) {
-  mongoose.connect(process.env.MONGODB_URI);
+  mongoose.connect(process.env.MONGODB_URI, options);
 } else {
-  mongoose.connect(config.mongodb_url);
+  mongoose.connect(config.mongodb_url, options);
   mongoose.set('debug', true);
 }
 
@@ -140,4 +148,18 @@ app.use(function (err, req, res, next) {
 // finally, let's start our server...
 var server = app.listen(process.env.PORT || 3000, function () {
   console.log('Listening on port ' + server.address().port);
+  const nyanbuffer = SHA256(`
+  ░░░░░░░▄▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▄░░░░░░
+  ░░░░░░█░░▄▀▀▀▀▀▀▀▀▀▀▀▀▀▄░░█░░░░░
+  ░░░░░░█░█░▀░░░░░▀░░▀░░░░█░█░░░░░
+  ░░░░░░█░█░░░░░░░░▄▀▀▄░▀░█░█▄▀▀▄░
+  █▀▀█▄░█░█░░▀░░░░░█░░░▀▄▄█▄▀░░░█░
+  ▀▄▄░▀██░█▄░▀░░░▄▄▀░░░░░░░░░░░░▀▄
+  ░░▀█▄▄█░█░░░░▄░░█░░░▄█░░░▄░▄█░░█
+  ░░░░░▀█░▀▄▀░░░░░█░██░▄░░▄░░▄░███
+  ░░░░░▄█▄░░▀▀▀▀▀▀▀▀▄░░▀▀▀▀▀▀▀░▄▀░
+  ░░░░█░░▄█▀█▀▀█▀▀▀▀▀▀█▀▀█▀█▀▀█░░░
+  ░░░░▀▀▀▀░░▀▀▀░░░░░░░░▀▀▀░░▀▀░░░░
+  `);
+  console.log(nyanbuffer);
 });

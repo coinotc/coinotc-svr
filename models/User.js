@@ -25,7 +25,7 @@ var UserSchema = new mongoose.Schema(
     bio: String,
     image: String,
     orderCount: Number,
-    goodCount: Number,
+    ratings: Array,
     volume: String,
     logoutDateTime: Date,
     idCard: String,
@@ -34,14 +34,17 @@ var UserSchema = new mongoose.Schema(
     phone: Number,
     tradePrd: Number,
     following: Array,
-    followers:Array,
+    followers: Array,
     hash: String,
     salt: String,
     tradePasswordSalt:String,
     tradePasswordHash:String,
     baseCurrency: String,
     deviceToken: String,
-    tfa: Object
+    tfa: Object,
+    secretToken :String,
+    active:Boolean,
+    block :Boolean
   },
   { timestamps: true }
 );
@@ -68,6 +71,14 @@ UserSchema.methods.setTradePassword = function(tradePassword) {
     .pbkdf2Sync(tradePassword, this.tradePasswordSalt, 10000, 512, 'sha512')
     .toString('hex');
 };
+
+UserSchema.methods.validTradePassword = function(tradePassword) {
+  var tradePasswordHash = crypto
+    .pbkdf2Sync(tradePassword, this.tradePasswordSalt, 10000, 512, 'sha512')
+    .toString('hex');
+  return this.tradePasswordHash === tradePasswordHash;
+};
+
 UserSchema.methods.generateJWT = function() {
   var today = new Date();
   var exp = new Date(today);
@@ -91,9 +102,9 @@ UserSchema.methods.toAuthJSON = function() {
     bio: this.bio,
     image: this.image,
     orderCount: this.orderCount,
-    goodCount: this.goodCount,
+    ratings: this.ratings,
     following: this.following,
-    followers:this.followers,
+    followers: this.followers,
     nativeCurrency: this.baseCurrency
   };
 };

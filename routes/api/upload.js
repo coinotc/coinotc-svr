@@ -6,12 +6,11 @@ var multer = require('multer');
 var auth = require('../auth');
 
 const  gstorage = googleStorage({
-    projectId: "coinotc-kitchensink-banner",
-    keyFileName : process.env.FIREBASE_KEYFILENAME
-    //keyFileName: 'D:/data3/coinotc-svr/coinotc-kitchensink-banner-firebase-adminsdk-ac9j9-1c818a730b.json'
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    keyFileName : process.env.GOOGLE_APPLICATION_CREDENTIALS
 });
 
-const bucket = gstorage.bucket('coinotc-kitchensink-banner.appspot.com');
+const bucket = gstorage.bucket(process.env.FIREBASE_BUCKET);
 
 const googleMulter = multer({
     storage: multer.memoryStorage(),
