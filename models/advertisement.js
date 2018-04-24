@@ -9,10 +9,10 @@ module.exports = mongoose.model('advertisement', {
     price: Number,
     min_price: Number,
     max_price: Number,
-    fiat: String,
     payment: String,
     limit: Number,
     message: String,
     deleteStatus : Boolean,
+    date: Date,
     type: Number // 0 is sell ,1 is buy
 });
