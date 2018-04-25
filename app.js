@@ -73,7 +73,7 @@ require('./config/passport');
 require('./models/complain');
 require('./models/advertisement');
 require('./models/alert');
-//require('./models/upload')
+require('./models/banner-control')
 require('./models/BackgroundUser');
 
 app.use(require('./routes'));

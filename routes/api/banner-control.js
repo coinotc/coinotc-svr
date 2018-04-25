@@ -4,6 +4,7 @@ var cors = require('cors')
 var mongoose = require('mongoose');
 var multer = require('multer');
 var auth = require('../auth');
+var BannerControl = mongoose.model('banner');
 
 const  gstorage = googleStorage({
     projectId: process.env.FIREBASE_PROJECT_ID,
@@ -28,17 +29,20 @@ var storage = multer.diskStorage({
   })
 var diskUpload = multer({ storage: storage })
 
-router.post('/upload-firestore', auth.required, googleMulter.single('coverThumbnail'), (req, res)=>{
+router.post('/upload-firestore',googleMulter.single('coverThumbnail'), (req, res)=>{
     console.log('upload here ...');
     console.log(req.file);
-    console.log(req)
     uploadToFireBaseStorage(req.file).then((result=>{
         console.log("firebase stored -> " + result);
-        // saveOneGallery([req.file.originalname, result, req.body.remarks]).then((result)=>{
-        //     console.log(result);
-        // }).catch((error)=>{
-        //     console.log("error ->" + error);
-        // })
+        let bannerControl = new BannerControl();
+        bannerControl.imgURL = result;
+        let error = bannerControl.validateSync();
+        if(!error){
+            bannerControl.save(function (err, result) {
+            })
+        }else {
+            res.status(500).send(error);
+        }
     })).catch((error)=>{
         console.log(error);
     })
@@ -53,7 +57,7 @@ const uploadToFireBaseStorage = function(file) {
         }
 
         let newfileName = `${Date.now()}_${file.originalname}`;
-        let fileupload = bucket.file(newfileName);
+        let fileupload = bucket.file(`banner/${newfileName}`);
         const blobStream = fileupload.createWriteStream({
             metadata: {
                 contentType: file.mimetype
@@ -65,9 +69,8 @@ const uploadToFireBaseStorage = function(file) {
         });
 
         blobStream.on('finish', ()=>{
-            console.log(fileupload.name);
-            //https://firebasestorage.googleapis.com/v0/b/coinotc-kitchensink-banner.appspot.com/o/banner-control%2F2.jpg?alt=media&token=d34df744-5988-44f6-b3fc-982a6522fb70
-            const url = `https://firebasestorage.googleapis.com/v0/b/coinotc-kitchensink-banner.appspot.com/o/${fileupload.name}?alt=media`;
+            const name = fileupload.name.replace(/\//,'%2F')
+            const url = `https://firebasestorage.googleapis.com/v0/b/coinotc-mobile-dev.appspot.com/o/${name}?alt=media`;
             file.fileURL = url;
             resolve(url)
         });
@@ -75,5 +78,16 @@ const uploadToFireBaseStorage = function(file) {
         blobStream.end(file.buffer);
     });
 }
+const apiurl = '/';
+router.get(apiurl , (req,res)=>{
+    var query ={};
+    BannerControl.find( query, (err, result) => {
+        if (err) {
+            res.status(500).send(err);
+            return; 
+        }
+        res.status(200).json(result);
+    });
+})
 
 module.exports = router;

@@ -15,7 +15,7 @@ router.post(apiurl+"sendComplain", auth.required, (req, res) => {
     newComplain.content = complain.content;
     newComplain.status = complain.status;
     newComplain.title = complain.title;
-    newComplain.data = new Date(); 
+    newComplain.createDate = new Date(); 
     let error = newComplain.validateSync();
     if (!error) {
         Complain.findOne({username:complain.username,orderId:complain.orderId}, (err, result) => {
@@ -36,7 +36,7 @@ router.post(apiurl+"sendComplain", auth.required, (req, res) => {
         }
         })
     } else {
-        console.log(error);
+        //console.log(error);
         res.status(500).send(error);
     }
 });
