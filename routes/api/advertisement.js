@@ -25,7 +25,6 @@ router.post(advertisementapi, auth.required, (req, res) => {
     let send = new advertisement();
     send.visible = get.visible
     send.owner = get.owner
-    send.ownerid = mongoose.Types.ObjectId()
     send.crypto = get.crypto
     send.country = get.country
     send.fiat = get.fiat
@@ -38,6 +37,7 @@ router.post(advertisementapi, auth.required, (req, res) => {
     send.message = get.message
     send.type = get.type
     send.deleteStatus = false;
+    send.date = Date.now();
     let error = send.validateSync();
     if (!error) {
         send.save(function (err, result) {
