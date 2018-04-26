@@ -95,12 +95,10 @@ router.patch('/users/public/ratings', auth.required, (req, res) => {
 });
 
 router.patch('/users/public/tradepassword', auth.required, (req, res) => {
-  //console.log(req.body);
-  //console.log(req.query);
   var user = new User();
   user.setTradePassword(req.body.tradePrd);
   User.findOneAndUpdate(
-    { username: req.query.username },
+    { username: req.body.username },
     {
       tradePasswordSalt: user.tradePasswordSalt,
       tradePasswordHash: user.tradePasswordHash
@@ -419,6 +417,81 @@ router.post('/users/forgetVerifySixPin', function (req, res, nest) {
       res.status(500).send(error);
       return;
     });
+})
+router.post('/users/confirmTradePasswordCode', function (req, res, nest) {
+  User.findOne({ email: req.body.email }).then(
+    function (user) {
+      if(req.body.code === user.code){
+        User.findOneAndUpdate(
+          { email: req.body.email },
+          { code: null },
+          { new: true },
+          (err, result) => {
+            if (err) res.status(500).json(err);
+            if (user.code === req.body.code)
+              res.status(201).json("success");
+            else
+              return res.status(201).json(err);
+          }
+        );
+      }else
+      res.status(201).json("Varification code is not correct")
+    }
+  )
+    .catch(error => {
+      console.log(error)
+      res.status(500).send(error);
+      return;
+    });
+})
+
+router.post('/users/forgetTradePassword', function (req, res, next) {
+  const code = Number(Math.floor(Math.random() * 9 + 1).toString() +
+    Math.floor(Math.random() * 10).toString() +
+    Math.floor(Math.random() * 10).toString() +
+    Math.floor(Math.random() * 10).toString() +
+    Math.floor(Math.random() * 10).toString() +
+    Math.floor(Math.random() * 10).toString());
+    User.findOneAndUpdate(
+      { email: req.body.email },
+      { code: code },
+      { new: true }).
+      then(
+        function (user) {
+          console.log(user)
+          var mailgun = new Mailgun({ apiKey: sendEmail.api_key, domain: sendEmail.domain });
+          console.log(user.code)
+          email
+            .renderAll('forgettradepassword', {
+              name: user.username,
+              code: user.code
+            })
+            .then((html) => {
+              var data = {
+                from: process.env.COINOTC_FROM_EMAIL,
+                to: user.email,
+                subject: html.subject,
+                html: html.html
+              }
+              mailgun.messages().send(data, function (err, body) {
+                if (err) {
+                  console.log("got an error: ", err);
+                  return res.status(500).send(err);
+                }
+                else {
+                  console.log(body);
+                  console.log(err)
+                  return res.status(201).json({ user: user.toAuthJSON(), body: body });
+                }
+              });
+            })
+            .catch(console.error);
+        }
+      )
+      .catch(error => {
+        res.status(500).send(error);
+        return;
+      });
 })
 
 router.post('/users', function (req, res, next) {
