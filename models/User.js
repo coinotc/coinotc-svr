@@ -44,7 +44,8 @@ var UserSchema = new mongoose.Schema(
     tfa: Object,
     secretToken :String,
     active:Boolean,
-    block :Boolean
+    block :Boolean,
+    code:Number
   },
   { timestamps: true }
 );
