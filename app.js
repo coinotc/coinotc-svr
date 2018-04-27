@@ -51,7 +51,7 @@ if (isProduction) {
   mongoose.connect(config.mongodb_url, options);
   mongoose.set('debug', true);
 }
-
+console.log(process.env.SESSION_SECRET);
 var MS = require('express-mongoose-store')(session, mongoose);
 app.use(
   session({ 
