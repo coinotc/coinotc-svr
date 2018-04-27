@@ -6,36 +6,41 @@ var Complain = mongoose.model('complain');
 
 const apiurl = '/';
 
-router.post(apiurl, auth.required,(req, res) => {
+router.post(apiurl+"sendComplain", auth.required, (req, res) => {
     let complain = req.body;
     let newComplain = new Complain();
-    newComplain.complainant = complain.complainant;
+    newComplain.username = complain.username;
     newComplain.orderId = complain.orderId;
-    newComplain.pleader = complain.pleader;
     newComplain.type = complain.type;
     newComplain.content = complain.content;
-    newComplain.status = 1;
-    newComplain.support = "";
-    newComplain.roomkey = "";
-    newComplain.fiat = complain.fiat;
-    newComplain.role = complain.role;
-    newComplain.crypto = complain.crypto;
-    newComplain.country = complain.country;
-    ts = moment.now();
-    newComplain.date = new Date();
-    newComplain.complainId = newComplain.country+"-"+newComplain.crypto+"-"+newComplain.role+"-"+ts;
-    console.log(newComplain.complainId)
-    console.log(newComplain);
+    newComplain.status = complain.status;
+    newComplain.title = complain.title;
+    newComplain.createDate = new Date(); 
     let error = newComplain.validateSync();
     if (!error) {
-        newComplain.save(function (err, result) {
-            res.status(201).json(result);
-        });
+        Complain.findOne({username:complain.username,orderId:complain.orderId}, (err, result) => {
+            if (err) {
+                res.status(500).send(err);
+                return; 
+            }
+            console.log(result)
+            if(result != null){
+                res.status(200).send("null")
+                return;
+            }
+            //res.status(200).json(result);
+            else{
+            newComplain.save(function (err, result) {
+                res.status(201).json(result);
+            })
+        }
+        })
     } else {
-        console.log(error);
+        //console.log(error);
         res.status(500).send(error);
     }
 });
+
 router.get(apiurl, auth.required, (req,res)=>{
     var query ={};
     let username = req.query.keyword;

@@ -8,7 +8,7 @@ router.use('/advertisement', require('./advertisement'));
 router.use('/wallet', require('./wallets'));
 router.use('/base-currency', require('./users'));
 router.use('/alert', require('./alert'));
-router.use('/upload', require('./upload'));
+router.use('/banner', require('./banner-control'));
 router.use('/2fa', require('./2fa'));
 router.use('/background', require('./BackgroundUser'));
 
