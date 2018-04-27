@@ -47,7 +47,7 @@ var UserSchema = new mongoose.Schema(
     firstNamr:String,
     lastName:String,
     gender:String,
-    contry:String
+    country:String
   },
   { timestamps: true }
 );
