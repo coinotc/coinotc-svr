@@ -16,7 +16,7 @@ router.get(`${advertisementapi}getprice`, auth.required, (req, res) => {
 })
 
 router.get(`${advertisementapi}getvisible/:id`, auth.required, (req, res) => {
-    advertisement.findById(req.params.id, (err,result) => {
+    advertisement.findById(req.params.id, (err, result) => {
         res.send(result.visible);
     })
 })
@@ -53,13 +53,23 @@ router.get(advertisementapi, auth.required, (req, res) => {
     let type = req.query.type;
     let country = req.query.country;
     let fiat = req.query.fiat;
-    advertisement.find({ crypto: crypto, type: type, country: country, fiat: fiat, visible: true }, null, { sort: { price: -1 } }, (err, result) => {
-        if (err) {
-            res.status(500).send(err);
-            return;
-        }
-        res.status(200).json(result);
-    });
+    if (country == "global") {
+        advertisement.find({ crypto: crypto, type: type, fiat: fiat, visible: true }, null, { sort: { price: -1 } }, (err, result) => {
+            if (err) {
+                res.status(500).send(err);
+                return;
+            }
+            res.status(200).json(result);
+        });
+    } else {
+        advertisement.find({ crypto: crypto, type: type, country: country, fiat: fiat, visible: true }, null, { sort: { price: -1 } }, (err, result) => {
+            if (err) {
+                res.status(500).send(err);
+                return;
+            }
+            res.status(200).json(result);
+        });
+    }
 })
 
 router.get(advertisementapi, auth.required, (req, res) => {

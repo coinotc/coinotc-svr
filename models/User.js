@@ -44,10 +44,10 @@ var UserSchema = new mongoose.Schema(
     code:Number,
     verifyStatus:Number,
     passport:String,
-    firstNamr:String,
+    firstName:String,
     lastName:String,
     gender:String,
-    contry:String
+    country:String
   },
   { timestamps: true }
 );

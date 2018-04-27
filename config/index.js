@@ -1,5 +1,4 @@
 module.exports = {
-  secret: process.env.NODE_ENV === 'production' ? process.env.SECRET : 'secret',
-  //mongodb_url: 'mongodb://root:123456@ds239217.mlab.com:39217/coinotc'
+  secret: process.env.NODE_ENV === 'production' ? process.env.SESSION_SECRET : 'asdsfdsfdR##@$#@#$@dr32423',
   mongodb_url: 'mongodb://localhost/coinotc'
 };
