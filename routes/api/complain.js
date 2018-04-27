@@ -48,7 +48,7 @@ router.get(apiurl, auth.required, (req,res)=>{
         username = "";
     }
     if (username !== '') {
-        query = { complainant: `${username}`}
+        query = { username: `${username}`}
     }
     Complain.find( query, (err, result) => {
         if (err) {

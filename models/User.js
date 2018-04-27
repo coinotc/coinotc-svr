@@ -28,11 +28,7 @@ var UserSchema = new mongoose.Schema(
     ratings: Array,
     volume: String,
     logoutDateTime: Date,
-    idCard: String,
-    verifyName: String,
-    verify: Number,
     phone: Number,
-    tradePrd: Number,
     following: Array,
     followers: Array,
     hash: String,
@@ -45,7 +41,13 @@ var UserSchema = new mongoose.Schema(
     secretToken :String,
     active:Boolean,
     block :Boolean,
-    code:Number
+    code:Number,
+    verifyStatus:Number,
+    passport:String,
+    firstNamr:String,
+    lastName:String,
+    gender:String,
+    contry:String
   },
   { timestamps: true }
 );
