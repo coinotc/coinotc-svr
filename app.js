@@ -3,8 +3,8 @@ var http = require('http'),
   path = require('path'),
   methods = require('methods'),
   express = require('express'),
-  bodyParser = require('body-parser'),
   session = require('express-session'),
+  bodyParser = require('body-parser'),
   cors = require('cors'),
   passport = require('passport'),
   errorhandler = require('errorhandler'),
@@ -35,21 +35,6 @@ app.use(compression());
 app.use(require('method-override')());
 app.use(express.static(__dirname + '/public'));
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    cookie: { maxAge: 60000 },
-    resave: false,
-    saveUninitialized: false
-  })
-);
-app.use(passport.initialize());
-app.use(passport.session());
-
-if (!isProduction) {
-  app.use(errorhandler());
-}
-
 const options = {
   useMongoClient: true,
   autoIndex: false, // Don't build indexes
@@ -65,6 +50,23 @@ if (isProduction) {
 } else {
   mongoose.connect(config.mongodb_url, options);
   mongoose.set('debug', true);
+}
+
+var MS = require('express-mongoose-store')(session, mongoose);
+app.use(
+  session({ 
+    secret: process.env.SESSION_SECRET, 
+    store: new MS({ttl: 600000}),
+    resave: false,
+    saveUninitialized: false
+  })); 
+//10 minute sessions
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+if (!isProduction) {
+  app.use(errorhandler());
 }
 
 require('./models/User');
