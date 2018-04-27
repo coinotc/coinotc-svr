@@ -171,18 +171,6 @@ router.put('/user', auth.required, auth.required, function (req, res, next) {
       if (typeof req.body.user.orderCount !== 'undefined') {
         user.orderCount = req.body.user.orderCount;
       }
-      if (typeof req.body.user.idCard !== 'undefined') {
-        user.idCard = req.body.user.idCard;
-      }
-      if (typeof req.body.user.verifyName !== 'undefined') {
-        user.verifyName = req.body.user.verifyName;
-      }
-      if (typeof req.body.user.phone !== 'undefined') {
-        user.phone = req.body.user.phone;
-      }
-      if (typeof req.body.user.tradePrd !== 'undefined') {
-        user.tradePrd = req.body.user.tradePrd;
-      }
       console.log(user);
       return user.save().then(function () {
         return res.json({ user: user.toAuthJSON() });
@@ -499,14 +487,10 @@ router.post('/users', function (req, res, next) {
   //console.log(req);
   var user = new User();
   user.active = false;
-  user.verify = '0';
+  user.verifyStatus = 0;
   user.ratings = [];
   user.orderCount = '0';
   user.volume = '';
-  user.verifyName = '';
-  user.idCard = '';
-  user.phone = '';
-  user.tradePrd = '';
   user.following = [];
   user.followers = [];
   user.block = false;
