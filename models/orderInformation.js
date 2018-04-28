@@ -17,5 +17,8 @@ module.exports = mongoose.model('orderInformation', {
   sellerRating: Number,
   finished: Number,
   date: Date,
+  informDate: Date,
+  approveDate: Date,
+  ratingDate: Date,
   roomkey: String
 });

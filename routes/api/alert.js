@@ -80,6 +80,7 @@ router.post('/', auth.required, (req, res) => {
   newAlert.crypto = alert.crypto;
   newAlert.fiat = alert.fiat;
   newAlert.status = alert.status;
+  newAlert.above = alert.above;
   newAlert.date = new Date();
   console.log(newAlert);
   let error = newAlert.validateSync();
