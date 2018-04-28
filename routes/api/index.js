@@ -11,6 +11,7 @@ router.use('/alert', require('./alert'));
 router.use('/banner', require('./banner-control'));
 router.use('/2fa', require('./2fa'));
 router.use('/background', require('./BackgroundUser'));
+router.use('/profiles', require('./profiles'));
 
 router.use(function(err, req, res, next) {
   console.log('error has occurred!');
@@ -20,7 +21,7 @@ router.use(function(err, req, res, next) {
         errors[key] = err.errors[key].message;
 
         return errors;
-      }, {})  
+      }, {})
     });
   }
 
