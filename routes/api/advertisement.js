@@ -6,6 +6,17 @@ var advertisement = mongoose.model('advertisement');
 const advertisementapi = '/';
 var auth = require('../auth');
 
+router.get(`${advertisementapi}getAll`, auth.optional, function(req, res) {
+
+    advertisement.find({visible: true},(err, result) => {
+      if (err) {
+        // console.log(err);
+        res.status(500).send(err);
+      }
+      res.status(200).json(result);
+    });
+  });
+
 router.get(`${advertisementapi}getprice`, auth.required, (req, res) => {
     let type = req.query.type, fiat = req.query.fiat;
     rp({ uri: `https://api.coinmarketcap.com/v1/ticker/${type}/?convert=${fiat}`, json: true }).then((result) => {
