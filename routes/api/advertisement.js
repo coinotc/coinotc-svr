@@ -31,7 +31,7 @@ router.get(`${advertisementapi}getvisible/:id`, auth.required, (req, res) => {
         res.send(result.visible);
     })
 })
-router.post(advertisementapi, auth.optional, (req, res) => {
+router.post(advertisementapi, auth.required, (req, res) => {
     let get = req.body;
     let send = new advertisement();
     send.visible = get.visible
