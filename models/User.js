@@ -36,6 +36,7 @@ var UserSchema = new mongoose.Schema(
     tradePasswordSalt:String,
     tradePasswordHash:String,
     baseCurrency: String,
+    preferLanguage: String,
     deviceToken: String,
     tfa: Object,
     secretToken :String,
