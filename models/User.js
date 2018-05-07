@@ -115,7 +115,8 @@ UserSchema.methods.toAuthJSON = function() {
 UserSchema.methods.toProfileJSONFor = function(user) {
   return {
     username: this.username,
-    email: this.email
+    email: this.email,
+    verifystatus: this.verifyStatus
   };
 };
 
