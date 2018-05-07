@@ -58,6 +58,29 @@ router.get(apiurl, auth.required, (req,res)=>{
         res.status(200).json(result);
     });
 })
+router.patch( apiurl+'updateMessage', (req, res) => {
+    Complain.findByIdAndUpdate(
+        { _id: req.body.id },
+        { message : req.body.message},
+        { new: true },
+        (err, result) => {
+          if (err) res.status(500).json(err);
+          res.status(201).json(result);
+        }
+      );
+});
+
+router.patch( apiurl +"changeStatus" , (req,res)=>{
+    Complain.findOneAndUpdate(
+        { _id: req.body.id },
+        { status : req.body.status },
+        { new: true },
+        (err,result) => {
+          if(err) res.status(500).json(err);
+          res.status(201).json(result);
+        }
+    );
+})
 router.patch(apiurl+"roomkey", auth.required, (req, res) => {
     console.log("patch roomkey"+req.body)
     console.log("patch roomkey"+req.query)

@@ -263,7 +263,7 @@ router.post('/users/checkChangePasswordUser', auth.required, function (req, res,
 })
 
 router.post('/users/checkUser', function (req, res, next) {
-  let username = req.body.user.username;
+  let username = req.body.user.username.toLowerCase();
   let email = req.body.user.email;
   User.find({ $or: [{ username: `${username}` }, { email: `${email}` }] },
     (err, result) => {
