@@ -7,7 +7,16 @@ module.exports = {
         console.log('Ready to watch database');
         let db = client.db('coinotc');
         // specific table for any change
-        let alerts_change_streams = db.collection('alerts').watch();
+        let alerts_change_streams = db.collection('alerts').watch([
+          {
+            $match: {
+              $and: [
+                { 'updateDescription.updatedFields.status': false },
+                { operationType: 'update' }
+              ]
+            }
+          }
+        ]);
         alerts_change_streams.on('change', function(change) {
           console.log('>>>>>changed<<<<<');
           console.log(change);
@@ -20,7 +29,9 @@ module.exports = {
               //console.log(username);
               let notification = {
                 username: username,
-                message: `Your ${res.crypto} in ${res.fiat} which price is ${res.price}, has reached`
+                message: `Your ${res.crypto} in ${res.fiat} which price is ${
+                  res.price
+                }, has reached`
               };
               db
                 .collection('notifications')

@@ -24,15 +24,13 @@ router.get('/getAbove', auth.required, (req, res) => {
   let fiat = req.query.fiat;
   let crypto = req.query.crypto;
   let price = req.query.price;
-  let array = [];
-  let times = 0;
   Alert.find(
     {
       above: `${above}`,
       status: `${status}`,
       fiat: `${fiat}`,
       crypto: `${crypto}`,
-      price: { $gt: `${price}` }
+      price: { $lt: `${price}` }
     },
     //'username -_id',
     (err, result) => {
@@ -51,15 +49,13 @@ router.get('/getBelow', auth.required, (req, res) => {
   let fiat = req.query.fiat;
   let crypto = req.query.crypto;
   let price = req.query.price;
-  let array = [];
-  let times = 0;
   Alert.find(
     {
       above: `${above}`,
       status: `${status}`,
       fiat: `${fiat}`,
       crypto: `${crypto}`,
-      price: { $lt: `${price}` }
+      price: { $gt: `${price}` }
     },
     //'username -_id',
     (err, result) => {
@@ -94,7 +90,7 @@ router.post('/', auth.required, (req, res) => {
   }
 });
 
-router.put('/', auth.required, (req, res) => {
+router.put('/', auth.optional, (req, res) => {
   let alert = req.body;
   console.log(req.body);
   let newAlert = new Alert();
