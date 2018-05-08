@@ -64,22 +64,42 @@ router.get(advertisementapi, auth.required, (req, res) => {
     let type = req.query.type;
     let country = req.query.country;
     let fiat = req.query.fiat;
-    if (country == "global") {
-        advertisement.find({ crypto: crypto, type: type, fiat: fiat, visible: true }, null, { sort: { price: -1 } }, (err, result) => {
-            if (err) {
-                res.status(500).send(err);
-                return;
-            }
-            res.status(200).json(result);
-        });
+    if (type) {
+        if (country == "global") {
+            advertisement.find({ crypto: crypto, type: type, fiat: fiat, visible: true }, null, { sort: { price: -1 } }, (err, result) => {
+                if (err) {
+                    res.status(500).send(err);
+                    return;
+                }
+                res.status(200).json(result);
+            });
+        } else {
+            advertisement.find({ crypto: crypto, type: type, country: country, fiat: fiat, visible: true }, null, { sort: { price: -1 } }, (err, result) => {
+                if (err) {
+                    res.status(500).send(err);
+                    return;
+                }
+                res.status(200).json(result);
+            });
+        }
     } else {
-        advertisement.find({ crypto: crypto, type: type, country: country, fiat: fiat, visible: true }, null, { sort: { price: -1 } }, (err, result) => {
-            if (err) {
-                res.status(500).send(err);
-                return;
-            }
-            res.status(200).json(result);
-        });
+        if (country == "global") {
+            advertisement.find({ crypto: crypto, type: type, fiat: fiat, visible: true }, null, { sort: { price: 1 } }, (err, result) => {
+                if (err) {
+                    res.status(500).send(err);
+                    return;
+                }
+                res.status(200).json(result);
+            });
+        } else {
+            advertisement.find({ crypto: crypto, type: type, country: country, fiat: fiat, visible: true }, null, { sort: { price: 1 } }, (err, result) => {
+                if (err) {
+                    res.status(500).send(err);
+                    return;
+                }
+                res.status(200).json(result);
+            });
+        }
     }
 })
 

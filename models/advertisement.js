@@ -9,7 +9,7 @@ module.exports = mongoose.model('advertisement', {
     price: Number,
     min_price: Number,
     max_price: Number,
-    payment: String,
+    payment: Array,
     limit: Number,
     message: String,
     deleteStatus : Boolean,
