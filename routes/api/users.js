@@ -575,7 +575,7 @@ router.get('/users/public', auth.required, (req, res) => {
   console.log(req.query);
   User.find(
     { username: `${username}` },
-    'orderCount ratings volume deviceToken following followers',
+    'orderCount ratings volume deviceToken following followers tfa',
     (err, result) => {
       console.log(result);
       if (err) {
