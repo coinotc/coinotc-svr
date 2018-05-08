@@ -56,34 +56,42 @@ router.get(apiurl + 'getone', auth.required, (req, res) => {
     res.status(200).json(result);
   });
 });
-router.get(apiurl + 'tradeWithHim' ,auth.required, (req,res)=>{
-  console.log(req.query)
+router.get(apiurl + 'tradeWithHim', auth.required, (req, res) => {
+  console.log(req.query);
   var profileUser = req.query.profileUser;
   var currentUser = req.query.currentUser;
-  Order.count({
-    finished: { $in: [0, 3] },
-    $or: [{ buyer: `${currentUser}`,seller: `${profileUser}` },
-    { buyer: `${profileUser}`, seller: `${currentUser}`}]
-    },(err,result) =>{
-    if(err){
-      res.status(500).send(err);
+  Order.count(
+    {
+      finished: { $in: [0, 3] },
+      $or: [
+        { buyer: `${currentUser}`, seller: `${profileUser}` },
+        { buyer: `${profileUser}`, seller: `${currentUser}` }
+      ]
+    },
+    (err, result) => {
+      if (err) {
+        res.status(500).send(err);
+      }
+      res.status(200).json(result);
     }
-    res.status(200).json(result);
-  })
-})
-router.get(apiurl + 'myTrade' ,auth.required, (req,res)=>{
-  console.log(req.query)
+  );
+});
+router.get(apiurl + 'myTrade', auth.required, (req, res) => {
+  console.log(req.query);
   var currentUser = req.query.currentUser;
-  Order.count({
-    finished: { $in: [0, 3] },
-    $or: [{ buyer: `${currentUser}` }, { seller: `${currentUser}` }]
-    },(err,result) =>{
-    if(err){
-      res.status(500).send(err);
+  Order.count(
+    {
+      finished: { $in: [0, 3] },
+      $or: [{ buyer: `${currentUser}` }, { seller: `${currentUser}` }]
+    },
+    (err, result) => {
+      if (err) {
+        res.status(500).send(err);
+      }
+      res.status(200).json(result);
     }
-    res.status(200).json(result);
-  })
-})
+  );
+});
 //FILTER ORDERS
 router.get(apiurl + 'filter', auth.required, (req, res) => {
   let finished = req.query.finished;
@@ -205,6 +213,13 @@ router.put(apiurl, auth.required, (req, res) => {
   newOrderInformation.buyerRating = orderInformation.buyerRating;
   newOrderInformation.sellerRating = orderInformation.sellerRating;
   newOrderInformation.finished = orderInformation.finished;
+  if (orderInformation.finished == 2) {
+    newOrderInformation.informDate = new Date();
+  } else if (orderInformation == 3) {
+    newOrderInformation.approveDate = new Date();
+  } else if (orderInformation == 0) {
+    newOrderInformation.ratingDate = new Date();
+  }
   var error = newOrderInformation.validateSync();
   if (!error) {
     //console.log(user._id);

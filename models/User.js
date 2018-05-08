@@ -28,11 +28,7 @@ var UserSchema = new mongoose.Schema(
     ratings: Array,
     volume: String,
     logoutDateTime: Date,
-    idCard: String,
-    verifyName: String,
-    verify: Number,
     phone: Number,
-    tradePrd: Number,
     following: Array,
     followers: Array,
     hash: String,
@@ -40,12 +36,19 @@ var UserSchema = new mongoose.Schema(
     tradePasswordSalt:String,
     tradePasswordHash:String,
     baseCurrency: String,
+    preferLanguage: String,
     deviceToken: String,
     tfa: Object,
     secretToken :String,
     active:Boolean,
     block :Boolean,
-    code:Number
+    code:Number,
+    verifyStatus:Number,
+    passport:String,
+    firstName:String,
+    lastName:String,
+    gender:String,
+    country:String
   },
   { timestamps: true }
 );
@@ -113,10 +116,7 @@ UserSchema.methods.toAuthJSON = function() {
 UserSchema.methods.toProfileJSONFor = function(user) {
   return {
     username: this.username,
-    bio: this.bio,
-    image:
-      this.image || 'https://static.productionready.io/images/smiley-cyrus.jpg',
-    following: user ? user.isFollowing(this._id) : false
+    email: this.email
   };
 };
 

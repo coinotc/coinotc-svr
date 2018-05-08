@@ -171,18 +171,6 @@ router.put('/user', auth.required, auth.required, function (req, res, next) {
       if (typeof req.body.user.orderCount !== 'undefined') {
         user.orderCount = req.body.user.orderCount;
       }
-      if (typeof req.body.user.idCard !== 'undefined') {
-        user.idCard = req.body.user.idCard;
-      }
-      if (typeof req.body.user.verifyName !== 'undefined') {
-        user.verifyName = req.body.user.verifyName;
-      }
-      if (typeof req.body.user.phone !== 'undefined') {
-        user.phone = req.body.user.phone;
-      }
-      if (typeof req.body.user.tradePrd !== 'undefined') {
-        user.tradePrd = req.body.user.tradePrd;
-      }
       console.log(user);
       return user.save().then(function () {
         return res.json({ user: user.toAuthJSON() });
@@ -202,6 +190,26 @@ router.put('/users/base-currency', auth.required, function (req, res, next) {
       // only update fields that were actually passed...
       if (typeof req.body.currency !== 'undefined') {
         user.baseCurrency = req.body.currency;
+      }
+
+      return user.save().then(function () {
+        return res.json({ user: user.toAuthJSON() });
+      });
+    })
+    .catch(next);
+});
+
+router.put('/users/language', auth.required, function (req, res, next) {
+  console.log('... update language ...');
+  User.findById(req.payload.id)
+    .then(function (user) {
+      if (!user) {
+        return res.sendStatus(401);
+      }
+
+      // only update fields that were actually passed...
+      if (typeof req.body.language !== 'undefined') {
+        user.preferLanguage = req.body.language;
       }
 
       return user.save().then(function () {
@@ -275,7 +283,7 @@ router.post('/users/checkChangePasswordUser', auth.required, function (req, res,
 })
 
 router.post('/users/checkUser', function (req, res, next) {
-  let username = req.body.user.username;
+  let username = req.body.user.username.toLowerCase();
   let email = req.body.user.email;
   User.find({ $or: [{ username: `${username}` }, { email: `${email}` }] },
     (err, result) => {
@@ -499,14 +507,10 @@ router.post('/users', function (req, res, next) {
   //console.log(req);
   var user = new User();
   user.active = false;
-  user.verify = '0';
+  user.verifyStatus = 0;
   user.ratings = [];
   user.orderCount = '0';
   user.volume = '';
-  user.verifyName = '';
-  user.idCard = '';
-  user.phone = '';
-  user.tradePrd = '';
   user.following = [];
   user.followers = [];
   user.block = false;
@@ -571,7 +575,7 @@ router.get('/users/public', auth.required, (req, res) => {
   console.log(req.query);
   User.find(
     { username: `${username}` },
-    'orderCount ratings volume deviceToken following followers',
+    'orderCount ratings volume deviceToken following followers tfa',
     (err, result) => {
       console.log(result);
       if (err) {
