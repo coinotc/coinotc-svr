@@ -7,7 +7,7 @@ var auth = require('../auth');
 
 const api = '/'
 
-router.get(api, auth.optional, (req, res) => {
+router.get(api, auth.required, (req, res) => {
     let user = req.query;
     if (user) {
         User.findOne({ username: user.username }, (err, result) => {
@@ -17,6 +17,14 @@ router.get(api, auth.optional, (req, res) => {
             }, (err, result) => {
                 if (!err)
                     res.status(201).json(secret.base32);
+                //res.send(secret.base32);
+                //     QRCode.toDataURL(secret.otpauth_url, function (err, data_url) {
+                //         // res.send(data_url);
+                //         let img = `<img src='${data_url}' >`
+                //         res.send(img);
+                //     });
+                // } else {
+                //     res.status(500).send(err);
             })
         })
     } else {
@@ -59,7 +67,7 @@ router.patch(api, auth.required, (req, res) => {
                 token: req.body.credentials.googleAuthenticationCode
             });
             if (match) {
-                User.findByIdAndUpdate(req.payload.id, { tfa: { effective: false, secret:{} } }, (err, result) => {
+                User.findByIdAndUpdate(req.payload.id, { tfa: { effective: false, secret: {} } }, (err, result) => {
                     res.status(200).json(0);
                 })
             } else {
