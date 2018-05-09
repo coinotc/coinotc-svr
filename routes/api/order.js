@@ -4,7 +4,40 @@ var auth = require('../auth');
 var Order = mongoose.model('orderInformation');
 
 const apiurl = '/';
-
+//GET all order information by fiat and crypto in a day
+router.get(apiurl + 'allOrderInfo' , auth.optional, (req,res) => {
+  let fiat = req.query.fiat;
+  let crypto = req.query.crypto;
+  let date = new Date();
+  let Y = date.getFullYear();
+  let M = date.getMonth()+1<10?'0'+(date.getMonth()+1) :date.getMonth()+1;
+  let D = date.getDate()<10?'0'+date.getDate():date.getDate();
+  let D2 = date.getDate()+1<10?'0'+(date.getDate()+1):(date.getDate()+1);
+  let endDate = `${Y}-${M}-${D2}`;
+  let startDate = `${Y}-${M}-${D}`;
+  console.log(endDate,startDate);
+  Order.find({ approveDate: {$gte: new Date(`${startDate}`), $lt: new Date(`${endDate}`)},fiat: `${fiat}`, crypto: `${crypto}` }, (err,result) => {
+    if (err) {
+      res.status(500).send(err);
+      return;
+    }
+    res.status(200).json(result);
+  })
+});
+//GET 15 current order information by fiat and crypto
+router.get(apiurl + 'currentOrderInformation' , auth.required, (req,res) => {
+  let fiat = req.query.fiat;
+  let crypto = req.query.crypto;
+  Order.find({ fiat: `${fiat}`, crypto: `${crypto}` }, (err,result) => {
+    if (err) {
+      res.status(500).send(err);
+      return;
+    }
+    res.status(200).json(result);
+  })
+  .sort({ approveDate: -1 })
+  .limit(15);
+});
 //GET ALERT INFORMATION
 router.get(apiurl + 'alert', auth.required, (req, res) => {
   let fiat = req.query.fiat;
