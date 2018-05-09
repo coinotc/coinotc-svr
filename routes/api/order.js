@@ -5,7 +5,7 @@ var Order = mongoose.model('orderInformation');
 
 const apiurl = '/';
 //GET all order information by fiat and crypto in a day
-router.get(apiurl + 'allOrderInfo' , auth.optional, (req,res) => {
+router.get(apiurl + 'allOrderInfo' , auth.required, (req,res) => {
   let fiat = req.query.fiat;
   let crypto = req.query.crypto;
   let date = new Date();
