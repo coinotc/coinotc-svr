@@ -15,12 +15,14 @@ var http = require('http'),
   cookieParser = require('cookie-parser');
   compression = require('compression');
   config = require('./config');
+  notification = require('./workers/changeStream');
 
-const {SHA256} = require("sha2");
+const { SHA256 } = require('sha2');
 var isProduction = process.env.NODE_ENV === 'production';
-``
+
 // Create global app object
 var app = express();
+var stream = notification.changeStream();
 
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(bodyParser.json({ limit: '50mb' }));
@@ -54,12 +56,13 @@ if (isProduction) {
 console.log(process.env.SESSION_SECRET);
 var MS = require('express-mongoose-store')(session, mongoose);
 app.use(
-  session({ 
-    secret: process.env.SESSION_SECRET, 
-    store: new MS({ttl: 600000}),
+  session({
+    secret: process.env.SESSION_SECRET,
+    store: new MS({ ttl: 600000 }),
     resave: false,
     saveUninitialized: false
-  })); 
+  })
+);
 //10 minute sessions
 
 app.use(passport.initialize());
@@ -75,13 +78,14 @@ require('./config/passport');
 require('./models/complain');
 require('./models/advertisement');
 require('./models/alert');
-require('./models/banner-control')
+require('./models/banner-control');
 require('./models/BackgroundUser');
+require('./models/notification');
 
 app.use(require('./routes'));
 
 // If the connection throws an error
-mongoose.connection.on('error', function (err) {
+mongoose.connection.on('error', function(err) {
   console.error(
     'Failed to connect to DB ' + config.mongodb_url + ' on startup ',
     err
@@ -89,18 +93,18 @@ mongoose.connection.on('error', function (err) {
 });
 
 // When the connection is disconnected
-mongoose.connection.on('disconnected', function () {
+mongoose.connection.on('disconnected', function() {
   console.log(
     'Mongoose default connection to DB :' + config.mongodb_url + ' disconnected'
   );
 });
 
-var gracefulExit = function () {
-  mongoose.connection.close(function () {
+var gracefulExit = function() {
+  mongoose.connection.close(function() {
     console.log(
       'Mongoose default connection with DB :' +
-      config.mongodb_url +
-      ' is disconnected through app termination'
+        config.mongodb_url +
+        ' is disconnected through app termination'
     );
     process.exit(0);
   });
@@ -121,7 +125,7 @@ process.on('SIGINT', gracefulExit).on('SIGTERM', gracefulExit);
 // development error handler
 // will print stacktrace
 if (!isProduction) {
-  app.use(function (err, req, res, next) {
+  app.use(function(err, req, res, next) {
     console.log(err.stack);
 
     res.status(err.status || 500);
@@ -137,7 +141,7 @@ if (!isProduction) {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function (err, req, res, next) {
+app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.json({
     errors: {
@@ -148,7 +152,7 @@ app.use(function (err, req, res, next) {
 });
 
 // finally, let's start our server...
-var server = app.listen(process.env.PORT || 3000, function () {
+var server = app.listen(process.env.PORT || 3000, function() {
   console.log('Listening on port ' + server.address().port);
   const nyanbuffer = SHA256(`
   ░░░░░░░▄▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▄░░░░░░
