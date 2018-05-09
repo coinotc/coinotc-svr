@@ -6,7 +6,7 @@ module.exports = {
       function(client) {
         console.log('Ready to watch database');
         let db = client.db('coinotc');
-        // specific table for any change
+        // Specific Alert Table For Change
         let alerts_change_streams = db.collection('alerts').watch([
           {
             $match: {
@@ -18,15 +18,13 @@ module.exports = {
           }
         ]);
         alerts_change_streams.on('change', function(change) {
-          console.log('>>>>>changed<<<<<');
+          console.log('>>>>>alert changed<<<<<');
           console.log(change);
           db
             .collection('alerts')
             .findOne({ _id: change.documentKey._id }, function(err, res) {
               if (err) throw err;
-              //console.log(res.username);
               let username = res.username;
-              //console.log(username);
               let notification = {
                 username: username,
                 message: `Your ${res.crypto} in ${res.fiat} which price is ${
@@ -39,6 +37,59 @@ module.exports = {
                   if (err) throw err;
                   console.log('Insert success');
                 });
+            });
+        });
+        // Specific Order Table For Change
+        let orders_change_streams = db.collection('orderinformations').watch([
+          {
+            $match: {
+              $and: [
+                {
+                  'updateDescription.updatedFields.finished': {
+                    $in: [2, 3]
+                  }
+                },
+                { operationType: 'update' }
+              ]
+            }
+          }
+        ]);
+        orders_change_streams.on('change', function(change) {
+          console.log('>>>>>order changed<<<<<');
+          console.log(change);
+          db
+            .collection('orderinformations')
+            .findOne({ _id: change.documentKey._id }, function(err, res) {
+              if (err) throw err;
+              if (change.updateDescription.updatedFields.finished == 2) {
+                let username = res.seller;
+                let notification = {
+                  username: username,
+                  message: `Your Order ${res._id} with ${
+                    res.buyer
+                  } has progress!`
+                };
+                db
+                  .collection('notifications')
+                  .insertOne(notification, function(err, res) {
+                    if (err) throw err;
+                    console.log('Insert success');
+                  });
+              } else if (change.updateDescription.updatedFields.finished == 3) {
+                let username = res.buyer;
+                let notification = {
+                  username: username,
+                  message: `Your Order ${res._id} with ${
+                    res.seller
+                  } has progress!`
+                };
+                db
+                  .collection('notifications')
+                  .insertOne(notification, function(err, res) {
+                    if (err) throw err;
+                    console.log('Insert success');
+                  });
+              }
             });
         });
       }
@@ -60,6 +111,3 @@ module.exports = {
 //     }
 //   }
 // ]);
-
-//for change inchange_streams:
-//do_some_magic();

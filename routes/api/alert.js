@@ -90,7 +90,7 @@ router.post('/', auth.required, (req, res) => {
   }
 });
 
-router.put('/', auth.optional, (req, res) => {
+router.put('/', auth.required, (req, res) => {
   let alert = req.body;
   console.log(req.body);
   let newAlert = new Alert();
