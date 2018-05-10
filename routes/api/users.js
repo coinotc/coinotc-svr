@@ -206,7 +206,6 @@ router.put('/users/language', auth.required, function (req, res, next) {
       if (!user) {
         return res.sendStatus(401);
       }
-
       // only update fields that were actually passed...
       if (typeof req.body.language !== 'undefined') {
         user.preferLanguage = req.body.language;
@@ -219,6 +218,24 @@ router.put('/users/language', auth.required, function (req, res, next) {
     .catch(next);
 });
 
+router.put('/users/region', auth.required, function (req, res, next) {
+  console.log('... update region ...');
+  User.findById(req.payload.id)
+    .then(function (user) {
+      if (!user) {
+        return res.sendStatus(401);
+      }
+      // only update fields that were actually passed...
+      if (typeof req.body.region !== 'undefined') {
+        user.nativeRegion = req.body.region;
+      }
+
+      return user.save().then(function () {
+        return res.json({ user: user.toAuthJSON() });
+      });
+    })
+    .catch(next);
+});
 router.post('/users/login', function (req, res, next) {
   if (!req.body.user.email) {
     return res.status(422).json({ errors: { email: "can't be blank" } });
@@ -232,11 +249,60 @@ router.post('/users/login', function (req, res, next) {
     if (err) {
       return next(err);
     }
-
     if (user) {
-      console.log(user)
-      user.deviceToken = req.body.deviceToken;
-      console.log(user);
+      if (user.ip.length < 5)
+        user.ip.unshift(req.body.ip);
+      else {
+        user.ip.pop();
+        user.ip.unshift(req.body.ip);
+      }
+      User.findOneAndUpdate(
+        { username: user.username },
+        { ip: user.ip },
+        { new: true },
+        (err, result) => {
+          if (err) res.status(500).json(err);
+          //res.status(201).json(result);
+        }
+      );
+      console.log(user.ip[0].query);
+      console.log(user.ip[1].query);
+      console.log(!(user.ip[0].query == user.ip[1].query))
+      if (!(user.ip[0].query == user.ip[1].query)) {
+        var mailgun = new Mailgun({ apiKey: sendEmail.api_key, domain: sendEmail.domain });
+        email
+          .renderAll('ip-changed', {
+            name: user.username,
+            ip: user.ip[0].query,
+            time : user.updatedAt,
+            email : user.email
+          })
+          .then((html) => {
+            console.log("" + html.subject);
+            console.log("" + html.html);
+            console.log("" + process.env.COINOTC_FROM_EMAIL);
+            console.log("" + user.email);
+            var data = {
+              from: process.env.COINOTC_FROM_EMAIL,
+              to: user.email,
+              subject: html.subject,
+              html: html.html
+            }
+            console.log(data);
+            mailgun.messages().send(data, function (err, body) {
+              if (err) {
+                console.log("got an error: ", err);
+                res.status(500).send(err);
+              }
+              else {
+                console.log(body);
+                //res.status(201).json({ user: user.toAuthJSON(), body: body });
+              }
+            });
+          })
+          .catch(console.error);
+
+      }
       user.token = user.generateJWT();
       return res.json({ user: user.toAuthJSON(), active: user.active });
     } else {
@@ -403,7 +469,7 @@ router.post('/users/forgetPassword', function (req, res, next) {
 router.post('/users/forgetVerifySixPin', function (req, res, nest) {
   User.findOne({ email: req.body.email }).then(
     function (user) {
-      if(req.body.code === user.code){
+      if (req.body.code === user.code) {
         User.findOneAndUpdate(
           { email: req.body.email },
           { code: null },
@@ -416,8 +482,8 @@ router.post('/users/forgetVerifySixPin', function (req, res, nest) {
               return res.status(201).json(err);
           }
         );
-      }else
-      res.status(201).json("Varification code is not correct")
+      } else
+        res.status(201).json("Varification code is not correct")
     }
   )
     .catch(error => {
@@ -429,7 +495,7 @@ router.post('/users/forgetVerifySixPin', function (req, res, nest) {
 router.post('/users/confirmTradePasswordCode', function (req, res, nest) {
   User.findOne({ email: req.body.email }).then(
     function (user) {
-      if(req.body.code === user.code){
+      if (req.body.code === user.code) {
         User.findOneAndUpdate(
           { email: req.body.email },
           { code: null },
@@ -442,8 +508,8 @@ router.post('/users/confirmTradePasswordCode', function (req, res, nest) {
               return res.status(201).json(err);
           }
         );
-      }else
-      res.status(201).json("Varification code is not correct")
+      } else
+        res.status(201).json("Varification code is not correct")
     }
   )
     .catch(error => {
@@ -460,51 +526,52 @@ router.post('/users/forgetTradePassword', function (req, res, next) {
     Math.floor(Math.random() * 10).toString() +
     Math.floor(Math.random() * 10).toString() +
     Math.floor(Math.random() * 10).toString());
-    User.findOneAndUpdate(
-      { email: req.body.email },
-      { code: code },
-      { new: true }).
-      then(
-        function (user) {
-          console.log(user)
-          var mailgun = new Mailgun({ apiKey: sendEmail.api_key, domain: sendEmail.domain });
-          console.log(user.code)
-          email
-            .renderAll('forgettradepassword', {
-              name: user.username,
-              code: user.code
-            })
-            .then((html) => {
-              var data = {
-                from: process.env.COINOTC_FROM_EMAIL,
-                to: user.email,
-                subject: html.subject,
-                html: html.html
+  User.findOneAndUpdate(
+    { email: req.body.email },
+    { code: code },
+    { new: true }).
+    then(
+      function (user) {
+        console.log(user)
+        var mailgun = new Mailgun({ apiKey: sendEmail.api_key, domain: sendEmail.domain });
+        console.log(user.code)
+        email
+          .renderAll('forgettradepassword', {
+            name: user.username,
+            code: user.code
+          })
+          .then((html) => {
+            var data = {
+              from: process.env.COINOTC_FROM_EMAIL,
+              to: user.email,
+              subject: html.subject,
+              html: html.html
+            }
+            mailgun.messages().send(data, function (err, body) {
+              if (err) {
+                console.log("got an error: ", err);
+                return res.status(500).send(err);
               }
-              mailgun.messages().send(data, function (err, body) {
-                if (err) {
-                  console.log("got an error: ", err);
-                  return res.status(500).send(err);
-                }
-                else {
-                  console.log(body);
-                  console.log(err)
-                  return res.status(201).json({ user: user.toAuthJSON(), body: body });
-                }
-              });
-            })
-            .catch(console.error);
-        }
-      )
-      .catch(error => {
-        res.status(500).send(error);
-        return;
-      });
+              else {
+                console.log(body);
+                console.log(err)
+                return res.status(201).json({ user: user.toAuthJSON(), body: body });
+              }
+            });
+          })
+          .catch(console.error);
+      }
+    )
+    .catch(error => {
+      res.status(500).send(error);
+      return;
+    });
 })
 
 router.post('/users', function (req, res, next) {
   console.log('--- Register ---- ');
   //console.log(req);
+  console.log(req.body.ip + "qqqqqqqqqqq")
   var user = new User();
   user.active = false;
   user.verifyStatus = 0;
@@ -524,6 +591,7 @@ router.post('/users', function (req, res, next) {
   user.deviceToken = req.body.deviceToken;
   user.username = req.body.user.username;
   user.email = req.body.user.email;
+  user.ip = req.body.ip;
   console.log(req.body.user.password);
   user.setPassword(req.body.user.password);
   user.setTradePassword(req.body.tradepassword);
@@ -536,7 +604,8 @@ router.post('/users', function (req, res, next) {
         email
           .renderAll('registration', {
             name: user.username,
-            regConfirmUrl: regUrl
+            regConfirmUrl: regUrl,
+            ip: user.ip[0].query
           })
           .then((html) => {
             console.log("" + html.subject);

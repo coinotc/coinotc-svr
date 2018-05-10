@@ -37,6 +37,7 @@ var UserSchema = new mongoose.Schema(
     tradePasswordHash:String,
     baseCurrency: String,
     preferLanguage: String,
+    nativeRegion: String,
     deviceToken: String,
     tfa: Object,
     secretToken :String,
@@ -48,7 +49,8 @@ var UserSchema = new mongoose.Schema(
     firstName:String,
     lastName:String,
     gender:String,
-    country:String
+    country:String,
+    ip:Array
   },
   { timestamps: true }
 );
