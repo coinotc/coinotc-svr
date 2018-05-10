@@ -2,7 +2,7 @@ var MongoClient = require('mongodb').MongoClient;
 var auth = require('../routes/auth');
 module.exports = {
   changeStream: function() {
-    MongoClient.connect('mongodb://localhost/coinotc?replicaSet=rs').then(
+    MongoClient.connect(process.env.MONGODB_URI).then(
       function(client) {
         console.log('Ready to watch database');
         let db = client.db('coinotc');
