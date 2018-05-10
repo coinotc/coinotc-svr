@@ -218,6 +218,24 @@ router.put('/users/language', auth.required, function (req, res, next) {
     .catch(next);
 });
 
+router.put('/users/region', auth.required, function (req, res, next) {
+  console.log('... update region ...');
+  User.findById(req.payload.id)
+    .then(function (user) {
+      if (!user) {
+        return res.sendStatus(401);
+      }
+      // only update fields that were actually passed...
+      if (typeof req.body.region !== 'undefined') {
+        user.nativeRegion = req.body.region;
+      }
+
+      return user.save().then(function () {
+        return res.json({ user: user.toAuthJSON() });
+      });
+    })
+    .catch(next);
+});
 router.post('/users/login', function (req, res, next) {
   if (!req.body.user.email) {
     return res.status(422).json({ errors: { email: "can't be blank" } });
