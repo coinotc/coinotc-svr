@@ -64,7 +64,7 @@ router.get(advertisementapi, auth.required, (req, res) => {
     let type = req.query.type;
     let country = req.query.country;
     let fiat = req.query.fiat;
-    if (type) {
+    if (type == 1) {
         if (country == "global") {
             advertisement.find({ crypto: crypto, type: type, fiat: fiat, visible: true }, null, { sort: { price: -1 } }, (err, result) => {
                 if (err) {
