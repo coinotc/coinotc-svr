@@ -22,7 +22,7 @@ var isProduction = process.env.NODE_ENV === 'production';
 
 // Create global app object
 var app = express();
-var stream = notification.changeStream();
+//var stream = notification.changeStream();
 
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(bodyParser.json({ limit: '50mb' }));
