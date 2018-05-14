@@ -2,6 +2,7 @@ var router = require('express').Router();
 var mongoose = require('mongoose');
 var auth = require('../auth');
 var Order = mongoose.model('orderInformation');
+var User = mongoose.model('User');
 
 const apiurl = '/';
 
@@ -183,14 +184,20 @@ router.post(apiurl, auth.required, (req, res) => {
   newOrder.date = new Date();
   console.log(newOrder);
   let error = newOrder.validateSync();
-  if (!error) {
-    newOrder.save(function(err, result) {
-      res.status(201).json(result);
-    });
-  } else {
-    console.log(error);
-    res.status(500).send(error);
-  }
+  User.findById(req.payload.id, (err, result) => {
+    if (result.block) {
+      return res.status(500).json({ error: "user was blocked" });
+    }
+    // if (result.verifyStatus) { }
+    if (!error) {
+      newOrder.save(function (err, result) {
+        res.status(201).json(result);
+      });
+    } else {
+      console.log(error);
+      res.status(500).send(error);
+    }
+  })
 });
 
 router.patch(apiurl + 'roomkey', auth.required, (req, res) => {
