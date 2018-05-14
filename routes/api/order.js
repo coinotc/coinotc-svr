@@ -212,34 +212,56 @@ router.patch(apiurl + 'roomkey', auth.required, (req, res) => {
     }
   );
 });
-router.put(apiurl, auth.required, (req, res) => {
+// router.put(apiurl, auth.optional, (req, res) => {
+//   let orderInformation = req.body;
+//   console.log(req.body);
+//   let newOrderInformation = new Order();
+//   newOrderInformation._id = orderInformation._id;
+//   newOrderInformation.buyerRating = orderInformation.buyerRating;
+//   newOrderInformation.sellerRating = orderInformation.sellerRating;
+//   newOrderInformation.finished = orderInformation.finished;
+//   if (orderInformation.finished == 2) {
+//     newOrderInformation.informDate = new Date();
+//   } else if (orderInformation == 3) {
+//     newOrderInformation.approveDate = new Date();
+//   } else if (orderInformation == 0) {
+//     newOrderInformation.ratingDate = new Date();
+//   }
+//   var error = newOrderInformation.validateSync();
+//   if (!error) {
+//     //console.log(user._id);
+//     Order.findByIdAndUpdate(
+//       { _id: orderInformation._id },
+//       { $set: newOrderInformation },
+//       { new: true },
+//       (err, result) => {
+//         if (err) res.status(500).json(err);
+//         res.status(201).json(result);
+//       }
+//     );
+//   }
+// });
+
+router.put(apiurl, auth.required, function(req, res, next) {
   let orderInformation = req.body;
-  console.log(req.body);
-  let newOrderInformation = new Order();
-  newOrderInformation._id = orderInformation._id;
-  newOrderInformation.buyerRating = orderInformation.buyerRating;
-  newOrderInformation.sellerRating = orderInformation.sellerRating;
-  newOrderInformation.finished = orderInformation.finished;
-  if (orderInformation.finished == 2) {
-    newOrderInformation.informDate = new Date();
-  } else if (orderInformation == 3) {
-    newOrderInformation.approveDate = new Date();
-  } else if (orderInformation == 0) {
-    newOrderInformation.ratingDate = new Date();
-  }
-  var error = newOrderInformation.validateSync();
-  if (!error) {
-    //console.log(user._id);
-    Order.findByIdAndUpdate(
-      { _id: orderInformation._id },
-      { $set: newOrderInformation },
-      { new: true },
-      (err, result) => {
-        if (err) res.status(500).json(err);
-        res.status(201).json(result);
-      }
-    );
-  }
+  Order.findById({ _id: req.body._id }).exec((err, order) => {
+    if (err) return res.status(400).send(err);
+    if (!order) return res.sendStatus(404);
+    order.buyerRating = orderInformation.buyerRating;
+    order.sellerRating = orderInformation.sellerRating;
+    order.finished = orderInformation.finished;
+    if (orderInformation.finished == 2) {
+      order.informDate = new Date();
+    } else if (orderInformation == 3) {
+      order.approveDate = new Date();
+    } else if (orderInformation == 0) {
+      order.ratingDate = new Date();
+    }
+    order.save((err, result) => {
+      if (err) return res.status(400).send(err);
+      res.status(201).json(result);
+    });
+  });
 });
 
 module.exports = router;
