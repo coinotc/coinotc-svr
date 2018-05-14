@@ -643,7 +643,7 @@ router.get('/users/public', auth.required, (req, res) => {
   let username = req.query.username;
   console.log(req.query);
   User.find(
-    { username: `${username}` },
+    { username: req.payload.username },
     'orderCount ratings volume deviceToken following followers tfa',
     (err, result) => {
       console.log(result);
