@@ -50,7 +50,8 @@ var UserSchema = new mongoose.Schema(
     lastName:String,
     gender:String,
     country:String,
-    ip:Array
+    ip:Array,
+    online:Boolean
   },
   { timestamps: true }
 );

@@ -35,7 +35,20 @@ router.patch('/users/public/follow', auth.required, (req, res) => {
     }
   );
 });
-
+router.patch('/users/changeOnlineStatus', auth.required, (req, res) => {
+  //console.log(req.body);
+  //console.log(req.query);
+  console.log(req.body.onlineStatus)
+  User.findOneAndUpdate(
+    { username: req.payload.username },
+    { online:req.body.onlineStatus },
+    { new: true },
+    (err, result) => {
+      if (err) res.status(500).json(err);
+      res.status(201).json(result);
+    }
+  );
+});
 router.get('/users/verify', (req, res) => {
   console.log('verify email after registration');
   if (req.query.secretToken == null) {
@@ -258,7 +271,7 @@ router.post('/users/login', function (req, res, next) {
       }
       User.findOneAndUpdate(
         { username: user.username },
-        { ip: user.ip },
+        { ip: user.ip ,online:true},
         { new: true },
         (err, result) => {
           if (err) res.status(500).json(err);
@@ -592,6 +605,7 @@ router.post('/users', function (req, res, next) {
   user.username = req.body.user.username;
   user.email = req.body.user.email;
   user.ip = req.body.ip;
+  user.online = false;
   console.log(req.body.user.password);
   user.setPassword(req.body.user.password);
   user.setTradePassword(req.body.tradepassword);
@@ -689,7 +703,7 @@ router.get('/users/logout', auth.required, function (req, res, next) {
   let currentUser = req.user;
   console.log(currentUser);
 
-  User.findById(req.payload.id)
+  User.findByIdAndUpdate(req.payload.id,{online:false})
     .then(function (user) {
       if (!user) {
         return res.sendStatus(401);
