@@ -94,7 +94,7 @@ router.get(apiurl + 'tradeWithHim', auth.required, (req, res) => {
   console.log(req.query);
   var profileUser = req.query.profileUser;
   var currentUser = req.query.currentUser;
-  Order.count(
+  Order.find(
     {
       finished: { $in: [0, 3] },
       $or: [
