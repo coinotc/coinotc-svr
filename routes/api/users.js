@@ -10,9 +10,9 @@ var sendEmail = require('../../config/sendEmail');
 const Email = require('email-templates');
 const email = new Email();
 
-router.get('/user', auth.required, function(req, res, next) {
+router.get('/user', auth.required, function (req, res, next) {
   User.findById(req.payload.id)
-    .then(function(user) {
+    .then(function (user) {
       if (!user) {
         return res.sendStatus(401);
       }
@@ -41,7 +41,7 @@ router.patch('/users/changeOnlineStatus', auth.required, (req, res) => {
   console.log(req.body.onlineStatus)
   User.findOneAndUpdate(
     { username: req.payload.username },
-    { online:req.body.onlineStatus },
+    { online: req.body.onlineStatus },
     { new: true },
     (err, result) => {
       if (err) res.status(500).json(err);
@@ -49,6 +49,9 @@ router.patch('/users/changeOnlineStatus', auth.required, (req, res) => {
     }
   );
 });
+
+
+
 router.get('/users/verify', (req, res) => {
   console.log('verify email after registration');
   if (req.query.secretToken == null) {
@@ -107,6 +110,48 @@ router.patch('/users/public/ratings', auth.required, (req, res) => {
   );
 });
 
+router.patch('/users/kyc', auth.required, (req, res) => {
+  console.log(req.body)
+  User.findOneAndUpdate(
+    { username: req.payload.username },
+    {
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      gender: req.body.gender,
+      country: req.body.country,
+      passport: req.body.passport,
+      kycImg: req.body.kycImg
+    },
+    { new: true },
+    (err, result) => {
+      if (err) res.status(500).json(err);
+      res.status(201).json(result);
+    }
+  );
+})
+
+// router.post('/upload-firestore', googleMulter.array('passportCover','passportPage','photoAndID'), (req, res) => {
+//   console.log('upload here ...');
+//   console.log(req.file);
+//   //console.log(req)  
+//   uploadToFireBaseStorage(req.file).then((result => {
+//     console.log("firebase stored -> " + result);
+//     let bannerControl = new BannerControl();
+//     bannerControl.imgURL = result;
+//     let error = bannerControl.validateSync();
+//     if (!error) {
+//       bannerControl.save(function (err, result) {
+//       })
+//     } else {
+//       res.status(500).send(error);
+//     }
+//   })).catch((error) => {
+//     console.log(error);
+//   })
+//   res.status(200).json({});
+// })
+
+
 router.patch('/users/public/tradepassword', auth.required, (req, res) => {
   var user = new User();
   user.setTradePassword(req.body.tradePrd);
@@ -154,10 +199,10 @@ router.patch('/users/public/deviceToken', auth.required, (req, res) => {
   );
 });
 
-router.put('/user', auth.required, auth.required, function(req, res, next) {
+router.put('/user', auth.required, auth.required, function (req, res, next) {
   console.log(req.body.user);
   User.findById(req.payload.id)
-    .then(function(user) {
+    .then(function (user) {
       if (!user) {
         return res.sendStatus(401);
       }
@@ -185,17 +230,18 @@ router.put('/user', auth.required, auth.required, function(req, res, next) {
         user.orderCount = req.body.user.orderCount;
       }
       console.log(user);
-      return user.save().then(function() {
+      return user.save().then(function () {
         return res.json({ user: user.toAuthJSON() });
       });
     })
     .catch(next);
 });
 
-router.put('/users/base-currency', auth.required, function(req, res, next) {
+
+router.put('/users/base-currency', auth.required, function (req, res, next) {
   //console.log(req.payload);
   User.findById(req.payload.id)
-    .then(function(user) {
+    .then(function (user) {
       if (!user) {
         return res.sendStatus(401);
       }
@@ -205,17 +251,17 @@ router.put('/users/base-currency', auth.required, function(req, res, next) {
         user.baseCurrency = req.body.currency;
       }
 
-      return user.save().then(function() {
+      return user.save().then(function () {
         return res.json({ user: user.toAuthJSON() });
       });
     })
     .catch(next);
 });
 
-router.put('/users/language', auth.required, function(req, res, next) {
+router.put('/users/language', auth.required, function (req, res, next) {
   console.log('... update language ...');
   User.findById(req.payload.id)
-    .then(function(user) {
+    .then(function (user) {
       if (!user) {
         return res.sendStatus(401);
       }
@@ -224,17 +270,17 @@ router.put('/users/language', auth.required, function(req, res, next) {
         user.preferLanguage = req.body.language;
       }
 
-      return user.save().then(function() {
+      return user.save().then(function () {
         return res.json({ user: user.toAuthJSON() });
       });
     })
     .catch(next);
 });
 
-router.put('/users/region', auth.required, function(req, res, next) {
+router.put('/users/region', auth.required, function (req, res, next) {
   console.log('... update region ...');
   User.findById(req.payload.id)
-    .then(function(user) {
+    .then(function (user) {
       if (!user) {
         return res.sendStatus(401);
       }
@@ -243,13 +289,13 @@ router.put('/users/region', auth.required, function(req, res, next) {
         user.nativeRegion = req.body.region;
       }
 
-      return user.save().then(function() {
+      return user.save().then(function () {
         return res.json({ user: user.toAuthJSON() });
       });
     })
     .catch(next);
 });
-router.post('/users/login', function(req, res, next) {
+router.post('/users/login', function (req, res, next) {
   if (!req.body.user.email) {
     return res.status(422).json({ errors: { email: "can't be blank" } });
   }
@@ -258,7 +304,7 @@ router.post('/users/login', function(req, res, next) {
     return res.status(422).json({ errors: { password: "can't be blank" } });
   }
 
-  passport.authenticate('local', { session: true }, function(err, user, info) {
+  passport.authenticate('local', { session: true }, function (err, user, info) {
     if (err) {
       return next(err);
     }
@@ -270,7 +316,7 @@ router.post('/users/login', function(req, res, next) {
       }
       User.findOneAndUpdate(
         { username: user.username },
-        { ip: user.ip ,online:true},
+        { ip: user.ip, online: true },
         { new: true },
         (err, result) => {
           if (err) res.status(500).json(err);
@@ -304,7 +350,7 @@ router.post('/users/login', function(req, res, next) {
               html: html.html
             };
             console.log(data);
-            mailgun.messages().send(data, function(err, body) {
+            mailgun.messages().send(data, function (err, body) {
               if (err) {
                 console.log('got an error: ', err);
                 res.status(500).send(err);
@@ -343,7 +389,7 @@ function handleHashPassword(err, result, res, currentPassword) {
   }
 }
 
-router.post('/users/checkChangePasswordUser', auth.required, function(
+router.post('/users/checkChangePasswordUser', auth.required, function (
   req,
   res,
   next
@@ -362,7 +408,7 @@ router.post('/users/checkChangePasswordUser', auth.required, function(
   });
 });
 
-router.post('/users/checkUser', function(req, res, next) {
+router.post('/users/checkUser', function (req, res, next) {
   let username = req.body.user.username.toLowerCase();
   let email = req.body.user.email;
   User.find(
@@ -392,7 +438,7 @@ function handleChangePassword(err, result, res, currentPassword, newPassword) {
     console.log('NEW SALT > ' + newPasswordUser.salt);
     result.hash = newPasswordUser.hash;
     result.salt = newPasswordUser.salt;
-    return result.save().then(function() {
+    return result.save().then(function () {
       return res.json({ user: result.toAuthJSON() });
     });
   } else {
@@ -403,7 +449,7 @@ function handleChangePassword(err, result, res, currentPassword, newPassword) {
   }
 }
 
-router.post('/users/change-password', auth.required, function(req, res, next) {
+router.post('/users/change-password', auth.required, function (req, res, next) {
   let email = req.body.user.email;
   let currentPassword = req.body.passwordData.oldPassword;
   let newPassword = req.body.passwordData.newPassword;
@@ -418,14 +464,14 @@ router.post('/users/change-password', auth.required, function(req, res, next) {
   });
 });
 
-router.post('/users/forgetPassword', function(req, res, next) {
+router.post('/users/forgetPassword', function (req, res, next) {
   const code = Number(
     Math.floor(Math.random() * 9 + 1).toString() +
-      Math.floor(Math.random() * 10).toString() +
-      Math.floor(Math.random() * 10).toString() +
-      Math.floor(Math.random() * 10).toString() +
-      Math.floor(Math.random() * 10).toString() +
-      Math.floor(Math.random() * 10).toString()
+    Math.floor(Math.random() * 10).toString() +
+    Math.floor(Math.random() * 10).toString() +
+    Math.floor(Math.random() * 10).toString() +
+    Math.floor(Math.random() * 10).toString() +
+    Math.floor(Math.random() * 10).toString()
   );
   User.findOne({ email: req.body.email.email }, (err, result) => {
     if (err) {
@@ -439,7 +485,7 @@ router.post('/users/forgetPassword', function(req, res, next) {
         { code: code },
         { new: true }
       )
-        .then(function(user) {
+        .then(function (user) {
           console.log(user);
           var mailgun = new Mailgun({
             apiKey: sendEmail.api_key,
@@ -459,7 +505,7 @@ router.post('/users/forgetPassword', function(req, res, next) {
                 subject: html.subject,
                 html: html.html
               };
-              mailgun.messages().send(data, function(err, body) {
+              mailgun.messages().send(data, function (err, body) {
                 if (err) {
                   console.log('got an error: ', err);
                   return res.status(500).send(err);
@@ -482,9 +528,9 @@ router.post('/users/forgetPassword', function(req, res, next) {
   });
 });
 
-router.post('/users/forgetVerifySixPin', function(req, res, nest) {
+router.post('/users/forgetVerifySixPin', function (req, res, nest) {
   User.findOne({ email: req.body.email })
-    .then(function(user) {
+    .then(function (user) {
       if (req.body.code === user.code) {
         User.findOneAndUpdate(
           { email: req.body.email },
@@ -504,9 +550,9 @@ router.post('/users/forgetVerifySixPin', function(req, res, nest) {
       return;
     });
 });
-router.post('/users/confirmTradePasswordCode', function(req, res, nest) {
+router.post('/users/confirmTradePasswordCode', function (req, res, nest) {
   User.findOne({ email: req.body.email })
-    .then(function(user) {
+    .then(function (user) {
       if (req.body.code === user.code) {
         User.findOneAndUpdate(
           { email: req.body.email },
@@ -527,21 +573,21 @@ router.post('/users/confirmTradePasswordCode', function(req, res, nest) {
     });
 });
 
-router.post('/users/forgetTradePassword', function(req, res, next) {
+router.post('/users/forgetTradePassword', function (req, res, next) {
   const code = Number(
     Math.floor(Math.random() * 9 + 1).toString() +
-      Math.floor(Math.random() * 10).toString() +
-      Math.floor(Math.random() * 10).toString() +
-      Math.floor(Math.random() * 10).toString() +
-      Math.floor(Math.random() * 10).toString() +
-      Math.floor(Math.random() * 10).toString()
+    Math.floor(Math.random() * 10).toString() +
+    Math.floor(Math.random() * 10).toString() +
+    Math.floor(Math.random() * 10).toString() +
+    Math.floor(Math.random() * 10).toString() +
+    Math.floor(Math.random() * 10).toString()
   );
   User.findOneAndUpdate(
     { email: req.body.email },
     { code: code },
     { new: true }
   )
-    .then(function(user) {
+    .then(function (user) {
       console.log(user);
       var mailgun = new Mailgun({
         apiKey: sendEmail.api_key,
@@ -560,7 +606,7 @@ router.post('/users/forgetTradePassword', function(req, res, next) {
             subject: html.subject,
             html: html.html
           };
-          mailgun.messages().send(data, function(err, body) {
+          mailgun.messages().send(data, function (err, body) {
             if (err) {
               console.log('got an error: ', err);
               return res.status(500).send(err);
@@ -581,7 +627,7 @@ router.post('/users/forgetTradePassword', function(req, res, next) {
     });
 });
 
-router.post('/users', function(req, res, next) {
+router.post('/users', function (req, res, next) {
   console.log('--- Register ---- ');
   //console.log(req);
   console.log(req.body.ip + 'qqqqqqqqqqq');
@@ -611,14 +657,14 @@ router.post('/users', function(req, res, next) {
   user.setTradePassword(req.body.tradepassword);
   user
     .save()
-    .then(function() {
+    .then(function () {
       var mailgun = new Mailgun({
         apiKey: sendEmail.api_key,
         domain: sendEmail.domain
       });
       var regUrl = `${process.env.API_DOMAIN_URL}/users/verify?secretToken=${
         user.secretToken
-      }`;
+        }`;
       email
         .renderAll('registration', {
           name: user.username,
@@ -637,7 +683,7 @@ router.post('/users', function(req, res, next) {
             html: html.html
           };
           console.log(data);
-          mailgun.messages().send(data, function(err, body) {
+          mailgun.messages().send(data, function (err, body) {
             if (err) {
               console.log('got an error: ', err);
               return res.status(500).send(err);
@@ -702,18 +748,18 @@ router.get('/users/tradepassword', auth.required, (req, res) => {
   // });
 });
 
-router.get('/users/logout', auth.required, function(req, res, next) {
+router.get('/users/logout', auth.required, function (req, res, next) {
   console.log(req.payload.id);
   let currentUser = req.user;
   console.log(currentUser);
 
-  User.findByIdAndUpdate(req.payload.id,{online:false})
+  User.findByIdAndUpdate(req.payload.id, { online: false })
     .then(function (user) {
       if (!user) {
         return res.sendStatus(401);
       }
 
-      return user.logout().then(function() {
+      return user.logout().then(function () {
         res.json({ logoutdatetime: new Date() });
       });
       req.logout(); // clears the passport session
