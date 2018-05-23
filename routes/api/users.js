@@ -323,10 +323,10 @@ router.post('/users/login', function (req, res, next) {
           //res.status(201).json(result);
         }
       );
-      console.log(user.ip[0].query);
-      console.log(user.ip[1].query);
-      console.log(!(user.ip[0].query == user.ip[1].query));
-      if (!(user.ip[0].query == user.ip[1].query)) {
+      console.log(user.ip[0].ip);
+      console.log(user.ip[1].ip);
+      console.log(!(user.ip[0].ip == user.ip[1].ip));
+      if (!(user.ip[0].ip == user.ip[1].ip)) {
         var mailgun = new Mailgun({
           apiKey: sendEmail.api_key,
           domain: sendEmail.domain
@@ -334,7 +334,7 @@ router.post('/users/login', function (req, res, next) {
         email
           .renderAll('ip-changed', {
             name: user.username,
-            ip: user.ip[0].query,
+            ip: user.ip[0].ip,
             time: user.updatedAt,
             email: user.email
           })
