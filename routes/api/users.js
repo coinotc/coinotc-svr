@@ -6,9 +6,30 @@ var auth = require('../auth');
 var crypto = require('crypto');
 var randomstring = require('randomstring');
 var mailgun = require('mailgun-js');
+var multer = require('multer')
 var sendEmail = require('../../config/sendEmail');
 const Email = require('email-templates');
 const email = new Email();
+const  gstorage = googleStorage({
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  keyFileName : process.env.GOOGLE_APPLICATION_CREDENTIALS
+});
+const bucket = gstorage.bucket(process.env.FIREBASE_BUCKET);
+const googleMulter = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 20 * 1024 * 1024 // 20MB
+  }
+})
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '_' + file.originalname)
+  }
+})
+var diskUpload = multer({ storage: storage })
 
 router.get('/user', auth.required, function (req, res, next) {
   User.findById(req.payload.id)
@@ -130,26 +151,70 @@ router.patch('/users/kyc', auth.required, (req, res) => {
   );
 })
 
-// router.post('/upload-firestore', googleMulter.array('passportCover','passportPage','photoAndID'), (req, res) => {
-//   console.log('upload here ...');
-//   console.log(req.file);
-//   //console.log(req)  
-//   uploadToFireBaseStorage(req.file).then((result => {
-//     console.log("firebase stored -> " + result);
-//     let bannerControl = new BannerControl();
-//     bannerControl.imgURL = result;
-//     let error = bannerControl.validateSync();
-//     if (!error) {
-//       bannerControl.save(function (err, result) {
-//       })
-//     } else {
-//       res.status(500).send(error);
-//     }
-//   })).catch((error) => {
-//     console.log(error);
-//   })
-//   res.status(200).json({});
-// })
+router.post('/upload-firestore', googleMulter.fields([{name:"passportCover"},{name:"passportPage"},{name:"photoAndID"}]), (req, res) => {
+  console.log('upload here ...');
+   console.log(req.files);
+  uploadToFireBaseStorage(req.files.passportCover[0]).then((result => {
+    console.log("firebase stored -> " + result);
+    let user = new User();
+    user.kycImg = result;
+      user.save(function (err, result) {
+        //res.status(200).json({});
+      })
+  })).catch((error) => {
+    console.log(error);
+    //res.status(500).send(error);
+  })
+  uploadToFireBaseStorage(req.files.passportPage[0]).then((result => {
+    console.log("firebase stored -> " + result);
+    let user = new User();
+    user.kycImg = result;
+      user.save(function (err, result) {
+        // res.status(200).json({});
+      })
+  })).catch((error) => {
+    console.log(error);
+    // res.status(500).send(error);
+  })
+  uploadToFireBaseStorage(req.files.photoAndID[0]).then((result => {
+    console.log("firebase stored -> " + result);
+    let user = new User();
+    user.kycImg = result;
+      user.save(function (err, result) {
+        res.status(200).json({});
+      })
+  })).catch((error) => {
+    console.log(error);
+    res.status(500).send(error);
+  })
+  
+})
+uploadToFireBaseStorage = function (file) {
+  return new Promise((resolve, reject) => {
+    // console.log(typeof file)
+    if (!file) {
+      reject('Invalid file upload');
+    }
+    let newfileName = `${Date.now()}_${file.originalname}`;
+    let fileupload = bucket.file(`/${newfileName}`);
+    const blobStream = fileupload.createWriteStream({
+      metadata: {
+        contentType: file.mimetype
+      }
+    });
+    blobStream.on('error', (error) => {
+      console.log(error);
+      reject('Something went wrong during file upload');
+    });
+    blobStream.on('finish', () => {
+      const name = fileupload.name.replace(/\//, '%2F')
+      const url = `https://firebasestorage.googleapis.com/v0/b/coinotc-mobile-dev.appspot.com/o/${name}?alt=media`;
+      file.fileURL = url;
+      resolve(url)
+    });
+    blobStream.end(file.buffer);
+  });
+}
 
 
 router.patch('/users/public/tradepassword', auth.required, (req, res) => {
@@ -207,7 +272,7 @@ router.put('/user', auth.required, auth.required, function (req, res, next) {
         return res.sendStatus(401);
       }
 
-      // only update fields that were actually passed...
+      // only update fields that were actually passed... 
       if (typeof req.body.user.username !== 'undefined') {
         user.username = req.body.user.username;
       }
