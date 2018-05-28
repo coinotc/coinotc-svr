@@ -13,7 +13,7 @@ router.use('/2fa', require('./2fa'));
 router.use('/background', require('./BackgroundUser'));
 router.use('/profiles', require('./profiles'));
 router.use('/notification',require('./notification'));
-
+router.use('/',require('./serverside-time'));
 router.use(function(err, req, res, next) {
   console.log('error has occurred!');
   if (err.name === 'ValidationError') {
