@@ -123,7 +123,8 @@ UserSchema.methods.toAuthJSON = function() {
     ratings: this.ratings,
     following: this.following,
     followers: this.followers,
-    nativeCurrency: this.baseCurrency
+    nativeCurrency: this.baseCurrency,
+    nativeCountry: this.country
   };
 };
 
