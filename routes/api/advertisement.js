@@ -6,16 +6,16 @@ var advertisement = mongoose.model('advertisement');
 const advertisementapi = '/';
 var auth = require('../auth');
 
-router.get(`${advertisementapi}getAll`, auth.optional, function(req, res) {
+router.get(`${advertisementapi}getAll`, auth.optional, function (req, res) {
 
-    advertisement.find({visible: true},(err, result) => {
-      if (err) {
-        // console.log(err);
-        res.status(500).send(err);
-      }
-      res.status(200).json(result);
+    advertisement.find({ visible: true }, (err, result) => {
+        if (err) {
+            // console.log(err);
+            res.status(500).send(err);
+        }
+        res.status(200).json(result);
     });
-  });
+});
 
 router.get(`${advertisementapi}getprice`, auth.required, (req, res) => {
     let type = req.query.type, fiat = req.query.fiat;
@@ -33,31 +33,40 @@ router.get(`${advertisementapi}getvisible/:id`, auth.required, (req, res) => {
 })
 router.post(advertisementapi, auth.required, (req, res) => {
     let get = req.body;
-    let send = new advertisement();
-    send.visible = get.visible
-    send.owner = get.owner
-    send.crypto = get.crypto
-    send.country = get.country
-    send.fiat = get.fiat
-    send.price = get.price
-    send.min_price = get.min_price
-    send.max_price = get.max_price
-    send.fiat = get.fiat
-    send.payment = get.payment
-    send.limit = get.limit
-    send.message = get.message
-    send.type = get.type
-    send.deleteStatus = false;
-    send.date = Date.now();
-    let error = send.validateSync();
-    if (!error) {
-        send.save(function (err, result) {
-            res.status(201).json(result);
-        });
-    } else {
-        console.log(error);
-        res.status(500).send(error);
-    }
+    advertisement.count({ fiat: get.fiat, crypto: get.crypto, type: get.type, visible: true }, (err, result) => {
+        if (err) {
+            res.status(500).json(err);
+        }
+        if (result) {
+            res.status(400).json(`You have a active advertisement at ${get.fiat}/${get.crypto}`);
+        } else {
+            let send = new advertisement();
+            send.visible = get.visible
+            send.owner = get.owner
+            send.crypto = get.crypto
+            send.country = get.country
+            send.fiat = get.fiat
+            send.price = get.price
+            send.min_price = get.min_price
+            send.max_price = get.max_price
+            send.fiat = get.fiat
+            send.payment = get.payment
+            send.limit = get.limit
+            send.message = get.message
+            send.type = get.type
+            send.deleteStatus = false;
+            send.date = Date.now();
+            let error = send.validateSync();
+            if (!error) {
+                send.save((err, result) => {
+                    res.status(201).json(result);
+                });
+            } else {
+                console.log(error);
+                res.status(500).json(error);
+            }
+        }
+    })
 })
 router.get(advertisementapi, auth.required, (req, res) => {
     let crypto = req.query.crypto;
