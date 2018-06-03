@@ -3,7 +3,7 @@ var router = require('express').Router();
 var passport = require('passport');
 var User = mongoose.model('User');
 var auth = require('../auth');
-
+var request = require('request')
 const walletApiKey = process.env.COINOTC_WALLET_API_KEY;
 const ApiUrl = process.env.COINOTC_WALLET_API_URL;
 const globalWalletPassword = process.env.COINOTC_GLOBAL_WALLET_PASSWORD;
@@ -16,7 +16,7 @@ router.get('/wallet-info', auth.required, function(req, res, next){
             return res.sendStatus(401);
         }
         console.log('get-wallet info ...');
-        currentUserEmail = result.email;
+        currentUserEmail = user.email;
         var options = {
             url: `${ApiUrl}wallets/${currentUserEmail}`,
             headers : {
@@ -25,15 +25,38 @@ router.get('/wallet-info', auth.required, function(req, res, next){
             }
         };
 
-        request.get(options)
-        .on('response', function(response) {
-            console.log(response.statusCode) // 200
-            console.log(response.headers['content-type']);
-            //console.log(response);
-            return res.status(201).json(response);
-        }).on('error', function(err) {
-            console.log(err);
-            res.status(500).send(err);
+        request.get(options, function(error, response, body){
+            if(error) res.status(500).send(error);
+            console.log(body);
+            let data = JSON.parse(body);
+            console.log(data)
+            var returnResult = {
+                id: data._id,
+                ETH: {
+                    address: data.eth.address
+                
+                },
+                ADA: {
+                    address:data.cardano.accountInfo.caAddresses[0].cadId
+                 
+                },
+                XRP: {
+                    address:data.ripple.account.address
+              
+                },
+                XLM: {
+                    address: data.stellar.public_address
+           
+                },
+                XMR: {
+                    address: data.monero.accInfo[1].result.address
+          
+                }
+                
+            }
+            console.log(returnResult)
+            return res.status(201).json(returnResult);
+
         })
     })
     .catch(next);
