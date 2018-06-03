@@ -4,40 +4,29 @@ var passport = require('passport');
 var User = mongoose.model('User');
 var auth = require('../auth');
 
-router.post('/generate', auth.required, function(req, res, next){
-    console.log('generate all wallets');
-    User.findById(req.payload.id).then(function(user){
-        if(!user){ return res.sendStatus(401); };
-        let currentUserEmail = null;
-        if(typeof user.email !== 'undefined'){
-            currentUserEmail = user.email;
-        }
-        
-        let wallets = [
-            {},
-            {},
-            {},
-            {},
-            {}
-        ];
+const walletApiKey = process.env.COINOTC_WALLET_API_KEY;
+const ApiUrl = process.env.COINOTC_WALLET_API_URL;
+const globalWalletPassword = process.env.COINOTC_GLOBAL_WALLET_PASSWORD;
 
-        Wallet.bulkInsert(wallets, function(err, results) {
-            if (err) {
-              console.log(err);
-            } 
-
-        });
-
-    }).catch(next);
+router.post('/withdrawal', auth.required, function(req, res, next){
+    console.log('withdrawal ...');
 });
 
-router.post('/send', auth.required, function(req, res, next){
-    console.log('transaction crypto ...');
+router.get('/balance', auth.required, function(req, res, next){
+    console.log('balance ...');
 });
 
-router.get('/create', auth.required, function(req, res, next){
-    console.log('create a new wallet');
+router.get('/locked-balance', auth.required, function(req, res, next){
+    console.log('locked balance ...');
 });
 
+router.post('/createOrder', auth.required, function(req, res, next){
+    console.log('Create an Order');
+});
+
+
+router.post('/releaseOrder', auth.required, function(req, res, next){
+    console.log('Release Order');
+});
 
 module.exports = router;
