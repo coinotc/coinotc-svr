@@ -107,7 +107,7 @@ router.get('/balance', auth.required, function(req, res, next){
                 },
                 XLM: {
                     address: data.stellar.public_address,
-                    balance: 0
+                    balance: data.balance
                 },
                 XMR: {
                     address: data.accInfo[1].result.address,
