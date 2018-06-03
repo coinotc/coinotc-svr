@@ -60,6 +60,8 @@ API_DOMAIN_URL=http://localhost:4001/api
 COINOTC_FROM_EMAIL=coinotc👻 <postmaster@mg.coinotc.market>
 COINOTC_WALLET_API_KEY=c1b8bf20420592a88300bc3e01405917fba41bcb64b6dc51497f64a3b8c3df59
 COINOTC_GLOBAL_WALLET_PASSWORD=123456h67890Fsfrdssdcdredsafd432
+COINOTC_WALLET_API_URL=http://localhost:3001/api/
+COINOTC_WALLET_ORIGIN=http://localhost:4001
 ```
 
 ## Change Stream Configuration
