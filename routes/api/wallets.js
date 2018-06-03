@@ -69,7 +69,9 @@ router.post('/withdrawal', auth.required, function(req, res, next){
 router.get('/balance', auth.required, function(req, res, next){
     console.log('balance ...');
     let _id = req.query.id;
-    let _cryptoType = req.query.cryptoType;
+    let _cryptoType = req.query.cryptoType.toLowerCase();
+    console.log("_id : " + _id);
+    console.log("_cryptoType : " + _cryptoType);
     
     User.findById(req.payload.id)
     .then(function (user) {
