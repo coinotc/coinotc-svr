@@ -66,10 +66,10 @@ router.post('/withdrawal', auth.required, function(req, res, next){
     console.log('withdrawal ...');
 });
 
-router.get('/balance', auth.required, function(req, res, next){
+router.get('/balance/:id/:cryptoType', auth.required, function(req, res, next){
     console.log('balance ...');
-    let _id = req.query.id;
-    let _cryptoType = req.query.cryptoType.toLowerCase();
+    let _id = req.params.id;
+    let _cryptoType = req.params.cryptoType.toLowerCase();
     console.log("_id : " + _id);
     console.log("_cryptoType : " + _cryptoType);
     
@@ -95,28 +95,15 @@ router.get('/balance', auth.required, function(req, res, next){
             console.log(data)
             var returnResult = {
                 id: data._id,
-                ETH: {
-                    address: data.address,
-                    balance: data.amount
-                },
-                ADA: {
-                    address:data.cardano.accountInfo.caAddresses[0].cadId,
-                    balance: data.amount
-                },
-                XRP: {
-                    address:data.account.address,
-                    balance: data.amount
-                },
-                XLM: {
-                    address: data.stellar.public_address,
-                    balance: data.balance
-                },
-                XMR: {
-                    address: data.accInfo[1].result.address,
-                    balance: data.balance
-                }
-                
+                balance: ''
             }
+            console.log(_cryptoType)
+            if((_cryptoType === "eth") || (_cryptoType === "ada") || (_cryptoType === "xrp")){
+                returnResult.balance = data.amount
+            }else if((_cryptoType === "xlm") || (_cryptoType === "xmr")){
+                returnResult.balance = data.balance
+            } 
+           
             console.log(returnResult)
             return res.status(201).json(returnResult);
 
