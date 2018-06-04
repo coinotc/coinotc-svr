@@ -47,14 +47,21 @@ Requests are authenticated using the `Authorization` header with a valid JWT. We
 * Create a .env file on the project root directory before start the backend service.
 
 ```
-NODE_ENV=
-SESSION_SECRET=
-MONGODB_URI=
-PORT=
-GOOGLE_APPLICATION_CREDENTIALS=
-FIREBASE_KEYFILENAME=
-MAILGUN_API_KEY=
-MAILGUN_DOMAIN=
+NODE_ENV=development
+SESSION_SECRET=wearethecoinotcppl@chinahuatah!
+MONGODB_URI=mongodb://localhost/coinotc
+PORT=4001
+GOOGLE_APPLICATION_CREDENTIALS=/home/kenneth/Projects/coinotc-svr/coinotc-mobile-dev-firebase-adminsdk-2pfht-29d893f4f0.json
+MAILGUN_API_KEY=key-e5b16dae5fb71157586d345c3df82e46
+MAILGUN_DOMAIN=mg.coinotc.market
+FIREBASE_PROJECT_ID=coinotc-mobile-dev
+FIREBASE_BUCKET=coinotc-mobile-dev.appspot.com
+API_DOMAIN_URL=http://localhost:4001/api
+COINOTC_FROM_EMAIL=coinotc👻 <postmaster@mg.coinotc.market>
+COINOTC_WALLET_API_KEY=c1b8bf20420592a88300bc3e01405917fba41bcb64b6dc51497f64a3b8c3df59
+COINOTC_GLOBAL_WALLET_PASSWORD=123456h67890Fsfrdssdcdredsafd432
+COINOTC_WALLET_API_URL=https://cointotc-wallet.ngrok.io/api/
+COINOTC_WALLET_ORIGIN=http://localhost:4001
 ```
 
 ## Change Stream Configuration

@@ -9,6 +9,8 @@ var mailgun = require('mailgun-js');
 var sendEmail = require('../../config/sendEmail');
 const Email = require('email-templates');
 var multer = require('multer');
+var request = require('request');
+
 const email = new Email();
 const gstorage = googleStorage({
   projectId: process.env.FIREBASE_PROJECT_ID,
@@ -16,6 +18,10 @@ const gstorage = googleStorage({
 });
 
 const bucket = gstorage.bucket(process.env.FIREBASE_BUCKET);
+const walletApiKey = process.env.COINOTC_WALLET_API_KEY;
+const ApiUrl = process.env.COINOTC_WALLET_API_URL;
+const globalWalletPassword = process.env.COINOTC_GLOBAL_WALLET_PASSWORD;
+const origin = process.env.COINOTC_WALLET_ORIGIN;
 
 const googleMulter = multer({
   storage: multer.memoryStorage(),
@@ -98,7 +104,35 @@ router.get('/users/verify', (req, res) => {
       if (err) {
         return res.status(500).json(err);
       }
-      return res.status(201).json({ status: 'success' });
+      if(!result){ return res.sendStatus(401); };
+      let currentUserEmail = null;
+      if(typeof result.email !== 'undefined'){
+          currentUserEmail = result.email;
+      }
+      console.log("currentUserEmail > " + currentUserEmail);
+      let language = "English";
+      if(result.preferLanguage === 'cn'){
+          language = "Chinese";
+      }
+
+      var options = {
+        url: `${ApiUrl}wallets/generate/${currentUserEmail}/${globalWalletPassword}/${language}`,
+        headers : {
+          'Authorization': `Bearer ${walletApiKey}`,
+          'Origin': origin
+        }
+      };
+
+      request.get(options)
+      .on('response', function(response) {
+          console.log(response.statusCode) // 200
+          console.log(response.headers['content-type']);
+          //console.log(response);
+          return res.status(201).json({ status: 'success' });
+      }).on('error', function(err) {
+          console.log(err);
+          res.status(500).send(err);
+      })
     }
   );
 });

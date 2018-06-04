@@ -15,6 +15,9 @@ router.post(apiurl+"sendComplain", auth.required, (req, res) => {
     newComplain.content = complain.content;
     newComplain.status = complain.status;
     newComplain.title = complain.title;
+    newComplain.crypto = complain.crypto;
+    newComplain.theOther = complain.theOther;
+    newComplain.fiat = complain.fiat;
     newComplain.createDate = new Date(); 
     let error = newComplain.validateSync();
     if (!error) {

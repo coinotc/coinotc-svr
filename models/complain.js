@@ -13,5 +13,8 @@ module.exports = mongoose.model('complain', {
         role:String
     }],
     createDate:Date,
-    title:String
+    title:String,
+    crypto:String,
+    theOther:String,
+    fiat:String
 });
