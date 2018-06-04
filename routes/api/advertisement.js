@@ -31,9 +31,19 @@ router.get(`${advertisementapi}getvisible/:id`, auth.required, (req, res) => {
         res.send(result.visible);
     })
 })
+router.get(`${advertisementapi}getfiatdata/:type/:fiat`, auth.required, (req, res) => {
+    advertisement.find({ fiat: req.params.fiat, type: req.params.type, owner: req.payload.username, visible: true }, 'crypto -_id', (err, result) => {
+        res.send(result);
+    })
+})
+// router.get(`${advertisementapi}getcryptodata/:type/:crypto`, auth.required, (req, res) => {
+//     advertisement.find({ crypto: req.params.crypto, type: req.params.type, owner: req.payload.username, visible: true }, 'fiat -_id', (err, result) => {
+//         res.send(result);
+//     })
+// })
 router.post(advertisementapi, auth.required, (req, res) => {
     let get = req.body;
-    advertisement.count({ fiat: get.fiat, crypto: get.crypto, type: get.type, visible: true }, (err, result) => {
+    advertisement.count({ fiat: get.fiat, crypto: get.crypto, type: get.type, owner: req.payload.username, visible: true }, (err, result) => {
         if (err) {
             res.status(500).json(err);
         }
