@@ -327,7 +327,7 @@ router.post('/users/login', function (req, res, next) {
       }
       User.findOneAndUpdate(
         { username: user.username },
-        { ip: user.ip, online: true },
+        { ip: user.ip, online: true ,loginDateTime:new Date()},
         { new: true },
         (err, result) => {
           if (err) res.status(500).json(err);
