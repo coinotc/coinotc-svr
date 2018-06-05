@@ -16,5 +16,7 @@ module.exports = mongoose.model('complain', {
     title:String,
     crypto:String,
     theOther:String,
-    fiat:String
+    fiat:String,
+    roomkey:String
+
 });

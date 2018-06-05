@@ -43,7 +43,15 @@ router.post(apiurl+"sendComplain", auth.required, (req, res) => {
         res.status(500).send(error);
     }
 });
-
+router.get("/getCurrentComplain", auth.required, (req,res)=>{
+    Complain.find( {_id:req.query._id}, (err, result) => {
+        if (err) {
+            res.status(500).send(err);
+            return; 
+        }
+        res.status(200).json(result);
+    });
+})
 router.get(apiurl, auth.required, (req,res)=>{
     var query ={};
     let username = req.query.keyword;
@@ -87,7 +95,7 @@ router.patch( apiurl +"changeStatus" , (req,res)=>{
 router.patch(apiurl+"roomkey", auth.required, (req, res) => {
     console.log("patch roomkey"+req.body)
     console.log("patch roomkey"+req.query)
-Complain.findOneAndUpdate({ _id: req.query.complainId},{ roomkey: req.body.roomkey },  (err, result) => {
+Complain.findOneAndUpdate({ _id: req.body.complainId},{ roomkey: req.body.roomkey },  (err, result) => {
         if (err) res.status(500).json(err);
         res.status(201).json(result);
       })
