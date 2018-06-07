@@ -123,9 +123,7 @@ router.post('/withdrawal', auth.required, function(req, res, next){
             request.post(options, function(error, response, body){
                 if(error) res.status(500).send(error);
                 console.log(body);
-                let data = JSON.parse(body);
-                console.log(data)
-                return res.status(201).json(data);
+                return res.status(201).json(body);
             })
         }).catch((err) => {
             console.log(err);
