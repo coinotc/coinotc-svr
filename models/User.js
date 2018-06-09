@@ -56,7 +56,8 @@ var UserSchema = new mongoose.Schema(
     verifyPassportPhoto:Number,
     verifySelfie:Number,
     passportPhoto:String,
-    selfiePhoto:String
+    selfiePhoto:String,
+    loginDateTime:Date
   },
   { timestamps: true }
 );
@@ -93,15 +94,8 @@ UserSchema.methods.validTradePassword = function(tradePassword) {
 
 UserSchema.methods.generateJWT = function() {
   var today = new Date();
-  console.log(today)
   var exp = new Date(today);
-  console.log(exp)
-  exp.setDate(today.getDate() + 60);
-  console.log(exp)
-  console.log(today.getDate())
-  console.log(exp.setDate(today.getDate() + 60))
-  console.log(exp.getTime() / 1000)
-  console.log(1111111111111111111111111111)
+  exp.setDate(today.getDate() + 1 );
   return jwt.sign(
     {
       id: this._id,

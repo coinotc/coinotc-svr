@@ -6,7 +6,7 @@ var moment = require('moment');
 const apiurl = '/';
 
 router.get("/serverside-time", (req,res)=>{
-    var durationFromLocalTime =  moment.duration(moment(new Date(0)).diff(moment()));
+    var durationFromLocalTime =  moment.duration(moment(new Date()).diff(moment()));
     //console.log(moment.utc().format())
     var offsetSeconds = durationFromLocalTime.asSeconds()
     console.log("offsetSeconds:"+offsetSeconds)
