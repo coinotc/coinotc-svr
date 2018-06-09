@@ -5,6 +5,7 @@ var User = mongoose.model('User');
 var auth = require('../auth');
 var request = require('request');
 var rp = require('request-promise');
+var Decimal = require('decimal.js');
 
 const walletApiKey = process.env.COINOTC_WALLET_API_KEY;
 const ApiUrl = process.env.COINOTC_WALLET_API_URL;
@@ -75,7 +76,8 @@ router.post('/withdrawal', auth.required, function(req, res, next){
             return res.sendStatus(401);
         }
         console.log(">>> {req.body.type>>> " + req.body.type);
-        console.log(">>> {req.body.type>>> " + user.baseCurrency);
+        console.log(">>> {req.body.address>>> " + req.body.address);
+        console.log(">>> {req.body.currency>>> " + user.baseCurrency);
         let userCurrency = user.baseCurrency;
         if(typeof(user.baseCurrency) === 'undefined' ){
             userCurrency = "USD";
@@ -95,16 +97,20 @@ router.post('/withdrawal', auth.required, function(req, res, next){
         }
 
         rp({ uri: `https://api.coinmarketcap.com/v1/ticker/${idType}/?convert=${userCurrency}`, json: true }).then((result) => {
-            console.log("result > " + result)
-            let equivAmount = parseInt(result) * parseInt(req.body.amount);
-            console.log(equivAmount);
+            console.log("result > " + JSON.stringify(result));
+            console.log("result > " + req.body.amount);
+            console.log("result.price_usd > " + result[0].price_usd);
+            x = new Decimal(result[0].price_usd);
+            equivAmount = x.times(req.body.amount);
+            console.log("<<< equivAmount >>>> <<< " + equivAmount.toNumber());
+            
             var withdrawalPostBody = {
                 "cryptoCurrency": req.body.type.toUpperCase(),
                 "email": user.email,
                 "unit": req.body.amount,
                 "transactCurrency": user.baseCurrency,
                 "pin": user.tradePasswordHash,
-                "equivalentAmount": equivAmount,
+                "equivalentAmount": equivAmount.toNumber(),
                 "beneficiaryAddress": req.body.address,
                 "memo": req.body.notes
             }
