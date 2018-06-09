@@ -47,34 +47,31 @@ router.post(advertisementapi, auth.required, (req, res) => {
         if (err) {
             res.status(500).json(err);
         }
-        if (result) {
-            res.status(400).json(`You have a active advertisement at ${get.fiat}/${get.crypto}`);
+        
+        let send = new advertisement();
+        send.visible = get.visible
+        send.owner = get.owner
+        send.crypto = get.crypto
+        send.country = get.country
+        send.fiat = get.fiat
+        send.price = get.price
+        send.min_price = get.min_price
+        send.max_price = get.max_price
+        send.fiat = get.fiat
+        send.payment = get.payment
+        send.limit = get.limit
+        send.message = get.message
+        send.type = get.type
+        send.deleteStatus = false;
+        send.date = Date.now();
+        let error = send.validateSync();
+        if (!error) {
+            send.save((err, result) => {
+                res.status(201).json(result);
+            });
         } else {
-            let send = new advertisement();
-            send.visible = get.visible
-            send.owner = get.owner
-            send.crypto = get.crypto
-            send.country = get.country
-            send.fiat = get.fiat
-            send.price = get.price
-            send.min_price = get.min_price
-            send.max_price = get.max_price
-            send.fiat = get.fiat
-            send.payment = get.payment
-            send.limit = get.limit
-            send.message = get.message
-            send.type = get.type
-            send.deleteStatus = false;
-            send.date = Date.now();
-            let error = send.validateSync();
-            if (!error) {
-                send.save((err, result) => {
-                    res.status(201).json(result);
-                });
-            } else {
-                console.log(error);
-                res.status(500).json(error);
-            }
+            console.log(error);
+            res.status(500).json(error);
         }
     })
 })
