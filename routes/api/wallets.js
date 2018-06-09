@@ -189,12 +189,35 @@ router.get('/balance/:id/:cryptoType', auth.required, function(req, res, next){
     .catch(next);
 });
 
-router.get('/locked-balance', auth.required, function(req, res, next){
+router.post('/locked-balance', auth.required, function(req, res, next){
     console.log('locked balance ...');
 });
 
-router.post('/createOrder', auth.required, function(req, res, next){
-    console.log('Create an Order');
+router.get('/transaction-history', auth.required, function(req, res, next){
+    let crypto_type = req.query.type;
+    console.log("crypto_type >>> transaction-history >>>" + crypto_type);
+    User.findById(req.payload.id)
+    .then(function (user) {
+        if (!user) {
+            return res.sendStatus(401);
+        }
+        console.log('get transaction history ...');
+        currentUserEmail = user.email;
+        var options = {
+            url: `${ApiUrl}transactions/transaction-history?email=${currentUserEmail}&currency=${crypto_type}`,
+            headers : {
+            'Authorization': `Bearer ${walletApiKey}`,
+            'Origin': origin
+            }
+        };
+
+        request.get(options, function(error, response, body){
+            if(error) res.status(500).send(error);
+            let data = JSON.stringify(body);
+            return res.status(201).json(JSON.parse(data));
+        })
+    })
+    .catch(next);
 });
 
 
