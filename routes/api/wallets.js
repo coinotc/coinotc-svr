@@ -32,34 +32,51 @@ router.get('/wallet-info', auth.required, function(req, res, next){
             if(error) res.status(500).send(error);
             console.log(body);
             let data = JSON.parse(body);
-            console.log(data)
-            var returnResult = {
-                id: data._id,
-                ETH: {
-                    address: data.eth.address
-                
-                },
-                ADA: {
-                    address:data.cardano.accountInfo.caAddresses[0].cadId
-                 
-                },
-                XRP: {
-                    address:data.ripple.account.address
-              
-                },
-                XLM: {
-                    address: data.stellar.public_address
-           
-                },
-                XMR: {
-                    address: data.monero.accInfo[2].result.address
-          
-                }
-                
+            console.log(data);
+            console.log("11111111"+data.monero.accInfo[1])
+            console.log("22222222"+data.monero.accInfo[2].result.address)
+            if(data.monero.accInfo[1] === null){
+                var _returnResult = {
+                    id: data._id,
+                    ETH: {
+                        address: data.eth.address
+                    },
+                    ADA: {
+                        address:data.cardano.accountInfo.caAddresses[0].cadId
+                    },
+                    XRP: {
+                        address:data.ripple.account.address
+                    },
+                    XLM: {
+                        address: data.stellar.public_address
+                    },
+                    XMR: {
+                        address: data.monero.accInfo[2].result.address
+                    }
+                };
+                return res.status(201).json(_returnResult);
+            }else{
+                var returnResult = {
+                    id: data._id,
+                    ETH: {
+                        address: data.eth.address
+                    },
+                    ADA: {
+                        address:data.cardano.accountInfo.caAddresses[0].cadId
+                    },
+                    XRP: {
+                        address:data.ripple.account.address
+                    },
+                    XLM: {
+                        address: data.stellar.public_address
+                    },
+                    XMR: {
+                        address: data.monero.accInfo[1].result.address
+                    }
+                };
+                return res.status(201).json(returnResult);
             }
-            console.log(returnResult)
-            return res.status(201).json(returnResult);
-
+            
         })
     })
     .catch(next);
@@ -214,6 +231,7 @@ router.get('/transaction-history', auth.required, function(req, res, next){
         request.get(options, function(error, response, body){
             if(error) res.status(500).send(error);
             let data = JSON.stringify(body);
+            console.log(data)
             return res.status(201).json(JSON.parse(data));
         })
     })
