@@ -6,15 +6,28 @@ var advertisement = mongoose.model('advertisement');
 const advertisementapi = '/';
 var auth = require('../auth');
 
-router.get(`${advertisementapi}getAll`, auth.optional, function (req, res) {
-
-    advertisement.find({ visible: true }, (err, result) => {
-        if (err) {
-            // console.log(err);
-            res.status(500).send(err);
-        }
-        res.status(200).json(result);
-    });
+router.get(`${advertisementapi}getAll/:type/:country/:fiat/:crypto`, auth.optional, function (req, res) {
+    let crypto = req.params.crypto;
+    let type = req.params.type;
+    let country = req.params.country;
+    let fiat = req.params.fiat;
+    if (country == 'global') {
+        advertisement.find({ crypto: crypto, type: type, fiat: fiat, visible: true }, (err, result) => {
+            if (err) {
+                // console.log(err);
+                res.status(500).send(err);
+            }
+            res.status(200).json(result);
+        });
+    } else {
+        advertisement.find({ crypto: crypto, type: type, fiat: fiat, country: country, visible: true }, (err, result) => {
+            if (err) {
+                // console.log(err);
+                res.status(500).send(err);
+            }
+            res.status(200).json(result);
+        });
+    }
 });
 
 router.get(`${advertisementapi}getprice`, auth.required, (req, res) => {
@@ -47,7 +60,7 @@ router.post(advertisementapi, auth.required, (req, res) => {
         if (err) {
             res.status(500).json(err);
         }
-        
+
         let send = new advertisement();
         send.visible = get.visible
         send.owner = get.owner
