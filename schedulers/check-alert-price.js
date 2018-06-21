@@ -18,8 +18,13 @@ function getAlertPrice(above){
     return promise;
 }
 
-function getUserFcmTokenAndUpdateStatus(username){
-    var getToken = User.findOneAndUpdate({ username : username },{status: false},{
+function updateAlertStatus(id){
+    var updateStatus = Alert.findOneAndUpdate({_id : id},{status : false},{"new": true}).exec();
+    return updateStatus
+}
+
+function getUserFcmToken(username){
+    var getToken = User.findOneAndUpdate({ username : username },{
         "fields": { "deviceToken":1 },
         "new": true 
        }).exec();
@@ -45,13 +50,12 @@ function comparePriceBelow() {
         // console.log(alertRate);
         // console.log(alertRate.price);
          console.log("MARKET PRICE"+marketRate.data.quotes.USD.price);
-        //  for(let i=0;i<alertRate.length;i++){
             alertRate.forEach((alertInfo)=>{
                 console.log("CHECK FOREACH"+ alertInfo)
-                if(marketRate.data.quotes.USD.price < alertInfo.price){
+                if((alertInfo.status === true) && (marketRate.data.quotes.USD.price < alertInfo.price)){
                     console.log(">>>>>>>>>>!!!!PRICE IS LOWER THAN MARKET VALUE!!!!<<<<<<<<<<");
                     console.log(">>>>>>>>>>NOTIFY USER"+ alertInfo.username);
-                    var deviceToken = getUserFcmTokenAndUpdateStatus(alertInfo.username);
+                    var deviceToken = getUserFcmToken(alertInfo.username);
                     deviceToken.then((token)=>{
                         console.log(">>>>>>>>>>TOKEN>>>>>>>>>>" + token.deviceToken);
                         console.log(">>>>>>>>>>BEFORE>>>>>>>>>>"+validDeviceRegistrationToken);
@@ -76,15 +80,23 @@ function comparePriceBelow() {
                                 console.log("Successfully ALERT sent with response: ", response);
                             }
                         });
-                    }).catch(err=> {throw console.error(err)})
+                        return alertInfo
+                    }).then(alertInfo => {
+                        console.log(">>>>>>>>>>ID>>>>>>>>>"+alertInfo)
+                        var updateStatus = updateAlertStatus(alertInfo._id);
+                        updateStatus.then(result=>{
+                            console.log("Updated Status: " + result.status)
+                        })
+                    }).catch(err=> {  console.log(err)})
+                    
+                    .catch(err=> { console.log(err)})
                 }else{
                     console.log("~~~~~~~~~~NOTHING TO SEE HERE~~~~~~~~~~")
                 }
             })
-        //  }
         return 
     }).catch((error)=>{
-        throw console.error(error);
+         console.log(error);
     })
     
 };
