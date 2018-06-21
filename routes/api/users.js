@@ -100,12 +100,13 @@ router.get('/users/verify', (req, res) => {
     { secretToken: '', active: true },
     { new: true },
     (err, result) => {
+      console.log("RESULT"+ result)
       console.log(err);
       if (err) {
         return res.status(500).json(err);
-      }
-      if(!result){ return res.sendStatus(401); };
-      let currentUserEmail = null;
+      }else if(!result){
+         return res.sendStatus(401) };
+          let currentUserEmail = null;
       if(typeof result.email !== 'undefined'){
           currentUserEmail = result.email;
       }

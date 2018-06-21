@@ -1,0 +1,100 @@
+var mongoose = require('mongoose');
+const getCoinRates = require('./get-crypto-price');
+var FCM = require('fcm-node');
+var validDeviceRegistrationToken = new Array();
+var serverKey = 'AAAALaHfOPI:APA91bFffuUQ4fZrxQ0a7ybjgG5n5560f8YK4XnZj-af_Ir02fhje2563c8Gfmh4ofPDlfHZb7x7n-9JmAMIYId-qr8kIuDe5fNiQF79wvnKGW6Y7Jpcst1wN3a9p2yE_NGR6dPLlW96'; //put your server key here
+var fcm = new FCM(serverKey);
+
+var db = mongoose.connect('mongodb://localhost:27017/coinotc');
+require('../models/alert');
+require('../models/User');
+mongoose.set('debug', true);
+var Alert = mongoose.model('alert');
+var User = mongoose.model('User');
+const ETH = '1027';
+
+function getAlertPrice(above){
+    var promise = Alert.find({above:above}).exec();
+    return promise;
+}
+
+function getUserFcmTokenAndUpdateStatus(username){
+    var getToken = User.findOneAndUpdate({ username : username },{status: false},{
+        "fields": { "deviceToken":1 },
+        "new": true 
+       }).exec();
+    return getToken;
+}
+
+function comparePriceBelow() {
+    var marketRate =  getCoinRates(ETH);
+
+    var getAlert = getAlertPrice(false);    
+    var alertRate = getAlert
+
+    let results = Promise.all([
+        marketRate,
+        alertRate
+      ]);
+    return results
+    .then(([marketRate, alertRate])=>{
+        // console.log("NEW DATA RECIEVED>>>>>>>AAAAAAA"+ JSON.stringify(resultA));
+        // console.log("NEW DATA RECIEVED>>>>>>>BBBBBBB"+resultB);
+        // console.log(typeof resultB)
+        // console.log(">>>>LONG" + resultB.length);
+        // console.log(alertRate);
+        // console.log(alertRate.price);
+         console.log("MARKET PRICE"+marketRate.data.quotes.USD.price);
+        //  for(let i=0;i<alertRate.length;i++){
+            alertRate.forEach((alertInfo)=>{
+                console.log("CHECK FOREACH"+ alertInfo)
+                if(marketRate.data.quotes.USD.price < alertInfo.price){
+                    console.log(">>>>>>>>>>!!!!PRICE IS LOWER THAN MARKET VALUE!!!!<<<<<<<<<<");
+                    console.log(">>>>>>>>>>NOTIFY USER"+ alertInfo.username);
+                    var deviceToken = getUserFcmTokenAndUpdateStatus(alertInfo.username);
+                    deviceToken.then((token)=>{
+                        console.log(">>>>>>>>>>TOKEN>>>>>>>>>>" + token.deviceToken);
+                        console.log(">>>>>>>>>>BEFORE>>>>>>>>>>"+validDeviceRegistrationToken);
+                        validDeviceRegistrationToken = token.deviceToken;
+                        console.log(">>>>>>>>>>AFTER>>>>>>>>>>"+validDeviceRegistrationToken);
+                        return ([alertInfo,validDeviceRegistrationToken])
+                    }).then(([alertInfo,validDeviceRegistrationToken])=>{
+                        console.log(">>>>>>>>>>NEW>>>>>>>>>>>" + alertInfo)
+                        var pigeon = {
+                            to: validDeviceRegistrationToken,
+                            priority: 'high',
+                            notification: {
+                                title: alertInfo.crypto + ' VALUE BELOW ' + alertInfo.fiat + alertInfo.price, 
+            
+                                sound : "default" 
+                            }
+                        }
+                        fcm.send(pigeon, function(err, response){
+                            if (err) {
+                                console.log("Something has gone wrong!");
+                            } else {
+                                console.log("Successfully ALERT sent with response: ", response);
+                            }
+                        });
+                    }).catch(err=> {throw console.error(err)})
+                }else{
+                    console.log("~~~~~~~~~~NOTHING TO SEE HERE~~~~~~~~~~")
+                }
+            })
+        //  }
+        return 
+    }).catch((error)=>{
+        throw console.error(error);
+    })
+    
+};
+comparePriceBelow();
+
+
+
+    
+
+  
+
+
+
