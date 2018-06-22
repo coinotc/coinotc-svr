@@ -34,6 +34,7 @@
     "iojs": "^1.0.0",
     "jsonwebtoken": "7.1.9",
     "mailgun-js": "^0.18.0",
+    "memwatch-next": "^0.3.0",
     "method-override": "^2.3.10",
     "methods": "1.1.2",
     "moment": "^2.22.2",

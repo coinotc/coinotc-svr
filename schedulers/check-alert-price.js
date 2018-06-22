@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var memwatch = require('memwatch-next');
 const getCoinRates = require('./get-crypto-price');
 var FCM = require('fcm-node');
 var validDeviceRegistrationToken = new Array();
@@ -170,4 +171,12 @@ function compareETHPriceAbove() {
 };
 compareETHPriceBelow();
 compareETHPriceAbove();
+memwatch.on('leak', function(info) { 
+    console.log(info);
+});
+
+memwatch.on('stats', function(stats) { console.log(stats) });
+var hd = new memwatch.HeapDiff();
+var diff = hd.end();
+console.log(diff);
 process.exit();
