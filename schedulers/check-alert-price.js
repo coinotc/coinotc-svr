@@ -122,7 +122,7 @@ function compareETHPriceAbove() {
             alertRate.forEach((alertInfo)=>{
                 console.log("CHECK FOREACH"+ alertInfo)
                 if((alertInfo.status === true) && (marketRate.data.quotes.USD.price > alertInfo.price)){
-                    console.log(">>>>>>>>>>!!!!PRICE IS LOWER THAN MARKET VALUE!!!!<<<<<<<<<<");
+                    console.log(">>>>>>>>>>!!!!PRICE IS ABOVE THAN MARKET VALUE!!!!<<<<<<<<<<");
                     console.log(">>>>>>>>>>NOTIFY USER"+ alertInfo.username);
                     var deviceToken = getUserFcmToken(alertInfo.username);
                     deviceToken.then((token)=>{
@@ -170,7 +170,7 @@ function compareETHPriceAbove() {
 };
 compareETHPriceBelow();
 compareETHPriceAbove();
-process.exit();
+// process.exit();
 
 
 
