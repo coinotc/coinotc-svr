@@ -1,7 +1,7 @@
 var cron = require('node-cron');
 
 //exceute every 1 min
-cron.schedule('*/5 * * * * *', function(){
+cron.schedule('*/30 * * * * *', function(){
     var shell = require('./child_helper');
 
     var commandList = [

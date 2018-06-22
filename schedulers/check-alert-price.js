@@ -31,7 +31,7 @@ function getUserFcmToken(username){
     return getToken;
 }
 
-function comparePriceBelow() {
+function compareETHPriceBelow() {
     var marketRate =  getCoinRates(ETH);
 
     var getAlert = getAlertPrice(false);    
@@ -98,9 +98,78 @@ function comparePriceBelow() {
     }).catch((error)=>{
          console.log(error);
     })
-    
 };
-comparePriceBelow();
+
+function compareETHPriceAbove() {
+    var marketRate =  getCoinRates(ETH);
+
+    var getAlert = getAlertPrice(true);    
+    var alertRate = getAlert
+
+    let results = Promise.all([
+        marketRate,
+        alertRate
+      ]);
+    return results
+    .then(([marketRate, alertRate])=>{
+        // console.log("NEW DATA RECIEVED>>>>>>>AAAAAAA"+ JSON.stringify(resultA));
+        // console.log("NEW DATA RECIEVED>>>>>>>BBBBBBB"+resultB);
+        // console.log(typeof resultB)
+        // console.log(">>>>LONG" + resultB.length);
+        // console.log(alertRate);
+        // console.log(alertRate.price);
+         console.log("MARKET PRICE"+marketRate.data.quotes.USD.price);
+            alertRate.forEach((alertInfo)=>{
+                console.log("CHECK FOREACH"+ alertInfo)
+                if((alertInfo.status === true) && (marketRate.data.quotes.USD.price > alertInfo.price)){
+                    console.log(">>>>>>>>>>!!!!PRICE IS LOWER THAN MARKET VALUE!!!!<<<<<<<<<<");
+                    console.log(">>>>>>>>>>NOTIFY USER"+ alertInfo.username);
+                    var deviceToken = getUserFcmToken(alertInfo.username);
+                    deviceToken.then((token)=>{
+                        console.log(">>>>>>>>>>TOKEN>>>>>>>>>>" + token.deviceToken);
+                        console.log(">>>>>>>>>>BEFORE>>>>>>>>>>"+validDeviceRegistrationToken);
+                        validDeviceRegistrationToken = token.deviceToken;
+                        console.log(">>>>>>>>>>AFTER>>>>>>>>>>"+validDeviceRegistrationToken);
+                        return ([alertInfo,validDeviceRegistrationToken])
+                    }).then(([alertInfo,validDeviceRegistrationToken])=>{
+                        console.log(">>>>>>>>>>NEW>>>>>>>>>>>" + alertInfo)
+                        var pigeon = {
+                            to: validDeviceRegistrationToken,
+                            priority: 'high',
+                            notification: {
+                                title: alertInfo.crypto + ' VALUE ABOVE ' + alertInfo.fiat + alertInfo.price, 
+            
+                                sound : "default" 
+                            }
+                        }
+                        fcm.send(pigeon, function(err, response){
+                            if (err) {
+                                console.log("Something has gone wrong!");
+                            } else {
+                                console.log("Successfully ALERT sent with response: ", response);
+                            }
+                        });
+                        return alertInfo
+                    }).then(alertInfo => {
+                        console.log(">>>>>>>>>>ID>>>>>>>>>"+alertInfo)
+                        var updateStatus = updateAlertStatus(alertInfo._id);
+                        updateStatus.then(result=>{
+                            console.log("Updated Status: " + result.status)
+                        })
+                    }).catch(err=> {  console.log(err)})
+                    
+                    .catch(err=> { console.log(err)})
+                }else{
+                    console.log("~~~~~~~~~~NOTHING TO SEE HERE~~~~~~~~~~")
+                }
+            })
+        return 
+    }).catch((error)=>{
+         console.log(error);
+    })
+};
+compareETHPriceBelow();
+compareETHPriceAbove();
 
 
 
