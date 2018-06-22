@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 const getCoinRates = require('./get-crypto-price');
 var FCM = require('fcm-node');
 var validDeviceRegistrationToken = new Array();
-var serverKey = 'AAAALaHfOPI:APA91bFffuUQ4fZrxQ0a7ybjgG5n5560f8YK4XnZj-af_Ir02fhje2563c8Gfmh4ofPDlfHZb7x7n-9JmAMIYId-qr8kIuDe5fNiQF79wvnKGW6Y7Jpcst1wN3a9p2yE_NGR6dPLlW96'; //put your server key here
+var serverKey = process.env.FCM_SERVER_KEY;
 var fcm = new FCM(serverKey);
 
 var db = mongoose.connect('mongodb://localhost:27017/coinotc');
