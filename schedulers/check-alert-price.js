@@ -33,6 +33,7 @@ function getUserFcmToken(username){
 }
 
 function compareETHPriceBelow() {
+    console.log("compareETHPriceBelow");
     var marketRate =  getCoinRates(ETH);
 
     var getAlert = getAlertPrice(false);    
@@ -42,14 +43,7 @@ function compareETHPriceBelow() {
         marketRate,
         alertRate
     ]);
-    return results
-    .then(([marketRate, alertRate])=>{
-        // console.log("NEW DATA RECIEVED>>>>>>>AAAAAAA"+ JSON.stringify(resultA));
-        // console.log("NEW DATA RECIEVED>>>>>>>BBBBBBB"+resultB);
-        // console.log(typeof resultB)
-        // console.log(">>>>LONG" + resultB.length);
-        // console.log(alertRate);
-        // console.log(alertRate.price);
+    return results.then(([marketRate, alertRate])=>{
          console.log("MARKET PRICE"+marketRate.data.quotes.USD.price);
             alertRate.forEach((alertInfo)=>{
                 console.log("CHECK FOREACH"+ alertInfo)
@@ -102,6 +96,7 @@ function compareETHPriceBelow() {
 };
 
 function compareETHPriceAbove() {
+    console.log("compareETHPriceAbove");
     var marketRate =  getCoinRates(ETH);
 
     var getAlert = getAlertPrice(true);    
@@ -113,13 +108,7 @@ function compareETHPriceAbove() {
       ]);
     return results
     .then(([marketRate, alertRate])=>{
-        // console.log("NEW DATA RECIEVED>>>>>>>AAAAAAA"+ JSON.stringify(resultA));
-        // console.log("NEW DATA RECIEVED>>>>>>>BBBBBBB"+resultB);
-        // console.log(typeof resultB)
-        // console.log(">>>>LONG" + resultB.length);
-        // console.log(alertRate);
-        // console.log(alertRate.price);
-         console.log("MARKET PRICE"+marketRate.data.quotes.USD.price);
+        console.log("MARKET PRICE"+marketRate.data.quotes.USD.price);
             alertRate.forEach((alertInfo)=>{
                 console.log("CHECK FOREACH"+ alertInfo)
                 if((alertInfo.status === true) && (marketRate.data.quotes.USD.price > alertInfo.price)){
@@ -169,6 +158,7 @@ function compareETHPriceAbove() {
          console.log(error);
     })
 };
+console.log("==== Get ETH Price Alerts =====");
 compareETHPriceBelow();
 compareETHPriceAbove();
 console.log("==== Memory Information =====");
