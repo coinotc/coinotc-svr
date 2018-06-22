@@ -14,7 +14,7 @@ cron.schedule('*/30 * * * * *', function(){
             console.log('executed many commands in a row'+ err);
             throw err;
         }else{ 
-            console.log('done')
+            console.log('done checking price alert...')
         }
     });
 });

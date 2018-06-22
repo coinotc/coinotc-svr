@@ -170,13 +170,4 @@ function compareETHPriceAbove() {
 };
 compareETHPriceBelow();
 compareETHPriceAbove();
-// process.exit();
-
-
-
-    
-
-  
-
-
-
+process.exit();

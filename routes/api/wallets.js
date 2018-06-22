@@ -33,9 +33,8 @@ router.get('/wallet-info', auth.required, function(req, res, next){
             console.log(body);
             let data = JSON.parse(body);
             console.log(data);
-            console.log("11111111"+data.monero.accInfo[1])
-            console.log("22222222"+data.monero.accInfo[2].result.address)
             if(data.monero.accInfo[1] === null){
+                console.log("data.monero.accInfo[2].result.address"+ data.monero.accInfo[2].result.address);
                 var _returnResult = {
                     id: data._id,
                     ETH: {
@@ -56,6 +55,7 @@ router.get('/wallet-info', auth.required, function(req, res, next){
                 };
                 return res.status(201).json(_returnResult);
             }else{
+                console.log("data.monero.accInfo[1] > "+data.monero.accInfo[1])
                 var returnResult = {
                     id: data._id,
                     ETH: {
