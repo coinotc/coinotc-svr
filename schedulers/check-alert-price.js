@@ -171,6 +171,7 @@ function compareETHPriceAbove() {
 };
 compareETHPriceBelow();
 compareETHPriceAbove();
+console.log("==== Memory Information =====");
 memwatch.on('leak', function(info) { 
     console.log(info);
 });

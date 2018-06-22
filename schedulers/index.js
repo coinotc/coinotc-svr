@@ -6,7 +6,7 @@ cron.schedule('*/30 * * * * *', function(){
 
     var commandList = [
         // "node ./schedulers/fcm.js"
-        "node ./schedulers/check-alert-price.js"
+        "node --trace-deopt --trace-opt ./schedulers/check-alert-price.js"
     ]
 
     shell.series(commandList , function(err){
