@@ -40,7 +40,7 @@ function compareETHPriceBelow() {
     let results = Promise.all([
         marketRate,
         alertRate
-      ]);
+    ]);
     return results
     .then(([marketRate, alertRate])=>{
         // console.log("NEW DATA RECIEVED>>>>>>>AAAAAAA"+ JSON.stringify(resultA));
@@ -170,6 +170,7 @@ function compareETHPriceAbove() {
 };
 compareETHPriceBelow();
 compareETHPriceAbove();
+process.exit();
 
 
 
