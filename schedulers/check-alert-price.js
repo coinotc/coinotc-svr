@@ -5,7 +5,7 @@ var validDeviceRegistrationToken = new Array();
 var serverKey = process.env.FCM_SERVER_KEY;
 var fcm = new FCM(serverKey);
 
-var db = mongoose.connect(proces.env.MONGODB_URI);
+var db = mongoose.connect(process.env.MONGODB_URI);
 require('../models/alert');
 require('../models/User');
 mongoose.set('debug', true);
