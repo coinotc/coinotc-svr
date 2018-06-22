@@ -5,7 +5,11 @@ exports.exec = function(cmd, cb){
     var child_process = require('child_process');
     var parts = cmd.split(/\s+/g);
     var p = child_process.spawn(parts[0], parts.slice(1), {stdio: 'inherit'});
-    p.on('exit', function(code){
+    p.on('close', function(code){
+        console.log(code);
+    });
+
+    p.on('error', function(code){
         var err = null;
         if (code) {
             err = new Error('command "'+ cmd +'" exited with wrong status code "'+ code +'"');
