@@ -15,7 +15,7 @@ router.get('/', auth.required, (req, res) => {
       }
       res.status(200).json(result);
     }
-  ).sort({ price: -1 });
+  ).sort({ status: -1 });
 });
 
 router.get('/getAbove', auth.required, (req, res) => {
