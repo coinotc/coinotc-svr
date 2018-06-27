@@ -16,8 +16,6 @@ var http = require('http'),
   compression = require('compression');
   config = require('./config');
   notification = require('./workers/changeStream');
-  // cron = require('./schedulers');
-  // test = require('./schedulers/check-alert-price')
 
 const { SHA256 } = require('sha2');
 var isProduction = process.env.NODE_ENV === 'production';
