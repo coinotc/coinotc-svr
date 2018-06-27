@@ -9,7 +9,6 @@ var Decimal = require('decimal.js');
 
 const walletApiKey = process.env.COINOTC_WALLET_API_KEY;
 const ApiUrl = process.env.COINOTC_WALLET_API_URL;
-const globalWalletPassword = process.env.COINOTC_GLOBAL_WALLET_PASSWORD;
 const origin = process.env.COINOTC_WALLET_ORIGIN;
 
 router.get('/wallet-info', auth.required, function(req, res, next){
@@ -34,7 +33,6 @@ router.get('/wallet-info', auth.required, function(req, res, next){
             let data = JSON.parse(body);
             console.log(data);
             if(data.monero.accInfo[1] === null){
-                console.log("data.monero.accInfo[2].result.address"+ data.monero.accInfo[2].result.address);
                 var _returnResult = {
                     id: data._id,
                     ETH: {
@@ -55,7 +53,6 @@ router.get('/wallet-info', auth.required, function(req, res, next){
                 };
                 return res.status(201).json(_returnResult);
             }else{
-                console.log("data.monero.accInfo[1] > "+data.monero.accInfo[1])
                 var returnResult = {
                     id: data._id,
                     ETH: {
@@ -166,44 +163,46 @@ router.get('/balance/:id/:cryptoType', auth.required, function(req, res, next){
     let _cryptoType = req.params.cryptoType.toLowerCase();
     console.log("_id : " + _id);
     console.log("_cryptoType : " + _cryptoType);
-    
-    User.findById(req.payload.id)
-    .then(function (user) {
-        if (!user) {
-            return res.sendStatus(401);
-        }
-        console.log('get-wallet info ...');
-        currentUserEmail = user.email;
-        var options = {
-            url: `${ApiUrl}wallets/balance/${_id}/${_cryptoType}`,
-            headers : {
-            'Authorization': `Bearer ${walletApiKey}`,
-            'Origin': origin
+    try {
+        User.findById(req.payload.id)
+        .then(function (user) {
+            if (!user) {
+                return res.sendStatus(401);
             }
-        };
+            console.log('get-wallet info ...');
+            currentUserEmail = user.email;
+            var options = {
+                url: `${ApiUrl}wallets/balance/${_id}/${_cryptoType}`,
+                headers : {
+                'Authorization': `Bearer ${walletApiKey}`,
+                'Origin': origin
+                }
+            };
 
-        request.get(options, function(error, response, body){
-            if(error) res.status(500).send(error);
-            console.log(body);
-            let data = JSON.parse(body);
-            console.log(data)
-            var returnResult = {
-                id: data._id,
-                balance: ''
-            }
-            console.log(_cryptoType)
-            if((_cryptoType === "eth") || (_cryptoType === "ada") || (_cryptoType === "xrp")){
-                returnResult.balance = data.amount
-            }else if((_cryptoType === "xlm") || (_cryptoType === "xmr")){
-                returnResult.balance = data.balance
-            } 
-           
-            console.log(returnResult)
-            return res.status(201).json(returnResult);
+            request.get(options, function(error, response, body){
+                if(error) res.status(500).send(error);
+                console.log(body);
+                let data = JSON.parse(body);
+                console.log(data)
+                var returnResult = {
+                    id: data._id,
+                    balance: ''
+                }
+                console.log(_cryptoType)
+                if((_cryptoType === "eth") || (_cryptoType === "ada") || (_cryptoType === "xrp")){
+                    returnResult.balance = data.amount
+                }else if((_cryptoType === "xlm") || (_cryptoType === "xmr")){
+                    returnResult.balance = data.balance
+                } 
+            
+                console.log(returnResult)
+                return res.status(201).json(returnResult);
 
-        })
-    })
-    .catch(next);
+            })
+        });
+    }catch(error){
+        res.status(500).send(error);
+    }
 });
 
 router.post('/locked-balance', auth.required, function(req, res, next){
