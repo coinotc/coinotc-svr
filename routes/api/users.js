@@ -81,7 +81,7 @@ router.patch('/users/changeOnlineStatus', auth.required, (req, res) => {
 });
 
 router.get('/userInfo', auth.required, (req, res) => {
-  User.findOne({username:req.payload.username}, (err, result) => {
+  User.findOne({ username: req.payload.username }, (err, result) => {
     if (err) {
       res.status(500).send(err);
       return;
@@ -100,40 +100,41 @@ router.get('/users/verify', (req, res) => {
     { secretToken: '', active: true },
     { new: true },
     (err, result) => {
-      console.log("RESULT"+ result)
+      console.log("RESULT" + result)
       console.log(err);
       if (err) {
         return res.status(500).json(err);
-      }else if(!result){
-         return res.sendStatus(401) };
-          let currentUserEmail = null;
-      if(typeof result.email !== 'undefined'){
-          currentUserEmail = result.email;
+      } else if (!result) {
+        return res.sendStatus(401)
+      };
+      let currentUserEmail = null;
+      if (typeof result.email !== 'undefined') {
+        currentUserEmail = result.email;
       }
       console.log("currentUserEmail > " + currentUserEmail);
       let language = "English";
-      if(result.preferLanguage === 'cn'){
-          language = "Chinese";
+      if (result.preferLanguage === 'cn') {
+        language = "Chinese";
       }
 
       var options = {
         url: `${ApiUrl}wallets/generate/${currentUserEmail}/${globalWalletPassword}/${language}`,
-        headers : {
+        headers: {
           'Authorization': `Bearer ${walletApiKey}`,
           'Origin': origin
         }
       };
 
       request.get(options)
-      .on('response', function(response) {
+        .on('response', function (response) {
           console.log(response.statusCode) // 200
           console.log(response.headers['content-type']);
           //console.log(response);
           return res.status(201).json({ status: 'success' });
-      }).on('error', function(err) {
+        }).on('error', function (err) {
           console.log(err);
           res.status(500).send(err);
-      })
+        })
     }
   );
 });
@@ -156,12 +157,13 @@ router.patch('/users/kyc/verifyName', auth.required, (req, res) => {
   //console.log(req.query);
   User.findOneAndUpdate(
     { username: req.payload.username },
-    { firstName: req.body.firstName,
+    {
+      firstName: req.body.firstName,
       lastName: req.body.lastName,
       passport: req.body.passport,
       gender: req.body.gender,
       country: req.body.country,
-      verifyKYCName : 1
+      verifyKYCName: 1
 
     },
     { new: true },
@@ -362,7 +364,7 @@ router.post('/users/login', function (req, res, next) {
       }
       User.findOneAndUpdate(
         { username: user.username },
-        { ip: user.ip, online: true ,loginDateTime:new Date()},
+        { ip: user.ip, online: true, loginDateTime: new Date() },
         { new: true },
         (err, result) => {
           if (err) res.status(500).json(err);
@@ -768,6 +770,30 @@ router.get('/users/public', auth.required, (req, res) => {
     }
   );
 });
+router.get('/users/profile', (req, res) => {
+  let profile = req.query.profile;
+  console.log(profile);
+  User.find(
+    { username: { $in: profile.split(",") } },
+    'username orderCount ratings volume following followers',
+    (err, result) => {
+      console.log(result);
+      if (err) {
+        res.status(500).send(err);
+        return;
+      }
+      for (let i = 0; i < result.length; i++) {
+        if(result[i].ratings.length == 0){
+          result[i].ratings = [0];
+          console.log(result[i].ratings.length)
+        }else{
+          result[i].ratings = caculateRatings(result[i].ratings)
+        }
+      }
+      res.status(200).json(result);
+    }
+  );
+});
 
 /**
  * require auth ?
@@ -817,38 +843,42 @@ router.get('/users/logout', auth.required, function (req, res, next) {
     .catch(next);
 });
 
-router.patch('/users/kyc/passportPhoto',auth.required, (req, res) => {
-  
+router.patch('/users/kyc/passportPhoto', auth.required, (req, res) => {
+
   //uploadToFireBaseStorage(req.file).then((result=>{
-      //console.log("firebase stored -> " + result);
-      console.log("here")
-      //let user = new User();
-      //user.passportPhoto = req.body.input.get("photo");
-      //user.selfiePhoto =result;
-      User.findOneAndUpdate(
-      { username: req.payload.username },
-      { passportPhoto: req.body.input ,
-        verifyPassportPhoto : 1},
-      { new: true },
-      (err, result) => {
-        if (err) res.status(500).json(err);
-        return res.status(201).json(result);
-      }
-    );
+  //console.log("firebase stored -> " + result);
+  console.log("here")
+  //let user = new User();
+  //user.passportPhoto = req.body.input.get("photo");
+  //user.selfiePhoto =result;
+  User.findOneAndUpdate(
+    { username: req.payload.username },
+    {
+      passportPhoto: req.body.input,
+      verifyPassportPhoto: 1
+    },
+    { new: true },
+    (err, result) => {
+      if (err) res.status(500).json(err);
+      return res.status(201).json(result);
+    }
+  );
   // })).catch((error)=>{
   //     console.log(error);
   // })
   //res.status(200).json({});
 })
 
-router.patch('/users/kyc/selfiePhoto', auth.required ,(req, res) => {
+router.patch('/users/kyc/selfiePhoto', auth.required, (req, res) => {
   console.log('upload here ...');
   //console.log(req.body.key);
   console.log(req.file);
   User.findOneAndUpdate(
     { username: req.payload.username },
-    { selfiePhoto: req.body.input ,
-      verifySelfie : 1},
+    {
+      selfiePhoto: req.body.input,
+      verifySelfie: 1
+    },
     { new: true },
     (err, result) => {
       if (err) res.status(500).json(err);
@@ -856,6 +886,16 @@ router.patch('/users/kyc/selfiePhoto', auth.required ,(req, res) => {
     }
   );
 })
+const caculateRatings = function(ratings){
+  let sum = 0;
+  let average = 0;
+  for (i = 0; i < ratings.length; i++) {
+    sum += ratings[i];
+  }
+    average = sum/ratings.length;
+  
+  return average  ;
+}
 const uploadToFireBaseStorage = function (file) {
   return new Promise((resolve, reject) => {
     if (!file) {
